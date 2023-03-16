@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   return {
-    base: command === 'serve' ? '/' : '/meetart-2023-vue/', 
+    base: command === 'serve' ? '/' : '/MeetArt_2023_Vue/', 
     plugins: [vue()],
     resolve: {
       alias: {
