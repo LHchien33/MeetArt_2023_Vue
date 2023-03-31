@@ -4,9 +4,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
+export default defineConfig(({ command, mode }) => {
   return {
-    base: command === 'serve' ? '/' : '/MeetArt_2023_Vue/', 
+    base: mode === 'development' ? '/' : '/MeetArt_2023_Vue/', 
     plugins: [vue()],
     resolve: {
       alias: {

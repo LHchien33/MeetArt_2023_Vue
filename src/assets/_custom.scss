@@ -1,0 +1,116 @@
+.mt-n14 {
+  margin: -14px 0 0 0;
+}
+
+.w-fit-content{
+  width: fit-content;
+}
+
+.bg-clip-padding-box{
+  background-clip: padding-box;
+}
+
+.focus-outline-none:focus-visible {
+  outline: none;
+}
+
+// text style
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.icon-wght-300{
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 48;
+}
+
+// img style
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.object-position-top {
+  object-position: left top;
+}
+
+// interactive effects & filter
+.backdrop-blur-2{
+  backdrop-filter: blur(20px);
+}
+
+.transition-all-3 {
+  transition: ease-in-out all .3s;
+}
+
+.transition-transform-3 {
+  transition: ease-in-out transform .3s;
+}
+
+@media (any-hover: hover){
+  .hover-animation:hover .translate-y-n100 {
+    transform: translateY(-100%);
+  }
+  .hover-animation:hover .scale-11 {
+    transform: scale(1.1);
+  }
+}
+
+@media (any-hover: none){
+  .bottom-fixed-0{
+    bottom: 0;
+  }
+}
+
+// gradient style
+.gradient-line {
+  &::after{
+  content: "";
+  display: block;
+  width: 100%;
+  background-image: $gradient;
+  }
+  &-14::after {
+    height: 14px;
+  }
+  &-4::after {
+    height: 4px;
+  }
+}
+
+.gradient-border {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit; 
+    background: $gradient border-box;
+    -webkit-mask:
+      linear-gradient(#fff, #fff) padding-box, 
+      linear-gradient(#fff, #fff) border-box;
+    mask: 
+      linear-gradient(#fff, #fff) padding-box, 
+      linear-gradient(#fff, #fff) border-box;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  &-1::before {
+    border: 1px solid transparent;
+  }
+  &-7::before {
+    border: 7px solid transparent;
+  }
+}
+
+// node_modules/bootstrap/scss/mixins/_buttons.scss
+// node_modules/bootstrap/scss/_buttons.scss
+.btn-outline-primary {
+  &:hover{
+    color: $white
+  }
+}

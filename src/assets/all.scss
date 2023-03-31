@@ -1,0 +1,45 @@
+// Required
+@import "bootstrap/scss/functions";
+
+// Custom Variables
+@import "./variables";
+
+// Required
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+
+// Custom utilities
+@import "./utilities";
+
+// Optional：Base & Layout
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+
+// Optional：Components
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/placeholders";
+
+// Optional：Helpers
+@import "bootstrap/scss/helpers";
+
+// Utilities
+@import "bootstrap/scss/utilities/api";
+
+
+// Additional custom utils/components
+@import "./custom";
