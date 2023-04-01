@@ -75,7 +75,7 @@
     <div class="container py-5 py-md-3">
       <div class="row">
         <p class="mb-md-0 text-light-1 col">僅個人作品使用，無任何商業用途 &copy; 2023 MeetArt 繪課室 |
-          <a class="text-light-1" href="#">後台</a>
+          <RouterLink to="/login" class="text-light-1">後台</RouterLink>
         </p>
         <div class="col-md-2 text-md-end">
           <a class="me-3" href="https://mail.google.com/mail/u/0/?fs=1&amp;tf=cm&amp;to=judy263562@gmail.com" target="_blank">
@@ -91,12 +91,13 @@
 </template>
 
 <script>
-import { RouterView } from 'vue-router';
+import { RouterView, RouterLink } from 'vue-router';
 import { throttle as _throttle } from 'lodash'
 
 export default {
   components: {
-    RouterView
+    RouterView,
+    RouterLink
   },
   data(){
     return {

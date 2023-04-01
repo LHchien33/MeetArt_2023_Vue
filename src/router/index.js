@@ -10,11 +10,29 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: '首頁',
+          name: '前台首頁',
           component: () => import('../views/HomeView.vue'),
         }
       ]
     },
+    {
+      path: '/login',
+      component: () => import('../views/AdminLoginView.vue')
+    },
+    {
+      path: '/admin',
+      component: () => import('../views/AdminLayout.vue'),
+      children: [
+        {
+          path: 'orders',
+          name: '後台訂單管理',
+          component: () => import('../views/AdminOrdersView.vue'),
+        }
+      ]
+    },
+    // {
+    //   name: '預設頁面 404'
+    // }
   ]
 })
 
