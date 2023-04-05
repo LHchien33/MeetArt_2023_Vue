@@ -1,6 +1,6 @@
 <template>
   <!-- header -->
-  <header class="fixed-top transition-all-3" :class="isTransparent ? '' : ['shadow-sm', 'bg-beige']">
+  <header class="fixed-top transition-all-3" :class="isOnTheTop ? '' : ['shadow-sm', 'bg-beige']">
     <nav class="navbar navbar-expand-lg py-3 py-lg-2 transition-all-3 bg-lg-transparent" :class="isCollapsed ? 'bg-transparent' : 'bg-light-1'">
       <div class="container">
         <a class="navbar-brand ps-3 ps-md-0" href="#">
@@ -62,10 +62,11 @@
       </div>
     </nav>
   </header>
-  <div class="fixed-bottom start-auto mb-9 me-9 mb-lg-10 me-lg-10 transition-all-3" :class="isTransparent ? 'opacity-0' : 'opacity-1'">
-    <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size">
+  <div class="fixed-bottom start-auto mb-9 mb-lg-10 transition-all-3" style="margin-right: -95px;"
+        :class="isOnTheTop ? '' : ['me-7', 'me-lg-9']">
+    <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
       <img class="arrow-size" src="../assets/images/ic_arrow.png" alt="回到頂端">
-      <span class="text-dark-2 fw-semibold fs-lg-5 fs-10px">TOP</span>
+      <span class="text-dark-2 fw-semibold fs-lg-5 fs-12px">TOP</span>
     </a>              
   </div>
   <!-- content -->
@@ -102,7 +103,7 @@ export default {
   data(){
     return {
       isCollapsed: true,
-      isTransparent: true,
+      isOnTheTop: true,
       dropdownItems: {
         '媒材': ['素描', '水彩', '油畫', '色鉛筆'],
         '主題': ['人物/肖像', '動物', '自然/植物', '建築', '美食'],
@@ -113,9 +114,9 @@ export default {
   methods: {
     scrollHandler: _throttle(function(){
       if (window.pageYOffset > 50){
-        this.isTransparent = false
+        this.isOnTheTop = false
       } else {
-        this.isTransparent = true
+        this.isOnTheTop = true
       }
     }, 300)
   },
@@ -158,8 +159,8 @@ export default {
   height: 20px;
 }
 
-.fs-10px{
-  font-size: 10px;
+.fs-12px{
+  font-size: 12px;
 }
 
 @media (min-width: 992px){

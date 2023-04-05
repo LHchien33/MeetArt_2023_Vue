@@ -27,6 +27,21 @@ const router = createRouter({
           path: 'orders',
           name: '後台訂單管理',
           component: () => import('../views/AdminOrdersView.vue'),
+        },
+        {
+          path: 'products',
+          name: '後台商品管理',
+          component: () => import('../views/AdminProductsView.vue'),
+        },
+        {
+          path: 'coupons',
+          name: '後台優惠券管理',
+          component: () => import('../views/AdminCouponsView.vue'),
+        },
+        {
+          path: 'articles',
+          name: '後台文章管理',
+          component: () => import('../views/AdminArticlesView.vue'),
         }
       ]
     },

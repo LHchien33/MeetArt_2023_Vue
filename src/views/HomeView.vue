@@ -159,7 +159,6 @@
                     1400: { slidesPerView: 4, slidesPerGroup: 4 },
                   }"
                   :spaceBetween="24"
-                  :slidesPerView="4"
                   :navigation="{
                     prevEl: '.custom-prev-button',
                     nextEl: '.custom-next-button'
@@ -175,9 +174,8 @@
                   }"
                   :modules="modules"
                   >
-            
             <swiper-slide class="h-auto" v-for="prod in filteredProducts" :key="prod.id">
-              <a href="#" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 hover-animation text-decoration-none">
+              <a href="#" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 204px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
                 </div>

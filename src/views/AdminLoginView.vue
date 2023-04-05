@@ -76,7 +76,7 @@ export default {
   methods: {
     onSubmit(values){
       const { VITE_BASE } = import.meta.env;
-      const url = `${VITE_BASE}/admin/signin`;
+      const url = `${VITE_BASE}/v2/admin/signin`;
 
       this.$http.post(url, values)
       .then(res => {
