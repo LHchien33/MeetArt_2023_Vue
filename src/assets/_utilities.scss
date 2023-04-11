@@ -40,6 +40,10 @@ $utilities: map-merge(
       property: overflow,
       values: auto hidden visible scroll,
     ),
+    "overflow-y": (
+      property: overflow-y,
+      values: scroll,
+    ),
     // scss-docs-end utils-overflow
     // scss-docs-start utils-display
     "display": (
@@ -64,6 +68,7 @@ $utilities: map-merge(
     // scss-docs-end utils-shadow
     // scss-docs-start utils-position
     "position": (
+      responsive: true,
       property: position,
       values: static relative absolute fixed sticky unset
     ),
@@ -528,6 +533,7 @@ $utilities: map-merge(
     ),
     "white-space": (
       property: white-space,
+      responsive: true,
       class: text,
       values: (
         wrap: normal,

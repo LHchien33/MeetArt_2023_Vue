@@ -307,6 +307,8 @@ $danger:        $red !default;
 $light:         $gray-100 !default;
 $dark:          $gray-900 !default;
 $dark-1:        #1a1a1a;
+$accent:        #FF881A;
+$beige:         #f9f7f2;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -322,9 +324,9 @@ $theme-colors: (
   'light-2':    #CCCCCC,
   'dark-3':     #666666,
   'dark-2':     #333333,
-  "dark-1":     #1a1a1a, //$dark,
-  'beige':      #f9f7f2,
-  'accent':     #FF881A,
+  "dark-1":     $dark-1, //$dark,
+  'beige':      $beige,
+  'accent':     $accent,
 ) !default;
 // scss-docs-end theme-colors-map
 
@@ -1216,27 +1218,28 @@ $pagination-padding-x-lg:           1.5rem !default;
 
 $pagination-font-size:              $font-size-base !default;
 
-$pagination-color:                  var(--#{$prefix}link-color) !default;
-$pagination-bg:                     $white !default;
+$pagination-color:                  $secondary; // var(--#{$prefix}link-color) !default;
+$pagination-bg:                     transparent; // $white !default;
 $pagination-border-radius:          $border-radius !default;
 $pagination-border-width:           $border-width !default;
 $pagination-margin-start:           ($pagination-border-width * -1) !default;
 $pagination-border-color:           $gray-300 !default;
 
-$pagination-focus-color:            var(--#{$prefix}link-hover-color) !default;
-$pagination-focus-bg:               $gray-200 !default;
-$pagination-focus-box-shadow:       $input-btn-focus-box-shadow !default;
+$pagination-focus-color:            $pagination-color; // var(--#{$prefix}link-hover-color) !default;
+$pagination-focus-bg:               transparent; // $gray-200 !default;
+$pagination-focus-box-shadow:       0 0 $input-btn-focus-blur $input-btn-focus-width tint-color($secondary, 80%);
+                                    // $input-btn-focus-box-shadow !default;
 $pagination-focus-outline:          0 !default;
 
-$pagination-hover-color:            var(--#{$prefix}link-hover-color) !default;
-$pagination-hover-bg:               $gray-200 !default;
+$pagination-hover-color:            shade-color($accent, 10%); // var(--#{$prefix}link-hover-color) !default;
+$pagination-hover-bg:               $beige; // $gray-200 !default;
 $pagination-hover-border-color:     $gray-300 !default;
 
-$pagination-active-color:           $component-active-color !default;
-$pagination-active-bg:              $component-active-bg !default;
+$pagination-active-color:           shade-color($accent, 20%); // $component-active-color !default;
+$pagination-active-bg:              tint-color($secondary, 90%); // $component-active-bg !default;
 $pagination-active-border-color:    $pagination-active-bg !default;
 
-$pagination-disabled-color:         $gray-600 !default;
+$pagination-disabled-color:         $gray-300; // $gray-600 !default;
 $pagination-disabled-bg:            $white !default;
 $pagination-disabled-border-color:  $gray-300 !default;
 
