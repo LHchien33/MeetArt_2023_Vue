@@ -1,4 +1,16 @@
 <template>
+  <!-- back to top button -->
+  <div class="fixed-bottom start-auto mb-9 mb-lg-10 transition-all-3" style="margin-right: -95px;"
+        :class="isOnTheTop ? '' : ['me-7', 'me-lg-9']">
+    <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
+      <img class="arrow-size" src="../assets/images/ic_arrow.png" alt="回到頂端">
+      <span class="text-dark-2 fw-semibold fs-lg-5 fs-12px">TOP</span>
+    </a>              
+  </div>
+  <!-- nav backdrop -->
+  <div class="d-lg-none position-fixed bg-dark-1 w-100 opacity-0" style="z-index: 1030; height: 0; transition: opacity .3s"
+        data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        :class="isCollapsed ? '' : ['h-100', 'opacity-50']" @click="isCollapsed = true"></div>
   <!-- header -->
   <header class="fixed-top transition-all-3" :class="isOnTheTop ? '' : ['shadow-sm', 'bg-beige']">
     <nav class="navbar navbar-expand-lg py-3 py-lg-2 transition-all-3 bg-lg-transparent" :class="isCollapsed ? 'bg-transparent' : 'bg-light-1'">
@@ -17,7 +29,7 @@
         </button>
         <div class="collapse navbar-collapse fs-4 fw-semibold py-3" id="navbarNavDropdown">
           <ul class="navbar-nav w-100 align-items-lg-center px-3 px-md-0">
-            <!-- 子下拉選單 start -->
+            <!-- 探索課程下拉選單 start -->
             <li class="nav-item dropdown dropdown-hover">
               <button type="button" class="nav-link w-100 text-start border-0 bg-transparent py-4 py-lg-2 px-3 px-lg-5 text-primary fw-bolder" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <span class="me-1">探索課程</span>
@@ -41,7 +53,7 @@
                 </template>
               </ul>
             </li>
-            <!-- 子下拉選單 end -->
+            <!-- 探索課程下拉選單 end -->
             <li class="nav-item">
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-3 px-lg-5" href="#">課外輔導</a>
             </li>
@@ -62,13 +74,6 @@
       </div>
     </nav>
   </header>
-  <div class="fixed-bottom start-auto mb-9 mb-lg-10 transition-all-3" style="margin-right: -95px;"
-        :class="isOnTheTop ? '' : ['me-7', 'me-lg-9']">
-    <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
-      <img class="arrow-size" src="../assets/images/ic_arrow.png" alt="回到頂端">
-      <span class="text-dark-2 fw-semibold fs-lg-5 fs-12px">TOP</span>
-    </a>              
-  </div>
   <!-- content -->
   <RouterView />
   <!-- footer -->

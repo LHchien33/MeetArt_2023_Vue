@@ -190,8 +190,8 @@
                     <p class="mb-0">{{ prod.classmates }} 位同學</p>
                   </div>
                   <div class="text-end">
-                    <p class="mb-0 text-dark-3"><s>NT$ {{ prod.origin_price }}</s></p>
-                    <p class="mb-0 fs-4 fw-semibold text-accent">NT$ {{ prod.price }}</p>
+                    <p class="mb-0 text-dark-3"><s>NT$ {{ numToPriceString(prod.origin_price) }}</s></p>
+                    <p class="mb-0 fs-4 fw-semibold text-accent">NT$ {{ numToPriceString(prod.price) }}</p>
                   </div>
                 </div>
               </a>
@@ -212,56 +212,19 @@
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 flex-lg-column">
-          <div class="col mb-8 mb-md-0 mb-lg-10 mb-xl-100">
+          <div v-for="(article, i) in articles" :key="article.title" class="col mb-8 mb-md-0 mb-lg-10 mb-xl-100"
+              :class=" i === 2 ? 'd-md-none d-lg-block' : '' ">
             <div class="row align-items-top align-items-xl-end flex-column flex-lg-row">
               <div class="col-lg-6 col-xl-5">
-                <img class="w-100 object-fit-cover rounded-top-3 rounded-lg-0" src="https://images.unsplash.com/photo-1513758173941-bfbd2e4166f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&q=80" alt="" style="max-height: 300px;">
+                <img class="w-100 object-fit-cover rounded-top-3 rounded-lg-0" :src="article.image" alt="文章附圖" style="max-height: 300px;">
               </div>
               <div class="col-lg-7 col-xl-8 mt-n8 mt-lg-8 mt-xl-0 mb-xl-n8 flex-lg-grow-1 ms-0 ms-lg-n9percent">
                 <div class="backdrop-blur-2 gradient-border gradient-border-1 rounded-bottom-3 rounded-lg-3 bg-white bg-opacity-75 py-8 px-5 px-lg-9">
-                  <h3 class="fw-bold fs-4 fw-lg-bolder fs-lg-2 mb-3">看不出圖哪裡怪怪的？從觀察開啟「繪畫之眼」</h3>
+                  <h3 class="fw-bold fs-4 fw-lg-bolder fs-lg-2 mb-3">{{ article.title }}</h3>
                   <div class="gradient-line gradient-line-4 mb-3"></div>
-                  <p class="text-dark-3 fs-lg-5 fw-lg-semibold mb-3 line-clamp-2">初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」…</p>
-                  <p class="text-dark-3 mb-5">2023/02/05</p>
-                  <a href="#" class="stretched-link d-flex align-items-center w-fit-content text-decoration-none text-secondary ms-auto">
-                    閱讀更多
-                    <img src="../assets/images/ic_polygon.png" alt="更多">
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-8 mb-md-0 mb-lg-10 mb-xl-100">
-            <div class="row align-items-top align-items-xl-end flex-column flex-lg-row">
-              <div class="col-lg-6 col-xl-5">
-                <img class="w-100 object-fit-cover rounded-top-3 rounded-lg-0" src="https://images.unsplash.com/photo-1541723011216-c57eaed19919?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80" alt="" style="max-height: 300px;">
-              </div>
-              <div class="col-lg-7 col-xl-8 mt-n8 mt-lg-8 mt-xl-0 mb-xl-n8 flex-lg-grow-1 ms-0 ms-lg-n9percent">
-                <div class="backdrop-blur-2 gradient-border gradient-border-1 rounded-bottom-3 rounded-lg-3 bg-white bg-opacity-75 py-8 px-5 px-lg-9">
-                  <h3 class="fw-bold fs-4 fw-lg-bolder fs-lg-2 mb-3">色彩三要素：什麼是色相、明度、飽和度？</h3>
-                  <div class="gradient-line gradient-line-4 mb-3"></div>
-                  <p class="text-dark-3 fs-lg-5 fw-lg-semibold mb-3 line-clamp-2">初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」…</p>
-                  <p class="text-dark-3 mb-5">2023/02/05</p>
-                  <a href="#" class="stretched-link d-flex align-items-center w-fit-content text-decoration-none text-secondary ms-auto">
-                    閱讀更多
-                    <img src="../assets/images/ic_polygon.png" alt="更多">
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col mb-8 mb-md-0 mb-lg-10 mb-xl-100 d-md-none d-lg-block">
-            <div class="row align-items-top align-items-xl-end flex-column flex-lg-row">
-              <div class="col-lg-6 col-xl-5">
-                <img class="w-100 object-fit-cover rounded-top-3 rounded-lg-0" src="https://images.unsplash.com/photo-1456086272160-b28b0645b729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80" alt="" style="max-height: 300px;">
-              </div>
-              <div class="col-lg-7 col-xl-8 mt-n8 mt-lg-8 mt-xl-0 mb-xl-n8 flex-lg-grow-1 ms-0 ms-lg-n9percent">
-                <div class="backdrop-blur-2 gradient-border gradient-border-1 rounded-bottom-3 rounded-lg-3 bg-white bg-opacity-75 py-8 px-5 px-lg-9">
-                  <h3 class="fw-bold fs-4 fw-lg-bolder fs-lg-2 mb-3">挑選水彩用具 - 不是越貴越好，要就挑「最適合」</h3>
-                  <div class="gradient-line gradient-line-4 mb-3"></div>
-                  <p class="text-dark-3 fs-lg-5 fw-lg-semibold mb-3 line-clamp-2">初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」…</p>
-                  <p class="text-dark-3 mb-5">2023/02/05</p>
-                  <a href="#" class="stretched-link d-flex align-items-center w-fit-content text-decoration-none text-secondary ms-auto">
+                  <p class="text-dark-3 fs-lg-5 fw-lg-semibold mb-3 line-clamp-2">{{ article.description }}</p>
+                  <p class="text-dark-3 mb-5">{{ dateConverter(article.create_at * 1000) }}</p>
+                  <a href="#" class="stretched-link d-flex align-items-center justify-content-end text-decoration-none text-secondary">
                     閱讀更多
                     <img src="../assets/images/ic_polygon.png" alt="更多">
                   </a>
@@ -279,11 +242,12 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/autoplay';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Autoplay, Pagination, FreeMode } from 'swiper';
+import { Navigation, Pagination, FreeMode } from 'swiper';
 
 const { VITE_BASE, VITE_API } = import.meta.env;
+import { mapActions } from 'pinia';
+import { useCommonStore } from '@/stores/common';
 
 export default {
   components: {
@@ -293,12 +257,33 @@ export default {
   data(){
     return {
       students: [],
-      modules: [ Navigation, Autoplay, Pagination, FreeMode ],
+      modules: [ Navigation, Pagination, FreeMode ],
       products: [],
-      errorMessage: ''
+      errorMessage: '',
+      articles: [
+        {
+          image: 'https://images.unsplash.com/photo-1513758173941-bfbd2e4166f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80',
+          title: '看不出圖哪裡怪怪的？從觀察開啟「繪畫之眼」',
+          description: '初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」',
+          create_at: 1673853662
+        },
+        {
+          image: 'https://images.unsplash.com/photo-1541723011216-c57eaed19919?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80',
+          title: '色彩三要素：什麼是色相、明度、飽和度？',
+          description: '初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」',
+          create_at: 1675850735
+        },
+        {
+          image: 'https://images.unsplash.com/photo-1456086272160-b28b0645b729?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80',
+          title: '挑選水彩用具 - 不是越貴越好，要就挑「最適合」',
+          description: '初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。然而在繪畫裡，講究的其實是一個「整體」',
+          create_at: 1678855662
+        }
+      ]
     }
   },
   methods: {
+    ...mapActions(useCommonStore, ['numToPriceString', 'dateConverter']),
     getRandomUsers(){
       this.$http.get('https://randomuser.me/api/?inc=name,picture&nat=us&results=3')
       .then(res => {
@@ -317,7 +302,7 @@ export default {
     },
     getProducts(){
       this.errorMessage = '';
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/products`;
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
       this.$http.get(url)
       .then(res => {
         this.products = res.data.products;
