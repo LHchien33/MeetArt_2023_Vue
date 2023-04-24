@@ -315,7 +315,12 @@
           <button type="button" class="btn btn-outline-dark-3 me-2" @click="beforeCancel(meta.touched)">取消</button>
           <button type="submit" class="btn btn-primary">確認{{ updateId === 'new' ? '新增' : '編輯' }}</button>
         </div>
-        <ConfirmModal ref="ConfirmModal" v-bind="modalContent"></ConfirmModal>
+        <!-- 離開頁面確認 modal -->
+        <ConfirmModal ref="ConfirmModal" v-bind="modalContent">
+          <template #modal-content>
+            <p class="mb-0">尚未儲存，<span class="text-danger">捨棄變更</span>嗎？</p>
+          </template>
+        </ConfirmModal>
       </VForm>
     </div>
 
@@ -395,7 +400,6 @@ export default {
         ]
       },
       modalContent: {
-        details: '將回到商品管理列表，捨棄變更嗎？',
         cancelBtnText: '繼續編輯',
         confirmBtnText: '捨棄'
       },
@@ -473,7 +477,6 @@ export default {
       this.$http[method](url, {data: {...requestData}}).then(res => {
         alert(res.data.message);
         this.productSaved = true;
-        this.originTempProd = {...requestData}
         method === 'post' ? location.reload() : this.$router.go(-1);
       }).catch(err => {
         alert(`新增商品失敗，錯誤代碼：${err.response.status}`);
@@ -486,8 +489,6 @@ export default {
           setTimeout(() => this.$router.push('/admin/products'), 500)
         }).catch(err => {
           this.discardEdit = false;
-        }).finally(() => {
-          this.$refs.ConfirmModal.hideModal();
         })
       } else {
         this.discardEdit = true;
@@ -506,7 +507,6 @@ export default {
     const formTouched = this.$refs.VForm.getMeta().touched;
     if(!this.discardEdit && !this.productSaved && formTouched) {
       try {
-        this.modalContent.details = '尚未儲存，捨棄變更嗎？';
         const response = await this.$refs.ConfirmModal.openModal();
         localStorage.removeItem('adminTempProd');
         window.removeEventListener('beforeunload', this.handleBeforeUnload)
@@ -515,9 +515,6 @@ export default {
       catch (err){
         return false
       }
-      finally {
-        this.$refs.ConfirmModal.hideModal()
-      } 
     } else {
       localStorage.removeItem('adminTempProd');
       window.removeEventListener('beforeunload', this.handleBeforeUnload)

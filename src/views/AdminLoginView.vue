@@ -17,7 +17,7 @@
               <div class="mb-6">
                 <label for="password" class="form-label">密碼</label>
                 <VField type="password" name="password" class="form-control" id="password" placeholder="請輸入密碼"
-                        :rules="{ required: true, regex: /^[^ \t\r\n\f]*$/ }" :class="{ 'is-invalid': errors['password'] }"
+                        :rules="{ required: true, regex: /^[^ \t\r\n\f:]*$/ }" :class="{ 'is-invalid': errors['password'] }"
                         ></VField>
                 <ErrorMessage name="password" class="invalid-feedback"></ErrorMessage>
               </div>

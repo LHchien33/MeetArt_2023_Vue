@@ -132,6 +132,10 @@
   backdrop-filter: blur(20px);
 }
 
+.rotate-90{
+  transform: rotate(90deg)
+}
+
 .transition-all-3 {
   transition: ease-in-out all .3s;
 }

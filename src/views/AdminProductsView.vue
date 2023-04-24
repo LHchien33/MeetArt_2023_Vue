@@ -82,7 +82,7 @@
                 <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
               </RouterLink>
               <button type="button" class="btn btn-danger border border-danger border-3 m-1"
-              @click="deleteProduct(prod.id)">刪除</button>
+              @click="deleteProduct(prod.id, prod.title)">刪除</button>
             </td>
           </tr>
         </tbody>
@@ -93,12 +93,19 @@
     <!-- 商品詳情 modal -->
     <InfoModal ref="InfoModal" id="infoModal">
       <template #modal-title>課程詳情</template>
-      <template #modal-content><AdminProdModal :tempProd="{...originTempProd}"></AdminProdModal></template>
-      <template #confirm-btn>
-        <RouterLink :to="`/admin/products/${originTempProd.id}`"
-            @click="hideModal()" class="btn btn-primary">前往編輯</RouterLink>
+      <template #modal-content>
+        <AdminProdModal :tempProd="{...originTempProd}"></AdminProdModal>
+      </template>
+      <template #confirm-btn="{ hideModal }">
+        <RouterLink :to="`/admin/products/${originTempProd.id}`" @click="hideModal()" class="btn btn-primary">前往編輯</RouterLink>
       </template>
     </InfoModal>
+    <!-- 確認刪除商品 modal -->
+    <ConfirmModal ref="ConfirmModal" v-bind="modalContent">
+      <template #modal-content>
+        <p class="mb-0">刪除後將無法恢復，確定刪除 <span class="text-danger">{{ modalContent.itemName }}</span> 嗎？</p>
+      </template>
+    </ConfirmModal>
   </div>
 </template>
 
@@ -110,10 +117,21 @@ import { useAdminProdStore } from '@/stores/adminProducts';
 import Pagination from '@/components/Pagination.vue';
 import InfoModal from '@/components/InfoModal.vue';
 import AdminProdModal from '@/components/AdminProdModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
   props: ['query'],
+  data(){
+    return {
+      modalContent: {
+        itemName: '',
+        title: '刪除課程',
+        cancelBtnText: '取消',
+        confirmBtnText: '確定刪除'
+      }
+    }
+  },
   watch: {
     'query.page'(newVal, oldVal){
       if(newVal === '1' && oldVal === undefined){
@@ -126,7 +144,8 @@ export default {
     RouterLink,
     Pagination,
     InfoModal,
-    AdminProdModal
+    AdminProdModal,
+    ConfirmModal
 },
   computed: {
     ...mapState(useAdminProdStore, ['pageProducts', 'pagination']),
@@ -136,21 +155,22 @@ export default {
     ...mapActions(useCommonStore, ['numToPriceString']),
     ...mapActions(useAdminProdStore, ['getPageProducts']),
     updateTempProd(product={}){
-      if(product.id !== this.originTempProd.id){
-        this.originTempProd = product;
-      }
+      this.originTempProd = product;
     },
-    deleteProduct(id){
+    deleteProduct(id, title){
+      this.modalContent.itemName = title;
+      let alertText = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${id}`;
-      this.$http.delete(url).then(res => {
-        alert(res.data.message);
+      this.$refs.ConfirmModal.openModal().then(res => {
+        return this.$http.delete(url)
+      }).then(res => {
+        alertText = res.data.message;
         this.getPageProducts();
       }).catch(err => {
-        alert(`刪除失敗，錯誤代碼：${err.response.status}`);
+        err === false ? alertText = '已取消刪除' : alertText = `刪除失敗，錯誤代碼：${err.response.status}`
+      }).finally(() => {
+        setTimeout(() => alert(alertText), 500)
       })
-    },
-    hideModal(){
-      this.$refs.InfoModal.hideModal();
     }
   },
   mounted(){
@@ -164,10 +184,6 @@ export default {
   .md-table-width{
     width: 770px !important;
   }
-}
-
-.rotate-90{
-  transform: rotate(90deg)
 }
 
 .table-cell-px-2 th,

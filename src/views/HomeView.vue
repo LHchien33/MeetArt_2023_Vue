@@ -183,10 +183,10 @@
                   <h3 class="mb-2 fs-4 fw-semibold text-dark-1">{{ prod.title }}</h3>
                   <p class="mb-2 text-secondary fs-5 fw-semibold d-flex align-items-center">
                     <span class="material-symbols-outlined me-1">auto_fix_high</span>
-                    {{ prod.teacher }}
+                    {{ prod.teacher.name }}
                   </p>
                   <div class="text-dark-3 mb-2 flex-grow-1">
-                    <p class="mb-1">時長 {{ prod.minutes }} 分鐘</p>
+                    <p class="mb-1">時長 {{ prod.outlines_total.minutes }} 分鐘</p>
                     <p class="mb-0">{{ prod.classmates }} 位同學</p>
                   </div>
                   <div class="text-end">

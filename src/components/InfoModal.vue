@@ -16,7 +16,7 @@
             <button type="button" class="btn btn-outline-dark-3" data-bs-dismiss="modal">
               <slot name="cancel-btn-text">關閉</slot>
             </button>
-            <slot name="confirm-btn"></slot>
+            <slot name="confirm-btn" :hideModal="hideModal"></slot>
           </div>
         </div>
       </div>
