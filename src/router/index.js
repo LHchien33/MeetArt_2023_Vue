@@ -31,7 +31,24 @@ const router = createRouter({
         {
           path: 'products',
           name: '後台商品管理',
-          component: () => import('../views/AdminProductsView.vue'),
+          children: [
+            {
+              path: '',
+              name: '商品列表',
+              component: () => import('../views/AdminProductsView.vue'),
+              props: (route) => ({
+                query: route.query
+              })
+            },
+            {
+              path: ':updateId',
+              name: '新增或編輯商品',
+              component: () => import('../views/AdminUpdateProdView.vue'),
+              props: (route) => ({
+                updateId: route.params.updateId
+              })
+            }
+          ]
         },
         {
           path: 'coupons',

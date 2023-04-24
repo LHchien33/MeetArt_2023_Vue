@@ -43,6 +43,10 @@
   object-fit: cover;
 }
 
+.object-fit-contain {
+  object-fit: contain;
+}
+
 .object-position-top {
   object-position: left top;
 }
@@ -111,7 +115,8 @@
 
 // node_modules/bootstrap/scss/mixins/_buttons.scss
 // node_modules/bootstrap/scss/_buttons.scss
-.btn-outline-primary {
+.btn-outline-primary, 
+.btn-outline-secondary {
   --bs-btn-hover-color: #fff;
   --bs-btn-active-color: #fff;
 }
@@ -151,5 +156,8 @@
 @media (any-hover: none){
   .bottom-fixed-0{
     bottom: 0;
+  }
+  .touched .translate-y-n100 {
+    transform: translateY(-100%);
   }
 }

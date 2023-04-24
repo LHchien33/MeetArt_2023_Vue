@@ -25,11 +25,12 @@
         <div class="collapse-hidden w-100 h-lg-100" :class="{ 'collapse-show': !isCollapsed }">
           <ul class="navbar-nav h-lg-100 py-3 py-lg-0">
             <li v-for="item in navItems" :key="item.itemName" class="nav-item">
-              <RouterLink :to="item.path" @click="isCollapsed = true"
-                  class="nav-link px-6 py-4 d-flex justify-content-between gradient-line gradient-line-0 position-relative"
-                  :class="{ 'gradient-line-90': currentPath === `${item.path}`}">
-                <span class="ms-lg-3 fs-5 nav-text-show " :class="{ 'nav-text-hidden': !isExpanded }">{{ item.itemName }}</span>
-                <span :class="{'opacity-0': isExpanded }" class="material-symbols-outlined icon-fill-1 d-none d-lg-block">{{ item.icon }}</span>
+              <RouterLink :to="item.path" @click="isCollapsed = true" v-slot="link" class="text-decoration-none">
+                <div class="nav-link px-6 py-4 d-flex justify-content-between gradient-line gradient-line-0 position-relative"
+                    :class="{ 'gradient-line-90': link.isActive }">
+                  <span class="ms-lg-3 fs-5 nav-text-show " :class="{ 'nav-text-hidden': !isExpanded }">{{ item.itemName }}</span>
+                  <span :class="{'opacity-0': isExpanded }" class="material-symbols-outlined icon-fill-1 d-none d-lg-block">{{ item.icon }}</span>
+                </div>
               </RouterLink>
             </li>
             <li class="nav-item mt-7 mt-lg-auto border-top">
@@ -48,9 +49,7 @@
     </nav>
     <!-- main content -->
     <div class="flex-grow-1">
-      <div class="pt-lg-8 d-flex flex-column main-content-height" style="padding: 138px 32px 32px;">
-        <RouterView v-if="isLoggedIn" class="flex-grow-1"></RouterView>
-      </div>
+      <RouterView v-if="isLoggedIn"></RouterView>
       <!-- footer -->
       <footer class="bg-dark-1 sticky-bottom">
         <div class="p-5 py-md-3">
@@ -91,7 +90,7 @@ export default {
           icon: 'assignment'
         },
         {
-          itemName: '商品管理',
+          itemName: '課程管理',
           path: '/admin/products',
           icon: 'dashboard_customize'
         },
@@ -105,13 +104,12 @@ export default {
           path: '/admin/articles',
           icon: 'edit'
         },
-        {
-          itemName: '營收圖表',
-          path: '/admin',
-          icon: 'bar_chart'
-        }
+        // {
+        //   itemName: '營收圖表',
+        //   path: '/admin/chart',
+        //   icon: 'bar_chart'
+        // }
       ],
-      currentPath: this.$route.path,
       isLoggedIn: false,
       isExpanded: true,
       isCollapsed: true
@@ -134,10 +132,7 @@ export default {
     }
   },
   created(){
-    this.checkAdmin();    
-  },
-  beforeUpdate(){
-    this.currentPath = this.$route.path;
+    this.checkAdmin();
   },
   async beforeRouteLeave (to, from) {
     if(to.path === '/login' && this.isLoggedIn === true) {
