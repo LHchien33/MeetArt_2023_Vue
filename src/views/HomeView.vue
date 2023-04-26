@@ -86,7 +86,7 @@
                   </h2>
                   <a class="fs-4 fs-md-6 fs-xxl-4 fw-semibold link-secondary text-decoration-none d-flex align-items-center" href="#">
                     看更多
-                    <img src="../assets/images/ic_polygon.png" alt="更多">
+                    <span class="material-symbols-outlined">arrow_right</span>
                   </a>
                 </div>
                 <!-- 圖片 -->
@@ -228,7 +228,7 @@
                   <p class="text-dark-3 mb-5">{{ dateConverter(article.create_at * 1000) }}</p>
                   <a href="#" class="stretched-link d-flex align-items-center justify-content-end text-decoration-none text-secondary">
                     閱讀更多
-                    <img src="../assets/images/ic_polygon.png" alt="更多">
+                    <span class="material-symbols-outlined">arrow_right</span>
                   </a>
                 </div>
               </div>

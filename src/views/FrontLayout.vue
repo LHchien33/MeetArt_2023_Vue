@@ -3,7 +3,7 @@
   <div class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
         :class="isOnTheTop ? '' : ['me-7', 'me-xxl-9']">
     <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
-      <img class="arrow-size" src="../assets/images/ic_arrow.png" alt="回到頂端">
+      <span class="material-symbols-outlined text-dark-1 fs-4 fs-xxl-2">arrow_upward</span>
       <span class="text-dark-2 fw-semibold fs-8 fs-lg-7 fs-xxl-6">TOP</span>
     </a>              
   </div>
@@ -22,32 +22,31 @@
             <img src="../assets/images/logo.png" alt="MeetArt 繪課室">
           </picture>
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
+        <button class="navbar-toggler border-0 pe-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
           @click="isCollapsed = !isCollapsed">
-          <img v-if="isCollapsed" src="../assets/images/ic_menu.png" alt="開啟選單">
-          <img v-else-if="!isCollapsed" src="../assets/images/ic_cancel.png" alt="關閉選單">
+          <span class="material-symbols-outlined text-secondary fs-3 fw-semibold">{{ isCollapsed ? 'menu' : 'close' }}</span>
         </button>
-        <div class="collapse navbar-collapse fs-4 fs-xl-6 fs-xxl-5 fw-semibold" id="navbarNavDropdown">
-          <ul class="navbar-nav w-100 align-items-lg-center">
+        <div class="collapse navbar-collapse fs-4 fs-lg-6 fs-xxl-5 fw-semibold" id="navbarNavDropdown">
+          <ul class="navbar-nav w-100 align-items-lg-center py-2 py-lg-0">
             <!-- 探索課程下拉選單 start -->
             <li class="nav-item dropdown dropdown-hover">
               <button type="button" class="nav-link w-100 text-start border-0 bg-transparent py-4 py-lg-2 px-lg-4 px-xxl-5 text-primary fw-bolder d-flex align-items-center" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <span class="me-1">探索課程</span>
-                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                <span class="material-symbols-outlined">arrow_drop_down</span>
               </button>
-              <ul class="dropdown-menu shadow-none py-6 py-xl-4 py-xxl-6 fs-4 fs-xl-6 fs-xxl-5 fw-semibold m-0">
-                <li class="px-3 px-xl-2 px-xxl-3">
-                  <a href="#" class="dropdown-item p-3 py-xl-2 p-xxl-3 text-secondary">所有課程</a>
+              <ul class="dropdown-menu shadow-none py-6 py-lg-4 py-xxl-6 fs-4 fs-lg-6 fs-xxl-5 fw-semibold m-0">
+                <li class="px-3">
+                  <a href="#" class="dropdown-item p-3 py-lg-2 p-xxl-3 text-secondary">所有課程</a>
                 </li>
                 <template v-for="(value, key) in dropdownItems" :key="key">
-                  <li class="dropdown-hover px-3 px-xl-2 px-xxl-3">
-                    <button type="button" class="dropdown-item p-3 py-xl-2 py-xxl-3 d-flex align-items-center" data-bs-toggle="dropdown">
+                  <li class="dropdown-hover px-3">
+                    <button type="button" class="dropdown-item p-3 py-lg-2 py-xxl-3 d-flex align-items-center" data-bs-toggle="dropdown">
                       依繪畫{{ key }}
-                      <img class="ms-8 ms-xl-6 ms-xxl-7" src="../assets/images/ic_go.png" alt="展開">
+                      <span class="material-symbols-outlined ms-8 ms-lg-5 ms-xxl-6">arrow_right</span>
                     </button>
-                    <ul class="dropdown-menu shadow-none py-6 py-xl-4 py-xxl-6 px-3 px-xl-2 px-xxl-3 fs-4 fs-xl-6 fs-xxl-5 fw-semibold top-0 start-100 m-0">
-                      <li><a class="dropdown-item p-3 py-xl-2 ps-xxl-3 pe-9 text-secondary" href="#">所有繪畫{{ key }}</a></li>
-                      <li v-for="item in value" :key="item"><a class="dropdown-item p-3 py-xl-2 py-xxl-3" href="#">{{ item }}</a></li>
+                    <ul class="dropdown-menu shadow-none py-6 py-lg-4 py-xxl-6 px-3 fs-4 fs-lg-6 fs-xxl-5 fw-semibold top-0 start-100 m-0">
+                      <li><a class="dropdown-item p-3 py-lg-2 pe-9 text-secondary" href="#">所有繪畫{{ key }}</a></li>
+                      <li v-for="item in value" :key="item"><a class="dropdown-item p-3 py-lg-2 py-xxl-3" href="#">{{ item }}</a></li>
                     </ul>
                   </li>
                 </template>
@@ -159,19 +158,10 @@ export default {
   height: 52px;
 }
 
-.arrow-size {
-  width: 20px;
-  height: 20px;
-}
-
 @media (min-width: 1200px){
   .fixed-button-size {
     width: 60px;
     height: 60px;
-  }
-  .arrow-size {
-    width: 25px;
-    height: 25px;
   }
 }
 
@@ -179,10 +169,6 @@ export default {
   .fixed-button-size {
     width: 80px;
     height: 80px;
-  }
-  .arrow-size {
-    width: 30px;
-    height: 30px;
   }
 }
 
