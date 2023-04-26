@@ -1,10 +1,10 @@
 <template>
   <!-- back to top button -->
-  <div class="fixed-bottom start-auto mb-9 mb-lg-10 transition-all-3" style="margin-right: -95px;"
-        :class="isOnTheTop ? '' : ['me-7', 'me-lg-9']">
+  <div class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
+        :class="isOnTheTop ? '' : ['me-7', 'me-xxl-9']">
     <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
       <img class="arrow-size" src="../assets/images/ic_arrow.png" alt="回到頂端">
-      <span class="text-dark-2 fw-semibold fs-lg-5 fs-12px">TOP</span>
+      <span class="text-dark-2 fw-semibold fs-8 fs-lg-7 fs-xxl-6">TOP</span>
     </a>              
   </div>
   <!-- nav backdrop -->
@@ -13,41 +13,41 @@
         :class="isCollapsed ? '' : ['h-100', 'opacity-50']" @click="isCollapsed = true"></div>
   <!-- header -->
   <header class="fixed-top transition-all-3" :class="isOnTheTop ? '' : ['shadow-sm', 'bg-beige']">
-    <nav class="navbar navbar-expand-lg py-3 py-lg-2 transition-all-3 bg-lg-transparent" :class="isCollapsed ? 'bg-transparent' : 'bg-light-1'">
+    <nav class="navbar navbar-expand-lg transition-all-3 bg-lg-transparent" :class="isCollapsed ? 'bg-transparent' : 'bg-light-1'">
       <div class="container">
-        <a class="navbar-brand ps-3 ps-md-0" href="#">
+        <a class="navbar-brand py-3 py-lg-0 py-xxl-2 pe-0 pe-lg-6 me-0 me-lg-6" href="#">
           <picture>
-            <source srcset="../assets/images/logo.png" media="(min-width: 768px)">
-            <source srcset="../assets/images/logo_m.png" media="(max-width: 767px)">
+            <!-- <source srcset="../assets/images/logo.png" media="(min-width: 1400px)"> -->
+            <source srcset="../assets/images/logo_m.png" media="(max-width: 1399.98px)">
             <img src="../assets/images/logo.png" alt="MeetArt 繪課室">
           </picture>
         </a>
-        <button class="navbar-toggler border-0 pe-5 pe-md-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
           @click="isCollapsed = !isCollapsed">
           <img v-if="isCollapsed" src="../assets/images/ic_menu.png" alt="開啟選單">
           <img v-else-if="!isCollapsed" src="../assets/images/ic_cancel.png" alt="關閉選單">
         </button>
-        <div class="collapse navbar-collapse fs-4 fw-semibold py-3" id="navbarNavDropdown">
-          <ul class="navbar-nav w-100 align-items-lg-center px-3 px-md-0">
+        <div class="collapse navbar-collapse fs-4 fs-xl-6 fs-xxl-5 fw-semibold" id="navbarNavDropdown">
+          <ul class="navbar-nav w-100 align-items-lg-center">
             <!-- 探索課程下拉選單 start -->
             <li class="nav-item dropdown dropdown-hover">
-              <button type="button" class="nav-link w-100 text-start border-0 bg-transparent py-4 py-lg-2 px-3 px-lg-5 text-primary fw-bolder" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+              <button type="button" class="nav-link w-100 text-start border-0 bg-transparent py-4 py-lg-2 px-lg-4 px-xxl-5 text-primary fw-bolder d-flex align-items-center" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <span class="me-1">探索課程</span>
-                <img src="../assets/images/ic_more_s.png" alt="探索更多課程">
+                <span class="material-symbols-outlined">keyboard_arrow_down</span>
               </button>
-              <ul class="dropdown-menu shadow-none py-6 fs-4 fw-semibold m-0">
-                <li class="px-3">
-                  <a href="#" class="dropdown-item p-3 text-secondary">所有課程</a>
+              <ul class="dropdown-menu shadow-none py-6 py-xl-4 py-xxl-6 fs-4 fs-xl-6 fs-xxl-5 fw-semibold m-0">
+                <li class="px-3 px-xl-2 px-xxl-3">
+                  <a href="#" class="dropdown-item p-3 py-xl-2 p-xxl-3 text-secondary">所有課程</a>
                 </li>
                 <template v-for="(value, key) in dropdownItems" :key="key">
-                  <li class="dropdown-hover px-3">
-                    <button type="button" class="dropdown-item p-3 d-flex align-items-center" data-bs-toggle="dropdown">
+                  <li class="dropdown-hover px-3 px-xl-2 px-xxl-3">
+                    <button type="button" class="dropdown-item p-3 py-xl-2 py-xxl-3 d-flex align-items-center" data-bs-toggle="dropdown">
                       依繪畫{{ key }}
-                      <img class="ms-8" src="../assets/images/ic_go.png" alt="展開">
+                      <img class="ms-8 ms-xl-6 ms-xxl-7" src="../assets/images/ic_go.png" alt="展開">
                     </button>
-                    <ul class="dropdown-menu shadow-none py-6 px-3 fs-4 fw-semibold top-0 start-100 m-0">
-                      <li><a class="dropdown-item p-3 pe-9 text-secondary" href="#">所有繪畫{{ key }}</a></li>
-                      <li v-for="item in value" :key="item"><a class="dropdown-item p-3" href="#">{{ item }}</a></li>
+                    <ul class="dropdown-menu shadow-none py-6 py-xl-4 py-xxl-6 px-3 px-xl-2 px-xxl-3 fs-4 fs-xl-6 fs-xxl-5 fw-semibold top-0 start-100 m-0">
+                      <li><a class="dropdown-item p-3 py-xl-2 ps-xxl-3 pe-9 text-secondary" href="#">所有繪畫{{ key }}</a></li>
+                      <li v-for="item in value" :key="item"><a class="dropdown-item p-3 py-xl-2 py-xxl-3" href="#">{{ item }}</a></li>
                     </ul>
                   </li>
                 </template>
@@ -55,18 +55,18 @@
             </li>
             <!-- 探索課程下拉選單 end -->
             <li class="nav-item">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-3 px-lg-5" href="#">課外輔導</a>
+              <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課外輔導</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-3 px-lg-5" href="#">課室專欄</a>
+              <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課室專欄</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-3 px-lg-5" aria-current="page" href="#">常見問答</a>
+              <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" aria-current="page" href="#">常見問答</a>
             </li>
             <li class="nav-item ms-lg-auto">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-3 px-lg-5" aria-current="page" href="#">
+              <a class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0" aria-current="page" href="#">
                 <span class="d-lg-none">購物車</span>
-                <img class="d-none d-lg-inline-block" src="../assets/images/shopping_cart.png" alt="購物車">
+                <span class="d-none d-lg-block material-symbols-outlined fs-lg-2 fs-xxl-1">shopping_cart</span>
               </a>
             </li>
           </ul>
@@ -134,7 +134,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 @media(any-hover: hover){
   .dropdown-hover > .dropdown-menu {
     display: none;
@@ -164,18 +164,51 @@ export default {
   height: 20px;
 }
 
-.fs-12px{
-  font-size: 12px;
-}
-
-@media (min-width: 992px){
+@media (min-width: 1200px){
   .fixed-button-size {
-    width: 90px;
-    height: 90px;
+    width: 60px;
+    height: 60px;
   }
   .arrow-size {
-    width: auto;
-    height: auto;
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@media (min-width: 1400px){
+  .fixed-button-size {
+    width: 80px;
+    height: 80px;
+  }
+  .arrow-size {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.section-padding {
+  padding: 60px 0;
+}
+
+@media (min-width: 768px){
+  .section-padding {
+    padding: 80px 0;
+  }
+}
+
+@media (min-width: 1400px){
+  .section-padding {
+    padding: 120px 0;
+  }
+}
+
+.page-padding-top {
+  padding-top: 88px;
+}
+
+@media(min-width: 992px){
+  .page-padding-top {
+    padding-top: 64px;
   }
 }
 </style>

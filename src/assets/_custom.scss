@@ -3,6 +3,7 @@
 }
 
 .w-fit-content{
+  width: -moz-fit-content;
   width: fit-content;
 }
 
@@ -129,6 +130,7 @@
 
 // interactive effects & filter
 .backdrop-blur-2{
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
 }
 

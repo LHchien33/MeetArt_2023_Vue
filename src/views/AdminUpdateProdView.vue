@@ -534,7 +534,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .ms-11px{
   margin-left: 11px;
 }
