@@ -7,11 +7,22 @@ const router = createRouter({
       path: '/',
       name: 'front',
       component: () => import('../views/FrontLayout.vue'),
+      props: (route) => ({
+        currentPath: route.fullPath
+      }),
       children: [
         {
           path: '',
           name: '前台首頁',
           component: () => import('../views/HomeView.vue'),
+        },
+        {
+          path: 'products',
+          name: '前台課程列表',
+          component: () => import('../views/ProductsView.vue'),
+          props: (route) => ({
+            query: route.query
+          })
         }
       ]
     },

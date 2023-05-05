@@ -81,39 +81,23 @@
                         </label>
                         <VField as="select" rules="required" name="category" id="category" class="form-select"
                                 :class="{ 'is-invalid': errors['category'] }">
-                          <option value="" selected class="text-light-2">請選擇繪畫媒材</option>
-                          <option value="素描">素描</option>
-                          <option value="水彩">水彩</option>
-                          <option value="色鉛筆">色鉛筆</option>
-                          <option value="測試">測試</option>
+                          <option value="" selected class="text-light-2">請選擇繪畫{{ catagories.category.name }}</option>
+                          <option v-for="item in catagories.category.sub" :key="item" :value="item">{{ item }}</option>
                         </VField>
                       </div>
                       <ErrorMessage name="category" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                     </div>
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <label for="theme" class="form-label mb-0 me-2 text-nowrap ms-11px">繪畫主題：</label>
-                        <VField as="select" name="theme" id="theme" class="form-select">
-                          <option value="" selected class="text-light-2">請選擇繪畫主題</option>
-                          <option value="人物/肖像">人物/肖像</option>
-                          <option value="建築">建築</option>
-                          <option value="自然/植物">自然/植物</option>
-                          <option value="測試">測試</option>
-                        </VField>
+                    <template v-for="(value, key) in catagories" :key="key">
+                      <div v-if="key !== 'category'" class="col-6">
+                        <div class="d-flex align-items-center">
+                          <label :for="key" class="form-label mb-0 me-2 text-nowrap ms-11px">繪畫{{ value.name }}：</label>
+                          <VField as="select" :name="key" :id="key" class="form-select">
+                            <option value="" selected class="text-light-2">請選擇繪畫{{ value.name }}</option>
+                            <option v-for="item in value.sub" :value="item">{{ item }}</option>
+                          </VField>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <label for="style" class="form-label mb-0 me-2 text-nowrap ms-11px">繪畫風格：</label>
-                        <VField as="select" name="style" id="style" class="form-select">
-                          <option value="" selected class="text-light-2">請選擇繪畫風格</option>
-                          <option value="寫實">寫實</option>
-                          <option value="插畫">插畫</option>
-                          <option value="日系">日系</option>
-                          <option value="測試">測試</option>
-                        </VField>
-                      </div>
-                    </div>
+                    </template>
                   </div>
                 </div>
               </div>
@@ -266,16 +250,6 @@
                         </div>
                         <div class="row">
                           <div class="col-6">
-                            <label :for="`outlines[${idx}].minutes`" class="form-label me-2 text-nowrap d-block">
-                              <span class="text-danger">* </span>總時長（分鐘）：
-                            </label>
-                            <VField type="number" class="form-control" placeholder="請輸入總時長（分鐘）"
-                                    rules="required|min_value:0" :name="`outlines[${idx}].minutes`"
-                                    :id="`outlines[${idx}].minutes`" :class="{ 'is-invalid': errors[`outlines[${idx}].minutes`] }"
-                                    label="總時長（分鐘）"></VField>
-                            <ErrorMessage :name="`outlines[${idx}].minutes`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
-                          </div>
-                          <div class="col-6">
                             <label :for="`outlines[${idx}].lectures`" class="form-label me-2 text-nowrap d-block">
                               <span class="text-danger">* </span>單元數：
                             </label>
@@ -284,6 +258,16 @@
                                     :id="`outlines[${idx}].lectures`" :class="{ 'is-invalid': errors[`outlines[${idx}].lectures`] }"
                                     label="單元數"></VField>
                             <ErrorMessage :name="`outlines[${idx}].lectures`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
+                          </div>
+                          <div class="col-6">
+                            <label :for="`outlines[${idx}].minutes`" class="form-label me-2 text-nowrap d-block">
+                              <span class="text-danger">* </span>總時長（分鐘）：
+                            </label>
+                            <VField type="number" class="form-control" placeholder="請輸入總時長（分鐘）"
+                                    rules="required|min_value:0" :name="`outlines[${idx}].minutes`"
+                                    :id="`outlines[${idx}].minutes`" :class="{ 'is-invalid': errors[`outlines[${idx}].minutes`] }"
+                                    label="總時長（分鐘）"></VField>
+                            <ErrorMessage :name="`outlines[${idx}].minutes`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                           </div>
                         </div>
                       </div>
@@ -328,8 +312,9 @@
 </template>
 
 <script>
-import { mapWritableState } from 'pinia';
+import { mapWritableState, mapState } from 'pinia';
 import { useAdminProdStore } from '@/stores/adminProducts';
+import { useCommonStore } from '@/stores/common';
 import { FieldArray, Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
 import { required, min_value } from '@vee-validate/rules';
 import { localize } from '@vee-validate/i18n';
@@ -409,6 +394,7 @@ export default {
   },
   computed: {
     ...mapWritableState(useAdminProdStore, ['originTempProd']),
+    ...mapState(useCommonStore, ['catagories']),
   },
   methods: {
     setInitialVal(){
@@ -456,6 +442,13 @@ export default {
     valueProcessing(val){
       val.origin_price = Number(val.origin_price);
       val.price = Number(val.price);
+      // 上架與否，轉數字 + 更新時間
+      val.is_enabled = Number(val.is_enabled);
+      if(val.is_enabled === 1 && !this.tempProduct.enabledTime){
+        val.enabledTime = Number((Date.now()/1000).toFixed(0));
+      } else if (val.is_enabled === 0) {
+        val.enabledTime = 0
+      }
       // 假定的售出數 100 ~ 999
       if(!val.classmates){ val.classmates = Math.floor(Math.random() * 900) + 100; }
       // 課程大綱資訊 轉數字 & 統計

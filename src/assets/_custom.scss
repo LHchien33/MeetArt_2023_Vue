@@ -106,6 +106,9 @@
   &-1::before {
     border: 1px solid transparent;
   }
+  &-2::before {
+    border: 2px solid transparent;
+  }
   &-3::before {
     border: 3px solid transparent;
   }
@@ -166,4 +169,18 @@
   .touched .translate-y-n100 {
     transform: translateY(-100%);
   }
+}
+
+.btn-primary-white-bg {
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-bg: var(--bs-white);
+  // --bs-btn-border-color: var(--bd-violet);
+  --bs-btn-border-radius: .5rem;
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--bs-primary);
+  // --bs-btn-hover-border-color: #{shade-color($primary, 10%)};
+  --bs-btn-focus-shadow-rgb: var(--bd-primary-rgb);
+  --bs-btn-active-color: var(--bs-btn-hover-color);
+  --bs-btn-active-bg: var(--bs-btn-hover-bg);
+  --bs-btn-active-border-color: var(--bs-btn-hover-bg);
 }

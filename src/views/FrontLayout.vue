@@ -1,7 +1,7 @@
 <template>
   <!-- back to top button -->
   <div class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
-        :class="isOnTheTop ? '' : ['me-7', 'me-xxl-9']">
+        :class="currentPath !== '/' || !isOnTheTop ? ['me-7', 'me-xxl-9'] : '' ">
     <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
       <span class="material-symbols-outlined text-dark-1 fs-4 fs-xxl-2">arrow_upward</span>
       <span class="text-dark-2 fw-semibold fs-8 fs-lg-7 fs-xxl-6">TOP</span>
@@ -11,18 +11,19 @@
   <div class="d-lg-none position-fixed bg-dark-1 w-100 opacity-0" style="z-index: 1030; height: 0; transition: opacity .3s"
         data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         :class="isCollapsed ? '' : ['h-100', 'opacity-50']" @click="isCollapsed = true"></div>
-  <!-- header -->
-  <header class="fixed-top transition-all-3" :class="isOnTheTop ? '' : ['shadow-sm', 'bg-beige']">
+  <!-- header --> 
+  <header class="fixed-top transition-all-3 shadow-sm bg-beige"
+          :class="isOnTheTop && currentPath === '/' ? ['shadow-none', 'bg-transparent'] : '' ">
     <nav class="navbar navbar-expand-lg transition-all-3 bg-lg-transparent" :class="isCollapsed ? 'bg-transparent' : 'bg-light-1'">
       <div class="container">
         <a class="navbar-brand py-3 py-lg-0 py-xxl-2 pe-0 pe-lg-6 me-0 me-lg-6" href="#">
           <picture>
             <!-- <source srcset="../assets/images/logo.png" media="(min-width: 1400px)"> -->
             <source srcset="../assets/images/logo_m.png" media="(max-width: 1399.98px)">
-            <img src="../assets/images/logo.png" alt="MeetArt 繪課室">
+            <img src="../assets/images/logo_m.png" alt="MeetArt 繪課室">
           </picture>
         </a>
-        <button class="navbar-toggler border-0 pe-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
           @click="isCollapsed = !isCollapsed">
           <span class="material-symbols-outlined text-secondary fs-3 fw-semibold">{{ isCollapsed ? 'menu' : 'close' }}</span>
         </button>
@@ -36,17 +37,25 @@
               </button>
               <ul class="dropdown-menu shadow-none py-6 py-lg-4 py-xxl-6 fs-4 fs-lg-6 fs-xxl-5 fw-semibold m-0">
                 <li class="px-3">
-                  <a href="#" class="dropdown-item p-3 py-lg-2 p-xxl-3 text-secondary">所有課程</a>
+                  <RouterLink to="/products" class="dropdown-item p-3 py-lg-2 p-xxl-3 text-secondary">所有課程</RouterLink>
                 </li>
-                <template v-for="(value, key) in dropdownItems" :key="key">
+                <template v-for="(value, key) in catagories" :key="value.name">
                   <li class="dropdown-hover px-3">
                     <button type="button" class="dropdown-item p-3 py-lg-2 py-xxl-3 d-flex align-items-center" data-bs-toggle="dropdown">
-                      依繪畫{{ key }}
+                      依繪畫{{ value.name }}
                       <span class="material-symbols-outlined ms-8 ms-lg-5 ms-xxl-6">arrow_right</span>
                     </button>
                     <ul class="dropdown-menu shadow-none py-6 py-lg-4 py-xxl-6 px-3 fs-4 fs-lg-6 fs-xxl-5 fw-semibold top-0 start-100 m-0">
-                      <li><a class="dropdown-item p-3 py-lg-2 pe-9 text-secondary" href="#">所有繪畫{{ key }}</a></li>
-                      <li v-for="item in value" :key="item"><a class="dropdown-item p-3 py-lg-2 py-xxl-3" href="#">{{ item }}</a></li>
+                      <li>
+                        <RouterLink :to="`/products?index=${key}`"
+                              class="dropdown-item p-3 py-lg-2 pe-9 text-secondary">所有繪畫{{ value.name }}
+                        </RouterLink>
+                      </li>
+                      <li v-for="item in value.sub" :key="item">
+                        <RouterLink :to="`/products?index=${key}&filter=${item}`"
+                              class="dropdown-item p-3 py-lg-2 py-xxl-3">{{ item }}
+                        </RouterLink>
+                      </li>
                     </ul>
                   </li>
                 </template>
@@ -97,9 +106,12 @@
 
 <script>
 import { RouterView, RouterLink } from 'vue-router';
-import { throttle as _throttle } from 'lodash'
+import { throttle as _throttle } from 'lodash';
+import { mapState } from 'pinia';
+import { useCommonStore } from '@/stores/common';
 
 export default {
+  props: ['currentPath'],
   components: {
     RouterView,
     RouterLink
@@ -108,12 +120,10 @@ export default {
     return {
       isCollapsed: true,
       isOnTheTop: true,
-      dropdownItems: {
-        '媒材': ['素描', '水彩', '油畫', '色鉛筆'],
-        '主題': ['人物/肖像', '動物', '自然/植物', '建築', '美食'],
-        '風格': ['寫實', '插畫', '日系', '復古', '奇幻']
-      }
     }
+  },
+  computed:{
+    ...mapState(useCommonStore, ['catagories']),
   },
   methods: {
     scrollHandler: _throttle(function(){
@@ -125,7 +135,9 @@ export default {
     }, 300)
   },
   mounted(){
-    window.addEventListener('scroll', this.scrollHandler)
+    if(this.currentPath === '/'){
+      window.addEventListener('scroll', this.scrollHandler)
+    }
   },
   unmounted(){
     window.removeEventListener('scroll', this.scrollHandler)
@@ -172,22 +184,6 @@ export default {
   }
 }
 
-.section-padding {
-  padding: 60px 0;
-}
-
-@media (min-width: 768px){
-  .section-padding {
-    padding: 80px 0;
-  }
-}
-
-@media (min-width: 1400px){
-  .section-padding {
-    padding: 120px 0;
-  }
-}
-
 .page-padding-top {
   padding-top: 88px;
 }
@@ -195,6 +191,12 @@ export default {
 @media(min-width: 992px){
   .page-padding-top {
     padding-top: 64px;
+  }
+}
+
+@media(min-width: 1400px){
+  .page-padding-top {
+    padding-top: 80px;
   }
 }
 </style>

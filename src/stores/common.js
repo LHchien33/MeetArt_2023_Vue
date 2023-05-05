@@ -1,6 +1,22 @@
 import { defineStore } from 'pinia';
 
 export const useCommonStore = defineStore('common', {
+  state: () => ({
+    catagories: {
+      category: {
+        name: '媒材',
+        sub: ['素描', '水彩', '油畫', '色鉛筆']
+      },
+      theme: {
+        name: '主題',
+        sub: ['人物/肖像', '動物', '自然/植物', '建築', '美食']
+      },
+      style: {
+        name: '風格',
+        sub: ['寫實', '插畫', '日系', '復古', '奇幻']
+      }
+    }
+  }),
   actions: {
     // 千分位分隔符，1000000 -> 1,000,000
     numToPriceString(num){

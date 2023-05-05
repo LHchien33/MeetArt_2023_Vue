@@ -89,7 +89,7 @@
       </table>
     </div>
     <!-- 分頁導覽 -->
-    <Pagination v-if="pagination.total_pages" v-bind="pagination" :mainPath="'/admin/products'" class="w-fit-content mx-auto"></Pagination>
+    <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/products'}" class="w-fit-content mx-auto"></Pagination>
     <!-- 商品詳情 modal -->
     <InfoModal ref="InfoModal" id="infoModal">
       <template #modal-title>課程詳情</template>
