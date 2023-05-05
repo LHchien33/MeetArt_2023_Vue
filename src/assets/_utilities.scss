@@ -98,6 +98,7 @@ $utilities: map-merge(
         null: translate(-50%, -50%),
         x: translateX(-50%),
         y: translateY(-50%),
+        unset: unset
       )
     ),
     // scss-docs-end utils-position

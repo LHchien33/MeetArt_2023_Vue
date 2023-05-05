@@ -33,13 +33,9 @@
                 </div>
               </RouterLink>
             </li>
-            <li class="nav-item mt-7 mt-lg-auto border-top">
-              <RouterLink to="/login"
-                  class="nav-link w-100 border-0 bg-transparent px-6 py-4 d-flex justify-content-between position-relative interactive mt-4 ">
-                <div class="nav-text-show" :class="{ 'nav-text-hidden': !isExpanded }">
-                  <span class="gradient-line gradient-line-0"></span>
-                  <span class="ms-lg-3 fs-5">登出</span>
-                </div>
+            <li class="nav-item mt-7 mt-lg-auto border-top interactive">
+              <RouterLink to="/login" class="nav-link px-6 py-4 d-flex justify-content-between gradient-line gradient-line-0 position-relative mt-4 ">
+                <span class="ms-lg-3 fs-5 nav-text-show" :class="{ 'nav-text-hidden': !isExpanded }">登出</span>
                 <span :class="{'opacity-0': isExpanded }" class="material-symbols-outlined d-none d-lg-block">logout</span>
               </RouterLink>
             </li>

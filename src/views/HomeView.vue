@@ -33,12 +33,12 @@
     <div class="container">
       <!-- 平台特色 -->
       <section class="section-padding px-lg-9">
-        <h2 class="fs-2 fs-xxl-1 fw-bold text-center mb-8 mb-xl-9 mb-xxl-10 w-fit-content mx-auto pt-5 pt-lg-0 d-md-none d-lg-block">繪課室提供
+        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 w-fit-content mx-auto pt-5 pt-lg-0 d-md-none d-lg-block">繪課室提供
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
         <div class="row justify-content-center icon-wght-300 pt-0 pt-md-9 pt-lg-0">
           <div class="col-md-6 d-none d-md-flex d-lg-none">
-            <h2 class="fs-2 fw-bold text-center w-fit-content m-auto pb-8">繪課室提供
+            <h2 class="fs-2 fw-bold w-fit-content m-auto pb-8">繪課室提供
               <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
             </h2>
           </div>
@@ -81,7 +81,7 @@
               <div class="pb-lg-3 mb-8 mb-md-0 d-lg-flex" style="height: 45%;">
                 <!-- 標題 -->
                 <div class="me-sm-8 mb-6">
-                  <h2 class="fs-2 fs-xxl-1 fw-bold text-center w-fit-content text-nowrap">作品分享
+                  <h2 class="fs-2 fs-xxl-1 fw-bold w-fit-content text-nowrap">作品分享
                     <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
                   </h2>
                   <a class="fs-4 fs-md-6 fs-xxl-4 fw-semibold link-secondary text-decoration-none d-flex align-items-center" href="#">
@@ -143,7 +143,7 @@
     <!-- 熱門推薦 -->
     <section class="section-padding section-recommend-padding">
       <div class="container">
-        <h2 class="fs-2 fs-xxl-1 fw-bold text-center mb-8 mb-xl-9 mb-xxl-10 w-fit-content">熱門課程推薦
+        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 w-fit-content">熱門課程推薦
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
       </div>
@@ -167,7 +167,8 @@
                   }"
                   :pagination="{
                     el: '.custom-pagination',
-                    clickable: true
+                    clickable: true,
+                    dynamicBullets: true
                   }"
                   :freeMode="{
                     momentumBounceRatio: 0.5,
@@ -181,7 +182,7 @@
                 <div class="overflow-hidden" style="height: 185px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
                 </div>
-                <div class="flex-grow-1 p-4 bg-beige d-flex flex-column bg-white bg-opacity-50 ">
+                <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50 ">
                   <h3 class="mb-2 fs-4 fw-semibold text-dark-1">{{ prod.title }}</h3>
                   <p class="mb-2 text-secondary fw-semibold d-flex align-items-center">
                     <span class="material-symbols-outlined me-1">auto_fix_high</span>
@@ -204,13 +205,13 @@
           <div class="swiper-button-next custom-next-button order-2 d-xl-flex ms-n6 ms-xxl-5 me-4"></div>
         </div>
         <!-- pagination -->
-        <div class="swiper-pagination custom-pagination position-unset"></div>
+        <div class="swiper-pagination custom-pagination position-unset mx-auto translate-middle-unset"></div>
       </div>
     </section>
     <!-- 課室專欄 -->
     <div class="container">
       <section class="section-padding">
-        <h2 class="fs-2 fs-xxl-1 fw-bold text-center mb-8 mb-xl-9 mb-xxl-10 w-fit-content">課室專欄
+        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 w-fit-content">課室專欄
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 flex-lg-column">
@@ -316,8 +317,11 @@ export default {
   },
   computed: {
     filteredProducts(){
-      return this.products.length !== 0 ?
-             this.products.filter(item => item.classmates > 200) : []
+      if(this.products.length !== 0){
+        return this.products.filter(item => item.classmates > 200).slice(0, 12)
+      } else {
+        return []
+      }
     }
   },
   mounted(){
@@ -328,6 +332,22 @@ export default {
 </script>
 
 <style scoped>
+.section-padding {
+  padding: 60px 0;
+}
+
+@media (min-width: 768px){
+  .section-padding {
+    padding: 80px 0;
+  }
+}
+
+@media (min-width: 1400px){
+  .section-padding {
+    padding: 120px 0;
+  }
+}
+
 .banner {
   background: url('../assets/images/banner_m.jpg') no-repeat center / cover;
 }
