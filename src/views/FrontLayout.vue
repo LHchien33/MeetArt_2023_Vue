@@ -199,4 +199,10 @@ export default {
     padding-top: 80px;
   }
 }
+
+.breadcrumb-item a {
+  text-decoration: none;
+  color: #666666;
+  font-weight: 300;
+}
 </style>

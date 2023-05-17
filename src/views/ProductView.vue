@@ -26,19 +26,19 @@
             <div class="bg-white bg-opacity-75">
               <ul class="py-3 px-8 nav">
                 <li class="nav-item">
-                  <a class="nav-link tab-color" :class="{'text-dark-1': currentTab === 'brief'}" @click="currentTab = 'brief'">課程簡介
+                  <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'brief'}" @click="currentTab = 'brief'">課程簡介
                     <span :class="{' gradient-line-8': currentTab === 'brief'}" class="gradient-line d-block mt-n2"></span>
-                  </a>
+                  </button>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link tab-color" :class="{'text-dark-1': currentTab === 'outlines'}" @click="currentTab = 'outlines'">課程章節
+                  <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'outlines'}" @click="currentTab = 'outlines'">課程章節
                     <span :class="{' gradient-line-8': currentTab === 'outlines'}" class="gradient-line d-block mt-n2"></span>
-                  </a>
+                  </button>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link tab-color" :class="{'text-dark-1': currentTab === 'QA'}" @click="currentTab = 'QA'">常見問題
+                  <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'QA'}" @click="currentTab = 'QA'">常見問題
                     <span :class="{' gradient-line-8': currentTab === 'QA'}" class="gradient-line d-block mt-n2"></span>
-                  </a>
+                  </button>
                 </li>
               </ul>
               <hr class="m-0">
@@ -381,8 +381,8 @@ export default {
 }
 
 .tab-color{
-  --bs-nav-link-color: #666666;
-  --bs-nav-link-hover-color: #1a1a1a;
+  --bs-link-color: #666666;
+  --bs-link-hover-color: #1a1a1a;
 }
 
 .hover-bg-gradient:hover,
