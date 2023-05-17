@@ -23,6 +23,12 @@ const router = createRouter({
           props: (route) => ({
             query: route.query
           })
+        },
+        {
+          path: 'product/:prodId',
+          name: '前台單一課程',
+          component: () => import('../views/ProductView.vue'),
+          props: true
         }
       ]
     },

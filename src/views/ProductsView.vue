@@ -6,13 +6,13 @@
         <li class="breadcrumb-item">
           <RouterLink to="/">首頁</RouterLink>
         </li>
-        <template v-if="query.index && query.filter">
+        <li v-if="!query.filter" class="breadcrumb-item active">{{ query.index ? `繪畫${catagories[query.index].name}` : '所有課程' }}</li>
+        <template v-else-if="query.index && query.filter">
           <li class="breadcrumb-item">
             <RouterLink :to="`/products?index=${query.index}`">繪畫{{ catagories[query.index].name }}</RouterLink>
           </li>
           <li class="breadcrumb-item active" aria-current="page">{{ query.filter }}</li>
         </template>
-        <li v-else class="breadcrumb-item active">{{ query.index ? `繪畫${catagories[query.index].name}` : '所有課程' }}</li>
       </ol>
       <!-- page title -->
       <div class="bg-gradient mb-5">
@@ -62,7 +62,7 @@
       <div v-show="filteredProd.length === 0" class="text-center">- 沒有符合此分類的課程 -</div>
       <div class="row row-cols-1 row-cols-lg-3 row-cols-xl-4 gy-5 mb-5">
         <div class="col" v-for="prod in prodContainer" :key="prod.id">
-          <a href="#" class="d-flex flex-column flex-sm-row flex-lg-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
+          <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column flex-sm-row flex-lg-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
             <div class="overflow-hidden prod-img-size">
               <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
             </div>
@@ -81,7 +81,7 @@
                 <p class="mb-0 fs-5 fw-semibold text-accent">NT$ {{ numToPriceString(prod.price) }}</p>
               </div>
             </div>
-          </a>
+          </RouterLink>
         </div>
       </div>
       <!-- pagination -->
@@ -153,7 +153,7 @@ export default {
         this.sortProd();
       })
       .catch(err => {
-        alert(`取得產品失敗，錯誤代碼：${err.response.status}`)
+        alert(`無法取得產品，錯誤代碼：${err.response.status}`)
       })
     },
     sortProd(sortBy='enabledTime'){
@@ -170,12 +170,6 @@ export default {
 </script>
 
 <style scoped>
-.breadcrumb-item a {
-  text-decoration: none;
-  color: #666666;
-  font-weight: 300;
-}
-
 .prod-img-size{
   height: 45%;
   min-height: 170px;

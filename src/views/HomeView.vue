@@ -303,7 +303,7 @@ export default {
         this.students.push({ name, img })
       })
     },
-    getProducts(){
+    getAllProducts(){
       this.errorMessage = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
       this.$http.get(url)
@@ -318,7 +318,7 @@ export default {
   computed: {
     filteredProducts(){
       if(this.products.length !== 0){
-        return this.products.filter(item => item.classmates > 200).slice(0, 12)
+        return this.products.filter(item => item.classmates > 500).slice(0, 12)
       } else {
         return []
       }
@@ -326,7 +326,7 @@ export default {
   },
   mounted(){
     this.getRandomUsers();
-    this.getProducts();
+    this.getAllProducts();
   }
 }
 </script>
