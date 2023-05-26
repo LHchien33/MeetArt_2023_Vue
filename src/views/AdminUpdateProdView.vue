@@ -15,7 +15,7 @@
         </div>
       </div>
       <!-- 表單 -->
-      <VForm ref="VForm" v-slot="{ errors, meta, setFieldTouched }" @submit="onSubmit" :initial-values="tempProduct">
+      <VForm ref="VForm" v-slot="{ errors, meta, setFieldTouched }" @submit="onSubmit" :initial-values="tempProduct"  @invalid-submit="onInvalidSubmit">
         <div class="accordion accordion-flush">
           <!-- 課程基本資訊 -->
           <div class="accordion-item mb-3">
@@ -460,6 +460,15 @@ export default {
         return acc;
       }, { outlines: val.outlines.length, minutes: 0, lectures: 0, });
       return val
+    },
+    onInvalidSubmit({ values, errors}){
+      const firstError = Object.keys(errors)[0];
+      const targetElement = document.getElementsByName(firstError)[0];
+      targetElement.scrollIntoView({
+        block: "center",
+        behavior: "smooth"
+      })
+      setTimeout(() => alert(`${errors[firstError]}`), 500);
     },
     onSubmit(values){
       const requestData = this.valueProcessing(values);
