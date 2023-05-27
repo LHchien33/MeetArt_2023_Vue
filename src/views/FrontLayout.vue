@@ -72,10 +72,10 @@
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" aria-current="page" href="#">常見問答</a>
             </li>
             <li class="nav-item ms-lg-auto">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0" aria-current="page" href="#">
+              <RouterLink to="/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0" aria-current="page">
                 <span class="d-lg-none">購物車</span>
                 <span class="d-none d-lg-block material-symbols-outlined fs-lg-2 fs-xxl-1">shopping_cart</span>
-              </a>
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -135,9 +135,9 @@ export default {
     }, 300)
   },
   mounted(){
-    if(this.currentPath === '/'){
-      window.addEventListener('scroll', this.scrollHandler)
-    }
+    window.addEventListener('scroll', this.scrollHandler)
+    // if(this.currentPath === '/'){
+    // }
   },
   unmounted(){
     window.removeEventListener('scroll', this.scrollHandler)

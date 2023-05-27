@@ -18,7 +18,7 @@
       <div class="bg-gradient mb-5">
         <div class="bg-beige bg-opacity-75 p-6 gradient-border gradient-border-2">
           <template v-if="!query.index">
-            <h2 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h2>
+            <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h1>
             <ul class="position-relative list-unstyled mb-0" style="z-index: 2;">
               <li class="d-inline-block" v-for="(value, key) in catagories" :key="value.name">
                 <RouterLink :to="`/products?index=${key}`"
@@ -28,9 +28,9 @@
             </ul>
           </template>
           <template v-else>
-            <h2 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">
+            <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">
               {{ query.filter ? query.filter : `繪畫${catagories[query.index].name}` }}
-            </h2>
+            </h1>
             <ul class="position-relative list-unstyled mb-0" style="z-index: 2;">
               <li class="d-inline-block">
                 <RouterLink :to="`/products?index=${query.index}`"
@@ -67,7 +67,7 @@
               <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
             </div>
             <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50">
-              <h3 class="mb-2 fs-5 fw-semibold text-dark-1">{{ prod.title }}</h3>
+              <h2 class="mb-2 fs-5 fw-semibold text-dark-1">{{ prod.title }}</h2>
               <p class="fs-7 mb-2 text-secondary fw-semibold d-flex align-items-center">
                 <span class="material-symbols-outlined me-1">auto_fix_high</span>
                 {{ prod.teacher.name }}
