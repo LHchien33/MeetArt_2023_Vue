@@ -72,9 +72,10 @@
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" aria-current="page" href="#">常見問答</a>
             </li>
             <li class="nav-item ms-lg-auto">
-              <RouterLink to="/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0" aria-current="page">
+              <RouterLink to="/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0 position-relative" aria-current="page">
                 <span class="d-lg-none">購物車</span>
                 <span class="d-none d-lg-block material-symbols-outlined fs-lg-2 fs-xxl-1">shopping_cart</span>
+                <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle-x">{{ carts.length }}</span>
               </RouterLink>
             </li>
           </ul>
@@ -107,8 +108,9 @@
 <script>
 import { RouterView, RouterLink } from 'vue-router';
 import { throttle as _throttle } from 'lodash';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useCommonStore } from '@/stores/common';
+import { useCartsStore } from '@/stores/carts';
 
 export default {
   props: ['currentPath'],
@@ -124,8 +126,10 @@ export default {
   },
   computed:{
     ...mapState(useCommonStore, ['catagories']),
+    ...mapState(useCartsStore, ['carts']),
   },
   methods: {
+    ...mapActions(useCartsStore, ['getCarts']),
     scrollHandler: _throttle(function(){
       if (window.pageYOffset > 50){
         this.isOnTheTop = false
@@ -136,6 +140,7 @@ export default {
   },
   mounted(){
     window.addEventListener('scroll', this.scrollHandler)
+    this.getCarts();
     // if(this.currentPath === '/'){
     // }
   },

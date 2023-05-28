@@ -61,9 +61,9 @@
             </ul>
             <hr class="mt-0">
             <div class="d-flex justify-content-between">
-              <button type="button" class="btn btn-sm btn-outline-secondary">
+              <RouterLink to="/products" class="btn btn-sm btn-outline-secondary">
                 <span class="material-symbols-outlined align-bottom fs-6">chevron_left</span>
-                繼續選購</button>
+                繼續選購</RouterLink>
               <small class="text-end d-block text-dark-3">共計 {{ carts.length }} 堂影音課程</small>
             </div>
           </div>
@@ -112,33 +112,19 @@
 <script>
 import { RouterLink } from 'vue-router';
 import StepProgressBar from '@/components/StepProgressBar.vue';
+import { mapActions, mapState } from 'pinia';
+import { useCartsStore } from '@/stores/carts'
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
-  data(){
-    return {
-      carts: [],
-      total: 0,
-      final_total: 0,
-    }
-  },
   components: {
     StepProgressBar
   },
+  computed: {
+    ...mapState(useCartsStore, ['carts', 'total', 'final_total'])
+  },
   methods: {
-    getCarts(){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
-      this.$http.get(url).then(res => {
-        this.carts = res.data.data.carts;
-        this.total = res.data.data.total;
-        this.final_total = res.data.data.final_total;
-        console.log(res.data);
-        
-      })
-      .catch(err => {
-        alert(`無法取得購物車資料，錯誤代碼：${err.response.status}`)
-      })
-    },
+    ...mapActions(useCartsStore, ['getCarts']),
     deleteCartItem(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart/${id}`;
       this.$http.delete(url).then(res => {
@@ -149,9 +135,6 @@ export default {
         alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`)
       })
     }
-  },
-  mounted(){
-    this.getCarts();
   }
 }
 </script>

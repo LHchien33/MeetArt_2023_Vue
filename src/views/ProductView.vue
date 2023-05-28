@@ -146,8 +146,11 @@
                 <s>NT$ {{ numToPriceString(product.origin_price) }}</s>
                 <p>售價：<span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(product.price) }}</span></p>
               </div>
-              <button type="button" class="btn py-3 btn-primary w-100 mb-2">立即購買</button>
-              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 hover-bg-gradient bg-white bg-opacity-75">加入購物車
+              <button type="button" class="btn py-3 btn-primary w-100 mb-2"
+                      :class="{ 'd-none': itemRepeated }">立即購買</button>
+              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75"
+                      :class="{ 'hover-bg-gradient': !itemRepeated, 'disabled': itemRepeated }"
+                      @click="addToCart(prodId)">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                 <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
               </button>
             </div>
@@ -237,6 +240,7 @@ import { Navigation, FreeMode } from 'swiper';
 import { RouterLink } from 'vue-router';
 import { mapActions, mapState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
+import { useCartsStore } from '@/stores/carts';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
@@ -286,10 +290,14 @@ export default {
           filter: newVal
         };
       }
+    },
+    carts(){
+      this.findRepeatItem(this.prodId);
     }
   },
   methods: {
     ...mapActions(useCommonStore, ['numToPriceString', 'dateConverter']),
+    ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem']),
     getSingleProd(){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/product/${this.prodId}`;
       this.$http.get(url).then(res => {
@@ -312,10 +320,11 @@ export default {
       .catch(err => {
         this.errorMessage = `資料取得失敗，錯誤代碼：${err.response.status}`;
       })
-    }
+    },
   },
   computed: {
     ...mapState(useCommonStore, ['catagories']),
+    ...mapState(useCartsStore, ['carts','itemRepeated']),
     filteredProducts(){
       if(this.allProducts.length !== 0 && this.product.id){
         const keys = ['category', 'style', 'theme'];
@@ -360,6 +369,7 @@ export default {
   mounted(){
     this.getSingleProd();
     this.getAllProducts();
+    this.findRepeatItem(this.prodId);
   },
   beforeRouteEnter(to, from, next) {
     if(from.name === '前台課程列表'){
@@ -371,10 +381,6 @@ export default {
 }
 </script>
 <style scoped>
-/* *{
-  border: 1px solid red;
-} */
-
 .image-container{
   width: 100%;
   height: 350px;
