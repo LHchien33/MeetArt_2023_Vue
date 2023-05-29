@@ -18,11 +18,45 @@
         <!-- 主要內容 -->
         <div class="row">
           <!-- 左欄 -->
-          <div class="col-8">
+          <div class="col-12 col-lg-8">
             <div class="image-container mb-4 bg-light-2">
               <img v-if="product.imageUrl" :src="product.imageUrl" class="object-fit-cover w-100 h-100" alt="">
             </div>
-            <!-- tab button -->
+            <!-- 992px 以下版面 start -->
+            <div class="p-6 bg-white bg-opacity-75 mb-4 d-lg-none">
+              <h1 class="fs-4 fw-bold mb-0">{{ product.title }}</h1>
+              <div class="gradient-line gradient-line-2 py-4"></div>
+              <div class="row gy-3 text-nowrap">
+                <div class="col">
+                  <p class="fs-7 mb-1 text-muted">課程時長</p>
+                  <p class="mb-0">{{ convertToHour(product.outlines_total?.minutes) }}</p>
+                </div>
+                <div class="col">
+                  <p class="fs-7 mb-1 text-muted">單元數</p>
+                  <p class="mb-0">{{ product.outlines_total?.outlines }} 章節 {{ product.outlines_total?.lectures }} 單元</p>
+                </div>
+                <div class="col">
+                  <p class="fs-7 mb-1 text-muted">觀看限制</p>
+                  <p class="mb-0">時間、次數不限</p>
+                </div>
+                <div class="col">
+                  <p class="fs-7 mb-1 text-muted">作業回覆</p>
+                  <p class="mb-0">已包含</p>
+                </div>
+              </div>
+              <div class="gradient-line gradient-line-2 py-4"></div>
+              <div>
+                <p class="mb-2">課程關鍵字：</p>
+                <div class="fs-7">
+                  <template v-for="word in keywords" :key="word">
+                    <RouterLink :to="`/products?index=${word.index}&filter=${word.filter}`"
+                          class="btn btn-sm btn-outline-primary rounded-pill me-2 mb-2">{{ word.filter }}</RouterLink>
+                  </template>
+                </div>
+              </div>
+            </div>
+            <!-- 992px 版面 end -->
+            <!-- 簡介、大綱、常見問題頁籤 -->
             <div class="bg-white bg-opacity-75">
               <ul class="py-3 px-8 nav">
                 <li class="nav-item">
@@ -89,7 +123,7 @@
                     <tr>
                       <th scope="col">章節名稱</th>
                       <th scope="col" class="w-50">概述</th>
-                      <th scope="col" class="text-nowrap text-center">時長（分鐘）</th>
+                      <th scope="col" class="text-nowrap text-center">分鐘</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -110,9 +144,21 @@
                 </ol>
               </template>
             </div>
+            <!-- 992px 以下版面 start -->
+            <div class="bg-white p-3 d-flex align-items-center sticky-bottom d-lg-none border-top">
+              <p class="text-accent fw-semibold text-nowrap me-2 mb-0">NT$ {{ numToPriceString(product.price) }}</p>
+              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75 me-2"
+                      :class="{ 'hover-bg-gradient': !itemRepeated, 'disabled': itemRepeated }"
+                      @click="addToCart(prodId)">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
+                <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
+              </button>
+              <button type="button" class="btn py-3 btn-primary w-100 border-0"
+                      :class="{ 'd-none': itemRepeated }">立即購買</button>
+            </div>
+            <!-- 992px 版面 end -->
           </div>
           <!-- 右欄 -->
-          <div class="col-4">
+          <div class="d-none d-lg-block col-lg-4">
             <div class="p-6 bg-white bg-opacity-75 mb-8">
               <h1 class="fs-4 fw-bold mb-0">{{ product.title }}</h1>
               <div class="gradient-line gradient-line-2 py-4"></div>
@@ -138,21 +184,23 @@
               <div class="mb-8">
                 <p class="mb-2">課程關鍵字：</p>
                 <div class="fs-7">
-                  <button type="button" v-for="word in keywords" :key="word"
-                        class="btn btn-sm btn-outline-primary rounded-pill me-2">{{ word }}</button>
+                  <template v-for="word in keywords" :key="word">
+                    <RouterLink :to="`/products?index=${word.index}&filter=${word.filter}`"
+                          class="btn btn-sm btn-outline-primary rounded-pill me-2 mb-2">{{ word.filter }}</RouterLink>
+                  </template>
                 </div>
               </div>
               <div class="text-end">
                 <s>NT$ {{ numToPriceString(product.origin_price) }}</s>
                 <p>售價：<span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(product.price) }}</span></p>
               </div>
-              <button type="button" class="btn py-3 btn-primary w-100 mb-2"
-                      :class="{ 'd-none': itemRepeated }">立即購買</button>
-              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75"
+              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75 mb-2"
                       :class="{ 'hover-bg-gradient': !itemRepeated, 'disabled': itemRepeated }"
                       @click="addToCart(prodId)">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                 <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
               </button>
+              <button type="button" class="btn py-3 btn-primary w-100"
+                      :class="{ 'd-none': itemRepeated }">立即購買</button>
             </div>
             <div>
               <h3 class="fs-6 mb-2">有其他圖想請老師指教？</h3>
@@ -176,7 +224,10 @@
     <!-- 課程推薦 -->
     <section class="py-10">
       <h4 class="text-center mb-6 fw-semibold">其他人也看了這些課程</h4>
-      <div class="index-recommend-swiper">
+      <div v-if="errorMessage !== ''" class="container">
+        <p class="mb-0 text-muted">{{ errorMessage }}</p>
+      </div>
+      <div v-else class="swiper-theme-set">
         <div class="d-flex mb-9 justify-content-center align-items-center">
           <swiper class="flex-shrink-1 order-1 px-3 mx-0 container-xl"
                   :breakpoints="{
@@ -199,7 +250,7 @@
                   :modules="modules"
                   >
             <swiper-slide class="h-auto" v-for="prod in filteredProducts" :key="prod.id">
-              <a href="#" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
+              <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 185px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
                 </div>
@@ -218,7 +269,7 @@
                     <p class="mb-0 fs-4 fw-semibold text-accent">NT$ {{ numToPriceString(prod.price) }}</p>
                   </div>
                 </div>
-              </a>
+              </RouterLink>
             </swiper-slide>
           </swiper>
           <!-- navigation -->
@@ -279,7 +330,8 @@ export default {
           answer: '<ul class="mb-4"><li>購買 7 日內未觀看任一付費單元，退還 100% 課程費用。</li><li>購買 8 - 14 日內未觀看任一付費單元，退還 30% 課程費用。</li><li>購買第 15 日起，恕不提供退費。</li></ul><p>※ 如欲申請退費請來信 <a href="#">MeetArt 客服信箱</a> 說明原因，信件內容應包含以下：</p><ul><li>使用者帳號</li><li>課程名稱</li><li>退款原因</li></ul>'
         }
       ],
-      breadcrumb: {}
+      breadcrumb: {},
+      errorMessage: ''
     }
   },
   watch: {
@@ -290,6 +342,9 @@ export default {
           filter: newVal
         };
       }
+    },
+    prodId(){
+      this.getSingleProd();
     },
     carts(){
       this.findRepeatItem(this.prodId);
@@ -318,7 +373,7 @@ export default {
         this.allProducts = res.data.products;
       })
       .catch(err => {
-        this.errorMessage = `資料取得失敗，錯誤代碼：${err.response.status}`;
+        this.errorMessage = `無法取得產品，錯誤代碼：${err.response.status}`;
       })
     },
   },
@@ -327,7 +382,7 @@ export default {
     ...mapState(useCartsStore, ['carts','itemRepeated']),
     filteredProducts(){
       if(this.allProducts.length !== 0 && this.product.id){
-        const keys = ['category', 'style', 'theme'];
+        const keys =  Object.keys(this.catagories);
         const total0 = [], total1 = [], total2 = [], total3 = [], total4 = [];
 
         this.allProducts.forEach(item => {
@@ -357,10 +412,13 @@ export default {
     },
     keywords(){
       const temp = [];
-      const keys = ['category', 'style', 'theme'];
+      const keys = Object.keys(this.catagories);
       keys.forEach(key => {
         if(this.product[key]){
-          temp.push(this.product[key])
+          temp.push({
+            index: key,
+            filter: this.product[key]
+          })
         }
       })
       return temp
@@ -395,26 +453,6 @@ export default {
 .hover-bg-gradient:active {
   --bs-bg-opacity: 0;
   background-image: var(--bs-gradient) !important;
-}
-
-.index-recommend-swiper {
-  --swiper-theme-color: #AA864E;
-  --swiper-navigation-size: 25px;
-  --swiper-pagination-bullet-width: 26px;
-  --swiper-pagination-bullet-border-radius: 20px;
-  --swiper-pagination-bullet-horizontal-gap: 6px;
-  --swiper-pagination-bullet-inactive-color: #AA864E;
-}
-
-.index-recommend-swiper .custom-prev-button,
-.index-recommend-swiper .custom-next-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  position: unset;
-  flex-shrink: 0;
-  background-color: #fff;
-  display: none;
 }
 
 .questions-list {

@@ -150,7 +150,7 @@
       <div v-if="errorMessage !== ''" class="container">
         <p class="mb-0 fs-5 text-muted">{{ errorMessage }}</p>
       </div>
-      <div v-else class="index-recommend-swiper">
+      <div v-else class="swiper-theme-set">
         <div class="d-flex mb-9 justify-content-center align-items-center">
           <swiper class="flex-shrink-1 order-1 px-3 mx-0 container-xl"
                   :breakpoints="{
@@ -178,7 +178,7 @@
                   :modules="modules"
                   >
             <swiper-slide class="h-auto" v-for="prod in filteredProducts" :key="prod.id">
-              <a href="#" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
+              <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 185px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
                 </div>
@@ -197,7 +197,7 @@
                     <p class="mb-0 fs-4 fw-semibold text-accent">NT$ {{ numToPriceString(prod.price) }}</p>
                   </div>
                 </div>
-              </a>
+              </RouterLink>
             </swiper-slide>
           </swiper>
           <!-- navigation -->
@@ -378,26 +378,6 @@ export default {
   .mobile-ratio-3x2{
     aspect-ratio: 3 / 2;
   }
-}
-
-.index-recommend-swiper {
-  --swiper-theme-color: #AA864E;
-  --swiper-navigation-size: 25px;
-  --swiper-pagination-bullet-width: 26px;
-  --swiper-pagination-bullet-border-radius: 20px;
-  --swiper-pagination-bullet-horizontal-gap: 6px;
-  --swiper-pagination-bullet-inactive-color: #AA864E;
-}
-
-.index-recommend-swiper .custom-prev-button,
-.index-recommend-swiper .custom-next-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  position: unset;
-  flex-shrink: 0;
-  background-color: #fff;
-  display: none;
 }
 
 @media (min-width: 992px){

@@ -4,7 +4,7 @@
       <!-- 進度條 -->
       <StepProgressBar :activeStep="1" class="mb-3"></StepProgressBar>
       <div class="row w-75 mx-auto mb-8">
-        <div class="col text-center fs-7">購買清單</div>
+        <div class="col text-center fs-7">購物清單</div>
         <div class="col text-center fs-7">填寫資訊</div>
         <div class="col text-center fs-7">確認付款</div>
         <div class="col text-center fs-7">付款完成</div>
@@ -40,10 +40,10 @@
             <ul class="list-unstyled interval-line">
               <li v-for="cart in carts" :key="cart.id" class="row mb-3 gy-3">
                 <div class="col-12 col-md-6">
-                  <div class="d-flex">
+                  <RouterLink :to="`/product/${cart.product_id}`" class="d-flex text-decoration-none text-dark-1">
                     <img :src="cart.product.imageUrl" :alt="cart.product.title" style="width: 30%; max-width: 100px;" class="me-2">
                     <p class="mb-0 fw-semibold">{{ cart.product.title }}</p>
-                  </div>
+                  </RouterLink>
                 </div>
                 <div class="col-6 col-md-2">
                   <p class="mb-0 text-start text-md-center text-muted">NT$ {{ cart.product.price }}</p>

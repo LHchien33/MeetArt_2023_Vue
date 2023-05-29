@@ -74,8 +74,9 @@
             <li class="nav-item ms-lg-auto">
               <RouterLink to="/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0 position-relative" aria-current="page">
                 <span class="d-lg-none">購物車</span>
+                <span class="badge rounded-pill bg-primary ms-2 d-lg-none">{{ carts.length }}</span>
                 <span class="d-none d-lg-block material-symbols-outlined fs-lg-2 fs-xxl-1">shopping_cart</span>
-                <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle-x">{{ carts.length }}</span>
+                <span class="badge rounded-pill bg-primary position-absolute top-0 start-100 translate-middle-x d-none d-lg-block">{{ carts.length }}</span>
               </RouterLink>
             </li>
           </ul>
@@ -209,5 +210,26 @@ export default {
   text-decoration: none;
   color: #666666;
   font-weight: 300;
+}
+
+.swiper-theme-set {
+  --swiper-theme-color: #AA864E;
+  --swiper-navigation-size: 20px;
+  --swiper-pagination-bullet-width: 26px;
+  --swiper-pagination-bullet-border-radius: 20px;
+  --swiper-pagination-bullet-horizontal-gap: 6px;
+  --swiper-pagination-bullet-inactive-color: #AA864E;
+}
+
+.swiper-theme-set .custom-prev-button,
+.swiper-theme-set .custom-next-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: unset;
+  flex-shrink: 0;
+  background-color: #fff;
+  display: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 }
 </style>
