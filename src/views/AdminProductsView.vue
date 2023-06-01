@@ -127,7 +127,6 @@ export default {
       modalContent: {
         itemName: '',
         title: '刪除課程',
-        cancelBtnText: '取消',
         confirmBtnText: '確定刪除'
       }
     }
@@ -180,38 +179,6 @@ export default {
 </script>
 
 <style scoped>
-@media (max-width: 767px){
-  .md-table-width{
-    width: 770px !important;
-  }
-}
-
-.table-cell-px-2 th,
-.table-cell-px-2 td {
-  padding-left: .5rem;
-  padding-right: .5rem;
-}
-
-.table-cell-px-2 th:first-child,
-.table-cell-px-2 td:first-child {
-  padding-left: 0;
-}
-
-.table-cell-px-2 th:last-child,
-.table-cell-px-2 td:last-child {
-  padding-right: 0;
-}
-
-.thead-padding th {
-  padding-top: 20px;
-  padding-bottom: 12px;
-}
-
-.hover-bg-transparent:hover,
-.hover-bg-transparent:active {
-  --bs-bg-opacity: 0;
-}
-
 .hover-bg-light-2:hover,
 .hover-bg-light-2:active {
   color: #1a1a1a !important;

@@ -150,7 +150,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .interactive .gradient-line-0::before {
   transition: all .5s;
 }
@@ -170,7 +170,7 @@ export default {
     height: calc(100vh - 48px);
   }
 }
-.router-link-exact-active{
+.navbar .router-link-exact-active{
   color: #1a1a1a;
   font-weight: 500;
 }
@@ -199,5 +199,31 @@ export default {
   .collapse-show {
     max-height: 500px;
   }
+}
+
+.table-cell-px-2 th,
+.table-cell-px-2 td {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.table-cell-px-2 th:first-child,
+.table-cell-px-2 td:first-child {
+  padding-left: 0;
+}
+
+.table-cell-px-2 th:last-child,
+.table-cell-px-2 td:last-child {
+  padding-right: 0;
+}
+
+.thead-padding th {
+  padding-top: 20px;
+  padding-bottom: 12px;
+}
+
+.hover-bg-transparent:hover,
+.hover-bg-transparent:active {
+  --bs-bg-opacity: 0;
 }
 </style>

@@ -16,8 +16,10 @@ export const useCartsStore = defineStore('carts', {
         this.carts = res.data.data.carts;
         this.total = res.data.data.total;
         this.final_total = res.data.data.final_total;
-        console.log(res.data);
-        
+
+        if(this.carts.length === 0){
+          localStorage.removeItem('coupon')
+        }
       })
       .catch(err => {
         alert(`無法取得購物車資料，錯誤代碼：${err.response.status}`)
@@ -26,8 +28,6 @@ export const useCartsStore = defineStore('carts', {
     findRepeatItem(id){
       const repeatedProd = this.carts.find(item => item.product_id === id);
       repeatedProd ? this.itemRepeated = true : this.itemRepeated = false;
-      console.log('find');
-      
     },
     addToCart(id){
       this.findRepeatItem(id);

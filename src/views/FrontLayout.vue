@@ -1,8 +1,29 @@
 <template>
-  <!-- back to top button -->
+  <!-- 側邊小工具 -->
   <div class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
         :class="currentPath !== '/' || !isOnTheTop ? ['me-7', 'me-xxl-9'] : '' ">
-    <a href="#" class="text-decoration-none bg-beige bg-opacity-75 rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
+    <!-- coupon button -->
+    <div :class="{ 'd-none': !couponBtnShow }" class="position-relative mb-2">
+      <button type="button" @click="couponToastShow = true"
+              class="text-decoration-none bg-beige rounded-circle shadow-sm border border-3 border-white d-flex justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
+        <img src="../assets/images/gift-fill.svg" alt="折扣碼" style="width: 24px;">
+      </button>
+      <!-- coupon close button -->
+      <div @click="couponBtnShow = false" class="position-absolute top-0 start-100 rounded-circle text-center text-bg-dark-3 opacity-75 button-x"></div>
+      <!-- coupon backdrop -->
+      <div v-if="couponToastShow" @click="couponToastShow = false" class="coupon-backdrop"></div>
+      <!-- coupon toast -->
+      <div class="rounded-3 bg-beige gradient-border gradient-border-3 position-absolute top-0 end-100 shadow-sm coupon-toast-hide"
+            :class="{ 'coupon-toast-show': couponToastShow }">
+        <p class="text-nowrap mb-2 fs-7">領取單筆八折優惠！</p>
+        <div class="input-group input-group-sm flex-nowrap">
+          <input type="text" class="form-control text-secondary" placeholder="Recipient's username" value="20%OFF">
+          <button @click="copyCoupon" type="button" class="input-group-text" id="basic-addon2">複製</button>
+        </div>
+      </div>
+    </div>
+    <!-- back to top button -->
+    <a href="#" class="text-decoration-none bg-beige rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
       <span class="material-symbols-outlined text-dark-1 fs-4 fs-xxl-2">arrow_upward</span>
       <span class="text-dark-2 fw-semibold fs-8 fs-lg-7 fs-xxl-6">TOP</span>
     </a>              
@@ -123,6 +144,8 @@ export default {
     return {
       isCollapsed: true,
       isOnTheTop: true,
+      couponBtnShow: true,
+      couponToastShow: false
     }
   },
   computed:{
@@ -135,9 +158,19 @@ export default {
       if (window.pageYOffset > 50){
         this.isOnTheTop = false
       } else {
-        this.isOnTheTop = true
+        this.isOnTheTop = true;
+        this.couponToastShow = false;
       }
-    }, 300)
+    }, 300),
+    copyCoupon(){
+      navigator.clipboard.writeText('20%OFF').then(() => {
+        alert('已複製到剪貼簿');
+        this.couponToastShow = false;
+      })
+      .catch((err) => {
+        alert('複製失敗')
+      });
+    }
   },
   mounted(){
     window.addEventListener('scroll', this.scrollHandler)
@@ -231,5 +264,40 @@ export default {
   background-color: #fff;
   display: none;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.button-x {
+  aspect-ratio: 1 / 1;
+  width: 20px;
+  margin-left: -12px;
+  margin-top: -5px;
+}
+
+.button-x::before{
+  font-family: 'Material Symbols Outlined';
+  content: '\e5cd';
+}
+
+.coupon-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.coupon-toast-hide {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all .3s;
+}
+
+.coupon-toast-show {
+  width: 180px;
+  padding: .75rem 1.25rem;
+  margin-top: -0.5rem;
+  margin-right: .5rem;
+  opacity: 1;
 }
 </style>

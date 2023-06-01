@@ -46,10 +46,12 @@
                   </RouterLink>
                 </div>
                 <div class="col-6 col-md-2">
-                  <p class="mb-0 text-start text-md-center text-muted">NT$ {{ cart.product.price }}</p>
+                  <p class="mb-2 text-start text-md-center text-muted">NT$ {{ cart.product.price }}</p>
+                  <div v-if="couponUsed" class="badge d-block w-fit-content mx-auto text-secondary border border-secondary">
+                    折扣 - NT$ {{ cart.product.price - Math.round(cart.final_total) }}</div>
                 </div>
                 <div class="col-6 col-md-2">
-                  <p class="mb-0 text-end text-md-center text-accent">NT$ {{ cart.final_total }}</p>
+                  <p class="mb-0 text-end text-md-center text-accent">NT$ {{ Math.round(cart.final_total) }}</p>
                 </div>
                 <div class="col-12 col-md-2">
                   <button type="button" class="border-0 bg-transparent d-flex align-items-center ms-auto text-dark-3"
@@ -76,14 +78,18 @@
               <div class="p-4 bg-white bg-opacity-75 mb-3">
                 <h2 class="fs-6">訂單明細</h2>
                 <div class="gradient-line gradient-line-2 py-4"></div>
-                <div class="d-flex justify-content-between mb-4">
+                <div class="d-flex justify-content-between">
                   <p class="mb-0">小計</p>
                   <p class="mb-0">NT$ {{ total }}</p>
+                </div>
+                <div v-if="couponUsed" class="d-flex justify-content-between text-secondary mt-4">
+                  <p class="mb-0">折扣碼</p>
+                  <p class="mb-0">- NT$ {{ total - Math.round(final_total) }}</p>
                 </div>
                 <div class="gradient-line gradient-line-2 py-4"></div>
                 <div class="d-flex justify-content-between align-items-end">
                   <p class="mb-0">總計</p>
-                  <p class="mb-0 fs-4 text-accent">NT$ {{ final_total }}</p>
+                  <p class="mb-0 fs-4 text-accent">NT$ {{ Math.round(final_total) }}</p>
                 </div>
               </div>
             </div>
@@ -91,10 +97,11 @@
               <!-- 折扣代碼欄 -->
               <div class="p-4 bg-white bg-opacity-75 mb-3">
                 <label for="coupon" class="w-100 border-0 bg-transparent text-start px-0 pb-3 text-dark-3">使用折扣代碼</label>
-                <input type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
-                <div class="d-flex justify-content-end">
-                  <button type="button" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
-                  <button type="button" class="btn btn-sm btn-primary">使用</button>
+                <input v-if="!couponUsed" v-model="couponCode" type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
+                <div v-if="couponUsed" class="badge text-secondary border border-secondary">折扣碼：{{ couponCode }}</div>
+                <div v-if="!couponUsed" class="d-flex justify-content-end">
+                  <button type="button" @click="couponCode = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
+                  <button type="button" @click="useCoupon(couponCode)" class="btn btn-sm btn-primary">使用</button>
                 </div>
               </div>
             </div>
@@ -117,6 +124,12 @@ import { useCartsStore } from '@/stores/carts'
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
+  data(){
+    return {
+      couponCode: '',
+      couponUsed: false
+    }
+  },
   components: {
     StepProgressBar
   },
@@ -134,7 +147,24 @@ export default {
       .catch(err => {
         alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`)
       })
+    },
+    useCoupon(couponCode){
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/coupon`;
+      this.$http.post(url, {data: {code: couponCode}}).then(res => {
+        console.log(res.data);
+        alert(`已套用優惠券`)
+        this.couponUsed = true;
+        localStorage.setItem('coupon', couponCode)
+        this.getCarts();
+      })
+      .catch(err => {
+        alert(`無法使用優惠券，錯誤代碼：${err.response.status}`)
+      })
     }
+  },
+  mounted(){
+    this.couponCode = localStorage.getItem('coupon')
+    this.couponUsed = this.couponCode ? true : false
   }
 }
 </script>
