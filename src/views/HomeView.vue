@@ -248,14 +248,17 @@ import 'swiper/css/pagination';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Navigation, Pagination, FreeMode } from 'swiper';
 
-const { VITE_BASE, VITE_API } = import.meta.env;
+import { RouterLink } from 'vue-router';
 import { mapActions } from 'pinia';
 import { useCommonStore } from '@/stores/common';
+const { VITE_BASE, VITE_API } = import.meta.env;
+
 
 export default {
   components: {
-      Swiper,
-      SwiperSlide,
+    RouterLink,
+    Swiper,
+    SwiperSlide,
   },
   data(){
     return {

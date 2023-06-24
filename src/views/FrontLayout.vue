@@ -1,6 +1,6 @@
 <template>
   <!-- 側邊小工具 -->
-  <div class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
+  <div v-if="!currentPath.includes('/checkout')" class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
         :class="currentPath !== '/' || !isOnTheTop ? ['me-7', 'me-xxl-9'] : '' ">
     <!-- coupon button -->
     <div :class="{ 'd-none': !couponBtnShow }" class="position-relative mb-2">
@@ -23,10 +23,10 @@
       </div>
     </div>
     <!-- back to top button -->
-    <a href="#" class="text-decoration-none bg-beige rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
+    <button type="button" @click="backToTop()" class="text-decoration-none bg-beige rounded-circle shadow-sm border border-3 border-white d-flex flex-column justify-content-center align-items-center fixed-button-size" :tabindex="isOnTheTop ? '-1' : '0'">
       <span class="material-symbols-outlined text-dark-1 fs-4 fs-xxl-2">arrow_upward</span>
       <span class="text-dark-2 fw-semibold fs-8 fs-lg-7 fs-xxl-6">TOP</span>
-    </a>              
+    </button>              
   </div>
   <!-- nav backdrop -->
   <div class="d-lg-none position-fixed bg-dark-1 w-100 opacity-0" style="z-index: 1030; height: 0; transition: opacity .3s"
@@ -93,7 +93,7 @@
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" aria-current="page" href="#">常見問答</a>
             </li>
             <li class="nav-item ms-lg-auto">
-              <RouterLink to="/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0 position-relative" aria-current="page">
+              <RouterLink to="/checkout/carts" class="nav-link py-4 py-lg-2 text-dark-1 ps-lg-4 ps-xxl-5 pe-0 position-relative" aria-current="page">
                 <span class="d-lg-none">購物車</span>
                 <span class="badge rounded-pill bg-primary ms-2 d-lg-none">{{ carts.length }}</span>
                 <span class="d-none d-lg-block material-symbols-outlined fs-lg-2 fs-xxl-1">shopping_cart</span>
@@ -170,13 +170,17 @@ export default {
       .catch((err) => {
         alert('複製失敗')
       });
+    },
+    backToTop(){
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   },
   mounted(){
     window.addEventListener('scroll', this.scrollHandler)
     this.getCarts();
-    // if(this.currentPath === '/'){
-    // }
   },
   unmounted(){
     window.removeEventListener('scroll', this.scrollHandler)

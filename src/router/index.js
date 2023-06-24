@@ -31,9 +31,21 @@ const router = createRouter({
           props: true
         },
         {
-          path: 'carts',
-          name: '前台購物車',
-          component: () => import('../views/CartsView.vue'),
+          path: 'checkout',
+          name: '前台結帳',
+          component: () => import('../views/CheckoutLayout.vue'),
+          children: [
+            {
+              path: 'carts',
+              name: '前台結帳_購物列表',
+              component: () => import('../views/CartsView.vue'),
+            },
+            {
+              path: 'order',
+              name: '前台結帳_填寫資訊',
+              component: () => import('../views/OrderView.vue'),
+            },
+          ]
         }
       ]
     },

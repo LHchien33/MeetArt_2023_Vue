@@ -29,7 +29,7 @@ export const useCartsStore = defineStore('carts', {
       const repeatedProd = this.carts.find(item => item.product_id === id);
       repeatedProd ? this.itemRepeated = true : this.itemRepeated = false;
     },
-    addToCart(id){
+    addToCart(id, buyNow = false){
       this.findRepeatItem(id);
       if(this.itemRepeated){
         return
@@ -37,7 +37,7 @@ export const useCartsStore = defineStore('carts', {
 
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
       axios.post(url, {data: {"product_id": id, "qty": 1}}).then(res => {
-        alert('已加入購物車')
+        if (buyNow === false){ alert('已加入購物車') }
         this.getCarts();
       })
       .catch(err => {

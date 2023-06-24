@@ -83,7 +83,7 @@
                 <div class="mb-9">
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-0">這門課你將會學到：
+                    <h2 class="fw-bold fs-5 mb-1">這門課你將會學到：
                     </h2>
                   </div>
                   <p v-html="product.intro?.willLearn"></p>
@@ -91,7 +91,7 @@
                 <div class="mb-9">
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-0">課前準備：
+                    <h2 class="fw-bold fs-5 mb-1">課前準備：
                     </h2>
                   </div>
                   <p v-html="product.intro?.preparation"></p>
@@ -99,7 +99,7 @@
                 <div>
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-0">關於老師：
+                    <h2 class="fw-bold fs-5 mb-1">關於老師：
                     </h2>
                   </div>
                   <div class="d-flex">
@@ -145,15 +145,41 @@
               </template>
             </div>
             <!-- 992px 以下版面 start -->
-            <div class="bg-white p-3 d-flex align-items-center sticky-bottom d-lg-none border-top">
-              <p class="text-accent fw-semibold text-nowrap me-2 mb-0">NT$ {{ numToPriceString(product.price) }}</p>
-              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75 me-2"
-                      :class="{ 'hover-bg-gradient': !itemRepeated, 'disabled': itemRepeated }"
-                      @click="addToCart(prodId)">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
-                <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
-              </button>
-              <button type="button" class="btn py-3 btn-primary w-100 border-0"
-                      :class="{ 'd-none': itemRepeated }">立即購買</button>
+            <div class="bg-white p-3 sticky-bottom d-lg-none border-top mb-8">
+              <div class="row g-2 align-items-center">
+                <div class="col flex-grow-0">
+                  <p class="text-accent fw-semibold text-nowrap mb-0">NT$ {{ numToPriceString(product.price) }}</p>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 text-nowrap"
+                          :class="{ 'disabled': itemRepeated }" @click="addToCart(prodId)">
+                    <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
+                      <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
+                    </div>
+                  </button>
+                </div>
+                <div class="col">
+                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
+                          :class="{ 'd-none': itemRepeated }">立即購買</button>
+                </div>
+              </div>
+            </div>
+            <div class="d-lg-none">
+              <h3 class="fs-6 mb-2">有其他圖想請老師指教？</h3>
+              <div class="p-6 bg-white bg-opacity-75">
+                <h2 class="fs-5 fw-bold mb-3">課外輔導</h2>
+                <div class="d-flex mb-4">
+                  <div class="bg-gradient me-3" style="width: 4px;"></div>
+                  <p class="mb-1">額外的作品檢視服務，由老師協助檢視 <u>課程作業以外</u> 的作品</p>
+                </div>
+                <div class="text-end mb-2">
+                  <s>NT$ 350</s>
+                  <p class="mb-0">加購價：<span class="fs-4 text-accent fw-semibold">NT$ 280</span></p>
+                </div>
+                <button type="button" class="btn p-0 w-100 bg-gradient border-0">
+                  <div class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent hover-bg-transparent">前往了解更多</div>
+                </button>
+              </div>
             </div>
             <!-- 992px 版面 end -->
           </div>
@@ -194,27 +220,30 @@
                 <s>NT$ {{ numToPriceString(product.origin_price) }}</s>
                 <p>售價：<span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(product.price) }}</span></p>
               </div>
-              <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 bg-white bg-opacity-75 mb-2"
-                      :class="{ 'hover-bg-gradient': !itemRepeated, 'disabled': itemRepeated }"
-                      @click="addToCart(prodId)">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
-                <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
+              <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 mb-2"
+                      :class="{ 'disabled': itemRepeated }" @click="addToCart(prodId)">
+                <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
+                  <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
+                </div>
               </button>
-              <button type="button" class="btn py-3 btn-primary w-100"
+              <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
                       :class="{ 'd-none': itemRepeated }">立即購買</button>
             </div>
             <div>
               <h3 class="fs-6 mb-2">有其他圖想請老師指教？</h3>
               <div class="p-6 bg-white bg-opacity-75">
                 <h2 class="fs-5 fw-bold mb-3">課外輔導</h2>
-                <div class="d-flex mb-8">
+                <div class="d-flex mb-6">
                   <div class="bg-gradient me-3" style="width: 4px;"></div>
-                  <p class="mb-0">額外的作品檢視服務，由老師協助檢視 <u>課程作業以外</u> 的作品</p>
+                  <p class="mb-1">額外的作品檢視服務，由老師協助檢視 <u>課程作業以外</u> 的作品</p>
                 </div>
                 <div class="text-end">
                   <s>NT$ 350</s>
                   <p>加購價：<span class="fs-4 text-accent fw-semibold">NT$ 280</span></p>
                 </div>
-                <button type="button" class="btn py-3 w-100 border-0 gradient-border gradient-border-3 hover-bg-gradient bg-white bg-opacity-75">前往了解更多</button>
+                <button type="button" class="btn p-0 w-100 bg-gradient border-0">
+                  <div class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent hover-bg-transparent">前往了解更多</div>
+                </button>
               </div>
             </div>
           </div>
@@ -297,8 +326,9 @@ const { VITE_BASE, VITE_API } = import.meta.env;
 export default {
   props:['prodId'],
   components: {
-      Swiper,
-      SwiperSlide,
+    RouterLink,
+    Swiper,
+    SwiperSlide,
   },
   data(){
     return {
@@ -327,7 +357,7 @@ export default {
         },
         {
           question: '課程購買後可以退費嗎？如何申請？',
-          answer: '<ul class="mb-4"><li>購買 7 日內未觀看任一付費單元，退還 100% 課程費用。</li><li>購買 8 - 14 日內未觀看任一付費單元，退還 30% 課程費用。</li><li>購買第 15 日起，恕不提供退費。</li></ul><p>※ 如欲申請退費請來信 <a href="#">MeetArt 客服信箱</a> 說明原因，信件內容應包含以下：</p><ul><li>使用者帳號</li><li>課程名稱</li><li>退款原因</li></ul>'
+          answer: '<ul class="mb-4"><li>購買 7 日內未觀看任一付費單元，退還 100% 課程費用。</li><li>購買 8 - 14 日內未觀看任一付費單元，退還 30% 課程費用。</li><li>購買第 15 日起，恕不提供退費。</li></ul><p class="mb-2">※ 如欲申請退費請來信 <a href="#">MeetArt 客服信箱</a> 說明原因，信件內容應包含以下：</p><ul><li>使用者帳號</li><li>課程名稱</li><li>退款原因</li></ul>'
         }
       ],
       breadcrumb: {},
@@ -376,6 +406,10 @@ export default {
         this.errorMessage = `無法取得產品，錯誤代碼：${err.response.status}`;
       })
     },
+    buyNow(id){
+      this.addToCart(id, true);
+      this.$router.push('/checkout/carts')
+    }
   },
   computed: {
     ...mapState(useCommonStore, ['catagories']),
@@ -449,12 +483,6 @@ export default {
   --bs-link-hover-color: #1a1a1a;
 }
 
-.hover-bg-gradient:hover,
-.hover-bg-gradient:active {
-  --bs-bg-opacity: 0;
-  background-image: var(--bs-gradient) !important;
-}
-
 .questions-list {
   --bs-link-color: #AA864E;
 }
@@ -462,5 +490,8 @@ export default {
   margin-top: 1.5rem;
 }
 
-
+.hover-bg-transparent:hover,
+.hover-bg-transparent:active {
+  --bs-bg-opacity: 0;
+}
 </style>
