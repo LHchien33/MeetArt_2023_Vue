@@ -159,7 +159,7 @@
                   </button>
                 </div>
                 <div class="col">
-                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
+                  <button @click="addToCart(product.id, true)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
                           :class="{ 'd-none': itemRepeated }">立即購買</button>
                 </div>
               </div>
@@ -226,7 +226,7 @@
                   <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                 </div>
               </button>
-              <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
+              <button @click="addToCart(product.id, true)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
                       :class="{ 'd-none': itemRepeated }">立即購買</button>
             </div>
             <div>
@@ -375,6 +375,7 @@ export default {
     },
     prodId(){
       this.getSingleProd();
+      this.findRepeatItem(this.prodId);
     },
     carts(){
       this.findRepeatItem(this.prodId);
@@ -382,7 +383,7 @@ export default {
   },
   methods: {
     ...mapActions(useCommonStore, ['numToPriceString', 'dateConverter']),
-    ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem']),
+    ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem', 'couponInfo']),
     getSingleProd(){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/product/${this.prodId}`;
       this.$http.get(url).then(res => {
@@ -405,10 +406,6 @@ export default {
       .catch(err => {
         this.errorMessage = `無法取得產品，錯誤代碼：${err.response.status}`;
       })
-    },
-    buyNow(id){
-      this.addToCart(id, true);
-      this.$router.push('/checkout/carts')
     }
   },
   computed: {

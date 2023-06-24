@@ -37,7 +37,7 @@
             </div>
             <div class="col-6 col-md-2">
               <p class="mb-2 text-start text-md-center text-muted">NT$ {{ cart.product.price }}</p>
-              <div v-if="couponUsed" class="badge d-block w-fit-content mx-lg-auto text-secondary border border-secondary">
+              <div v-if="cart.coupon" class="badge d-block w-fit-content mx-lg-auto text-secondary border border-secondary">
                 折扣 - NT$ {{ cart.product.price - Math.round(cart.final_total) }}</div>
             </div>
             <div class="col-6 col-md-2">
@@ -72,7 +72,7 @@
               <p class="mb-0">小計</p>
               <p class="mb-0">NT$ {{ total }}</p>
             </div>
-            <div v-if="couponUsed" class="d-flex justify-content-between text-secondary mt-4">
+            <div v-if="couponInfo.code" class="d-flex justify-content-between text-secondary mt-4">
               <p class="mb-0">折扣碼</p>
               <p class="mb-0">- NT$ {{ total - Math.round(final_total) }}</p>
             </div>
@@ -87,11 +87,11 @@
           <!-- 折扣代碼欄 -->
           <div class="p-4 bg-white bg-opacity-75 mb-3">
             <label for="coupon" class="w-100 border-0 bg-transparent text-start px-0 pb-3 text-dark-3">使用折扣代碼</label>
-            <input v-if="!couponUsed" v-model="couponCode" type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
-            <div v-if="couponUsed" class="badge text-secondary border border-secondary">折扣碼：{{ couponCode }}</div>
-            <div v-if="!couponUsed" class="d-flex justify-content-end">
-              <button type="button" @click="couponCode = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
-              <button type="button" @click="useCoupon(couponCode)" class="btn btn-sm btn-primary">使用</button>
+            <input v-if="!couponInfo.code" v-model="couponInput" type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
+            <div v-if="couponInfo.code" class="badge text-secondary border border-secondary">折扣碼：{{ couponInfo.code }}</div>
+            <div v-if="!couponInfo.code" class="d-flex justify-content-end">
+              <button type="button" @click="couponInput = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
+              <button type="button" @click="useCoupon(couponInput)" class="btn btn-sm btn-primary">使用</button>
             </div>
           </div>
         </div>
@@ -104,33 +104,21 @@
 
 <script>
 import { RouterLink } from 'vue-router';
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useCartsStore } from '@/stores/carts'
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
   emits: ['updateStep'],
-  data(){
-    return {
-      couponCode: '',
-      couponUsed: false
-    }
-  },
   components: {
     RouterLink,
   },
-  watch: {
-    'carts.length'(newVal, oldVal){
-      if(newVal > oldVal && this.couponCode){
-        this.useCoupon(this.couponCode)
-      }
-    }
-  },
   computed: {
-    ...mapState(useCartsStore, ['carts', 'total', 'final_total'])
+    ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
+    ...mapWritableState(useCartsStore, ['couponInput'])
   },
   methods: {
-    ...mapActions(useCartsStore, ['getCarts']),
+    ...mapActions(useCartsStore, ['getCarts', 'useCoupon']),
     deleteCartItem(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart/${id}`;
       this.$http.delete(url).then(res => {
@@ -141,23 +129,10 @@ export default {
         alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`)
       })
     },
-    useCoupon(couponCode){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/coupon`;
-      this.$http.post(url, {data: {code: couponCode}}).then(res => {
-        if(!this.couponUsed){ alert(`已套用優惠券`) }
-        this.couponUsed = true;
-        localStorage.setItem('coupon', couponCode)
-        this.getCarts();
-      })
-      .catch(err => {
-        alert(`無法使用優惠券，錯誤代碼：${err.response.status}`)
-      })
-    }
   },
   mounted(){
     this.$emit('updateStep', 1)
-    this.couponCode = localStorage.getItem('coupon')
-    this.couponUsed = this.couponCode ? true : false;
+    if(this.couponInfo.code){ this.useCoupon(this.couponInfo.code) }
   }
 }
 </script>
