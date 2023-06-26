@@ -40,12 +40,11 @@ export const useCartsStore = defineStore('carts', {
       }
 
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
-      axios.post(url, {data: {"product_id": id, "qty": 1}}).then(res => {
+      return axios.post(url, {data: {"product_id": id, "qty": 1}}).then(res => {
         this.getCarts();
-        buyNow ? window.location = '/#/checkout/carts' : alert('已加入購物車');
       })
       .catch(err => {
-        alert(`無法加入購物車，錯誤代碼：${err.response.status}`)
+        throw `無法加入購物車，錯誤代碼：${err.response.status}`;
       })
     },
     useCoupon(couponCode){

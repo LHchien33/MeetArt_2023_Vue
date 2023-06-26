@@ -152,14 +152,14 @@
                 </div>
                 <div class="col">
                   <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 text-nowrap"
-                          :class="{ 'disabled': itemRepeated }" @click="addToCart(prodId)">
+                          :class="{ 'disabled': itemRepeated }" @click="addProduct(prodId)">
                     <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                       <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                     </div>
                   </button>
                 </div>
                 <div class="col">
-                  <button @click="addToCart(product.id, true)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
+                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
                           :class="{ 'd-none': itemRepeated }">立即購買</button>
                 </div>
               </div>
@@ -221,12 +221,12 @@
                 <p>售價：<span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(product.price) }}</span></p>
               </div>
               <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 mb-2"
-                      :class="{ 'disabled': itemRepeated }" @click="addToCart(prodId)">
+                      :class="{ 'disabled': itemRepeated }" @click="addProduct(prodId)">
                 <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                   <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                 </div>
               </button>
-              <button @click="addToCart(product.id, true)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
+              <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
                       :class="{ 'd-none': itemRepeated }">立即購買</button>
             </div>
             <div>
@@ -399,12 +399,27 @@ export default {
     getAllProducts(){
       this.errorMessage = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
-      this.$http.get(url)
-      .then(res => {
+      this.$http.get(url).then(res => {
         this.allProducts = res.data.products;
       })
       .catch(err => {
         this.errorMessage = `無法取得產品，錯誤代碼：${err.response.status}`;
+      })
+    },
+    addProduct(id){
+      this.addToCart(id, true).then(res => {
+        alert('已加入購物車')
+      })
+      .catch(err => {
+        alert(err)
+      })
+    },
+    buyNow(id) {
+      this.addToCart(id, true).then(res => {
+        this.$router.push('/checkout/carts');
+      })
+      .catch(err => {
+        alert(err)
       })
     }
   },
