@@ -29,24 +29,27 @@
         <hr class="my-3">
         <ul class="list-unstyled interval-line">
           <li v-for="cart in carts" :key="cart.id" class="row mb-3 gy-3">
-            <div class="col-12 col-md-6">
-              <RouterLink :to="`/product/${cart.product_id}`" class="d-flex text-decoration-none text-dark-1">
+            <div class="col-8 col-md-6">
+              <RouterLink :to="`/product/${cart.product_id}`" class="d-flex align-items-start text-decoration-none text-dark-1">
                 <img :src="cart.product.imageUrl" :alt="cart.product.title" style="width: 30%; max-width: 100px;" class="me-2">
                 <p class="mb-0 fw-semibold">{{ cart.product.title }}</p>
               </RouterLink>
             </div>
-            <div class="col-6 col-md-2">
-              <p class="mb-2 text-start text-md-center text-muted">NT$ {{ cart.product.price }}</p>
-              <div v-if="cart.coupon" class="badge d-block w-fit-content mx-lg-auto text-secondary border border-secondary">
-                折扣 - NT$ {{ cart.product.price - Math.round(cart.final_total) }}</div>
+            <div class="col col-md-2">
+              <div class="h-100 d-flex flex-column justify-content-end d-md-block">
+                <p class="mb-2 text-end text-md-center text-muted">NT$ {{ cart.product.price }}</p>
+                <div v-if="cart.coupon" class="badge d-block w-fit-content ms-auto mx-lg-auto text-secondary border border-secondary">
+                  折扣 - NT$ {{ cart.product.price - Math.round(cart.final_total) }}</div>
+              </div>
             </div>
-            <div class="col-6 col-md-2">
+            <div class="col-12 col-md-2">
               <p class="mb-0 text-end text-md-center text-accent">NT$ {{ Math.round(cart.final_total) }}</p>
             </div>
             <div class="col-12 col-md-2">
-              <button type="button" class="border-0 bg-transparent d-flex align-items-center ms-auto text-dark-3"
-                  @click="deleteCartItem(cart.id)">刪除
+              <button type="button" class="border-0 bg-transparent d-flex align-items-center ms-auto text-dark-3 pe-0 pe-md-revert"
+                  @click="deleteCartItem(cart.id)">
                 <span class="fs-5 material-symbols-outlined">delete</span>
+                刪除
               </button>
             </div>
           </li>
@@ -66,19 +69,19 @@
         <div class="col col-lg-12">
           <!-- 訂單明細欄 -->
           <div class="p-4 bg-white bg-opacity-75 mb-3 text-nowrap">
-            <h2 class="fs-6">訂單明細</h2>
+            <h2 class="fs-6 mb-0">訂單明細</h2>
             <div class="gradient-line gradient-line-2 py-4"></div>
             <div class="d-flex justify-content-between">
-              <p class="mb-0">小計</p>
+              <p class="mb-0 me-2">小計</p>
               <p class="mb-0">NT$ {{ total }}</p>
             </div>
             <div v-if="couponInfo.code" class="d-flex justify-content-between text-secondary mt-4">
-              <p class="mb-0">折扣碼</p>
+              <p class="mb-0 me-2">折扣碼</p>
               <p class="mb-0">- NT$ {{ total - Math.round(final_total) }}</p>
             </div>
             <div class="gradient-line gradient-line-2 py-4"></div>
             <div class="d-flex justify-content-between align-items-end">
-              <p class="mb-0">總計</p>
+              <p class="mb-0 me-2">總計</p>
               <p class="mb-0 fs-4 text-accent">NT$ {{ Math.round(final_total) }}</p>
             </div>
           </div>
@@ -142,4 +145,11 @@ export default {
   border-top: 1px solid var(--bs-border-color);
   margin-top: .75rem;
 }
+
+@media (min-width: 768px) {
+  .pe-md-revert {
+    padding-right: revert !important;
+  }
+}
+
 </style>
