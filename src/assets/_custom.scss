@@ -182,11 +182,9 @@
 .btn-primary-white-bg {
   --bs-btn-color: var(--bs-primary);
   --bs-btn-bg: var(--bs-white);
-  // --bs-btn-border-color: var(--bd-violet);
   --bs-btn-border-radius: .5rem;
   --bs-btn-hover-color: var(--bs-white);
   --bs-btn-hover-bg: var(--bs-primary);
-  // --bs-btn-hover-border-color: #{shade-color($primary, 10%)};
   --bs-btn-focus-shadow-rgb: var(--bd-primary-rgb);
   --bs-btn-active-color: var(--bs-btn-hover-color);
   --bs-btn-active-bg: var(--bs-btn-hover-bg);

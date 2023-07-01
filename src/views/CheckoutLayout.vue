@@ -5,7 +5,7 @@
       <StepProgressBar :activeStep="progressStep" class="mb-3"></StepProgressBar>
       <div class="row w-75 mx-auto mb-8">
         <div class="col text-center fs-7">購物清單</div>
-        <div class="col text-center fs-7">填寫資訊</div>
+        <div class="col text-center fs-7">填寫訂單</div>
         <div class="col text-center fs-7">確認付款</div>
         <div class="col text-center fs-7">付款完成</div>
       </div>
@@ -35,3 +35,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.white-accordion {
+  --bs-accordion-btn-bg: rgba(var(--bs-white-rgb), .75);
+  --bs-accordion-active-bg: rgba(var(--bs-white-rgb), .75);
+  --bs-accordion-active-color: var(--bs-dark-1);
+}
+</style>

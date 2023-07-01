@@ -15,10 +15,10 @@
       <!-- coupon toast -->
       <div class="rounded-3 bg-beige gradient-border gradient-border-3 position-absolute top-0 end-100 shadow-sm coupon-toast-hide"
             :class="{ 'coupon-toast-show': couponToastShow }">
-        <p class="text-nowrap mb-2 fs-7">領取單筆八折優惠！</p>
+        <p class="text-nowrap mb-2 fs-7">{{ coupon.info }}</p>
         <div class="input-group input-group-sm flex-nowrap">
-          <input type="text" class="form-control text-secondary" placeholder="Recipient's username" value="20%OFF">
-          <button @click="copyCoupon" type="button" class="input-group-text" id="basic-addon2">複製</button>
+          <input type="text" class="form-control text-secondary" :value="coupon.code">
+          <button @click="copyCoupon" type="button" class="input-group-text" id="couponCopyBtn">複製</button>
         </div>
       </div>
     </div>
@@ -145,7 +145,11 @@ export default {
       isCollapsed: true,
       isOnTheTop: true,
       couponBtnShow: true,
-      couponToastShow: false
+      couponToastShow: false,
+      coupon: {
+        info: '領取單筆八折優惠！',
+        code: '20%OFF'
+      }
     }
   },
   computed:{
@@ -163,7 +167,7 @@ export default {
       }
     }, 300),
     copyCoupon(){
-      navigator.clipboard.writeText('20%OFF').then(() => {
+      navigator.clipboard.writeText(this.coupon.code).then(() => {
         alert('已複製到剪貼簿');
         this.couponToastShow = false;
       })

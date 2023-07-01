@@ -52,6 +52,16 @@ const router = createRouter({
               name: '前台結帳_填寫資訊',
               component: () => import('../views/OrderView.vue'),
             },
+            {
+              path: 'payment',
+              name: '前台結帳_付款',
+              component: () => import('../views/PaymentView.vue'),
+            },
+            {
+              path: 'complete',
+              name: '前台結帳_完成付款',
+              component: () => import('../views/CheckoutCompleteView.vue'),
+            },
           ]
         }
       ]

@@ -83,24 +83,21 @@
                 <div class="mb-9">
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-1">這門課你將會學到：
-                    </h2>
+                    <h2 class="fw-bold fs-5 mb-1">這門課你將會學到：</h2>
                   </div>
                   <p v-html="product.intro?.willLearn"></p>
                 </div>
                 <div class="mb-9">
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-1">課前準備：
-                    </h2>
+                    <h2 class="fw-bold fs-5 mb-1">課前準備：</h2>
                   </div>
                   <p v-html="product.intro?.preparation"></p>
                 </div>
                 <div>
                   <div class="d-flex mb-3">
                     <div class="bg-gradient me-3" style="width: 4px;"></div>
-                    <h2 class="fw-bold fs-5 mb-1">關於老師：
-                    </h2>
+                    <h2 class="fw-bold fs-5 mb-1">關於老師：</h2>
                   </div>
                   <div class="d-flex">
                     <img class="rounded-circle me-3 align-self-start" src="../assets/images/teacher_avatar.jpg" alt="" style="max-width: 60px;">
@@ -158,9 +155,8 @@
                     </div>
                   </button>
                 </div>
-                <div class="col">
-                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;"
-                          :class="{ 'd-none': itemRepeated }">立即購買</button>
+                <div class="col" :class="{ 'd-none': itemRepeated }">
+                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">立即購買</button>
                 </div>
               </div>
             </div>
