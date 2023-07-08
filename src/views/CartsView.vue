@@ -30,7 +30,7 @@
         <ul class="list-unstyled">
           <li v-for="cart in carts" :key="cart.id">
             <div class="row gy-3">
-              <div class="col-8 col-md-6">
+              <div class="col-8 col-md-6 flex-grow-1">
                 <RouterLink :to="`/product/${cart.product_id}`" class="d-flex align-items-start text-decoration-none text-dark-1">
                   <img :src="cart.product.imageUrl" :alt="cart.product.title" style="width: 30%; max-width: 100px;" class="me-2">
                   <p class="mb-0 fw-semibold">{{ cart.product.title }}</p>
@@ -74,7 +74,7 @@
             <label for="coupon" class="w-100 border-0 bg-transparent text-start px-0 pb-3 text-dark-3">使用折扣代碼</label>
             <input v-if="!couponInfo.code" v-model="couponInput" type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
             <div v-if="couponInfo.code" class="badge text-secondary border border-secondary">折扣碼：{{ couponInfo.code }}</div>
-            <div v-if="!couponInfo.code" class="d-flex justify-content-end">
+            <div v-if="!couponInfo.code" class="d-flex justify-content-end text-nowrap">
               <button type="button" @click="couponInput = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
               <button type="button" @click="useCoupon(couponInput)" class="btn btn-sm btn-primary">使用</button>
             </div>

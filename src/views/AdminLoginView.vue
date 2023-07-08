@@ -49,13 +49,8 @@
 
 <script>
 import { RouterLink } from 'vue-router';
-import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
-import { required, email, regex } from '@vee-validate/rules';
+import { Field, Form, ErrorMessage, configure } from 'vee-validate';
 import { localize } from '@vee-validate/i18n';
-
-defineRule('required', required);
-defineRule('email', email);
-defineRule('regex', regex);
 
 configure({
   generateMessage: localize('zh_TW',{

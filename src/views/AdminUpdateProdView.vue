@@ -315,16 +315,12 @@
 import { mapWritableState, mapState } from 'pinia';
 import { useAdminProdStore } from '@/stores/adminProducts';
 import { useCommonStore } from '@/stores/common';
-import { FieldArray, Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
-import { required, min_value } from '@vee-validate/rules';
+import { FieldArray, Field, Form, ErrorMessage, configure } from 'vee-validate';
 import { localize } from '@vee-validate/i18n';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
-
-defineRule('required', required);
-defineRule('min_value', min_value);
 
 configure({
   generateMessage: localize('zh_TW',{
