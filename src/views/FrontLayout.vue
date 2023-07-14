@@ -1,6 +1,6 @@
 <template>
   <!-- 側邊小工具 -->
-  <div v-if="!currentPath.includes('/checkout')" class="fixed-bottom start-auto mb-5 mb-md-10 transition-all-3" style="margin-right: -95px;"
+  <div v-if="!currentPath.includes('/checkout')" class="fixed-bottom start-auto mb-10 transition-all-3" style="margin-right: -95px;"
         :class="currentPath !== '/' || !isOnTheTop ? ['me-7', 'me-xxl-9'] : '' ">
     <!-- coupon button -->
     <div :class="{ 'd-none': !couponBtnShow }" class="position-relative mb-2">
@@ -105,26 +105,28 @@
       </div>
     </nav>
   </header>
-  <!-- content -->
-  <RouterView />
-  <!-- footer -->
-  <footer class="bg-dark-1">
-    <div class="container py-5 py-md-3">
-      <div class="row">
-        <p class="mb-md-0 text-light-1 col">僅個人作品使用，無任何商業用途 &copy; 2023 MeetArt 繪課室 |
-          <RouterLink to="/login" class="text-light-1">後台</RouterLink>
-        </p>
-        <div class="col-md-2 text-md-end">
-          <a class="me-3" href="https://mail.google.com/mail/u/0/?fs=1&amp;tf=cm&amp;to=judy263562@gmail.com" target="_blank">
-            <img src="../assets/images/ic_mail.png" alt="聯絡信箱">
-          </a>
-          <a href="https://github.com/LHchien33/MeetArt_2023_Vue" target="_blank">
-            <img src="../assets/images/ic_iconmonstr-github.png" alt="GitHub 連結">
-          </a>
+  <div class="min-vh-100 d-flex flex-column">
+    <!-- content -->
+    <RouterView />
+    <!-- footer -->
+    <footer class="bg-dark-1">
+      <div class="container py-5 py-md-3">
+        <div class="row">
+          <p class="mb-md-0 text-light-1 col">僅個人作品使用，無任何商業用途 &copy; 2023 MeetArt 繪課室 |
+            <RouterLink to="/login" class="text-light-1">後台</RouterLink>
+          </p>
+          <div class="col-md-2 text-md-end">
+            <a class="me-3" href="https://mail.google.com/mail/u/0/?fs=1&amp;tf=cm&amp;to=judy263562@gmail.com" target="_blank">
+              <img src="../assets/images/ic_mail.png" alt="聯絡信箱">
+            </a>
+            <a href="https://github.com/LHchien33/MeetArt_2023_Vue" target="_blank">
+              <img src="../assets/images/ic_iconmonstr-github.png" alt="GitHub 連結">
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </footer>
+    </footer>
+  </div>
 </template>
 
 <script>

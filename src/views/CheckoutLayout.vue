@@ -1,9 +1,9 @@
 <template>
-  <main class="bg-beige page-padding-top min-vh-100">
+  <main class="bg-beige page-padding-top flex-grow-1">
     <div class="container py-8">
       <!-- 進度條 -->
-      <StepProgressBar :activeStep="progressStep" class="mb-3"></StepProgressBar>
-      <div class="row w-75 mx-auto mb-8">
+      <StepProgressBar :activeStep="progressStep" :progressBarWidth="progressBarWidth" class="mb-3"></StepProgressBar>
+      <div class="row mx-auto mb-8" :class="progressBarWidth">
         <div class="col text-center fs-7">購物清單</div>
         <div class="col text-center fs-7">填寫訂單</div>
         <div class="col text-center fs-7">確認付款</div>
@@ -15,13 +15,14 @@
 </template>
 
 <script>
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import StepProgressBar from '@/components/StepProgressBar.vue';
 
 export default {
   data(){
     return {
-      progressStep: 1
+      progressStep: 1,
+      progressBarWidth: ['w-100', 'w-md-75']
     }
   },
   components: {

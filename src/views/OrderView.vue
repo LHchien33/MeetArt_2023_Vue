@@ -2,7 +2,7 @@
   <h1 class="fs-4 fs-xxl-3 mb-3 mb-md-5">
     <span class="material-symbols-outlined align-bottom me-1">assignment</span>填寫訂單資訊
   </h1>
-  <VForm ref="myForm" v-slot="{ errors }" @submit="onSubmit" @invalid-submit="onInvalidSubmit">
+  <VForm v-slot="{ errors }" @submit="onSubmit" @invalid-submit="onInvalidSubmit" @keydown.enter.exact="preventEnter($event)">
     <div class="row">
       <!-- 左欄 -->
       <div class="col-lg-9 mb-8">
@@ -21,19 +21,19 @@
             <div class="row row-cols-auto gx-3 gy-2 align-items-center">
               <div class="col">
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
-                        id="creditCard" class="btn-check" value="creditCard"></VField>
+                        id="creditCard" class="btn-check" value="信用卡付款"></VField>
                 <label class="btn btn-outline-primary fs-7" for="creditCard"
                       :class="{ 'btn-outline-danger': errors.payMethod }">信用卡付款</label>
               </div>
               <div class="col">
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
-                        id="ATM" class="btn-check" value="ATM"></VField>
+                        id="ATM" class="btn-check" value="ATM 轉帳"></VField>
                 <label class="btn btn-outline-primary fs-7" for="ATM"
                       :class="{ 'btn-outline-danger': errors.payMethod }">ATM 轉帳</label>
               </div>
               <div class="col">
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
-                        id="CVS" class="btn-check" value="CVS"></VField>
+                        id="CVS" class="btn-check" value="超商代收"></VField>
                 <label class="btn btn-outline-primary fs-7" for="CVS"
                       :class="{ 'btn-outline-danger': errors.payMethod }">超商代收</label>
               </div>
@@ -144,7 +144,7 @@
                 <ErrorMessage name="problem" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
               <VField as="textarea" rules="required|wordLimit:300" name="problem" :class="{ 'is-invalid': errors.problem }"
-                      class="form-control" id="problem" style="height: 6rem;"
+                      class="form-control invalid-icon-position" id="problem" style="height: 8rem;"
                       placeholder="例如：想針對作品的某部分請老師給予建議、學習卡關不知道怎麼進行下一步...等">
               </VField>
             </div>
@@ -215,7 +215,7 @@
 
 <script>
 import { RouterLink } from 'vue-router';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useCartsStore } from '@/stores/carts';
 import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
 import { localize } from '@vee-validate/i18n';
@@ -285,10 +285,17 @@ export default {
     }
   },
   computed: {
-  ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
+    ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
   },
   methods: {
+    ...mapActions(useCartsStore, ['getCarts']),
     onInvalidSubmit({ values, errors}){
+      if(this.carts.length === 0){
+        alert('請先在購物車加入商品！');
+        this.$router.push('/checkout/carts');
+        return
+      }
+      
       const firstError = Object.keys(errors)[0];
       const targetElement = document.getElementsByName(firstError)[0];
       targetElement.scrollIntoView({
@@ -315,16 +322,30 @@ export default {
       }
       const url = `${VITE_BASE}/v2/api/${VITE_API}/order`;
       this.$http.post(url, requestData).then(res => {
-        alert('成功建立訂單')
-        this.$router.push('/checkout/payment')
+        alert('成功建立訂單');
+        this.getCarts();
+        sessionStorage.setItem('orderId', res.data.orderId);
+        this.$router.push(`/checkout/payment`);
       })
       .catch(err => {
-        alert(`無法建立訂單，錯誤代碼：${err.response.status}`)
+        alert(`無法建立訂單，錯誤代碼：${err.response.status}`);
       })
     },
+    preventEnter(e){
+      if(e.target.name !== 'problem'){
+        e.preventDefault();
+        return
+      }
+    }
   },
   mounted(){
-    this.$emit('updateStep', 2)
+    this.$emit('updateStep', 2);
   }
 }
 </script>
+
+<style scoped>
+.invalid-icon-position {
+  background-position: top calc(0.3em + 0.1875rem) right calc(1.2em + 0.1875rem) !important;
+}
+</style>

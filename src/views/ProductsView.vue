@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-beige page-padding-top min-vh-100">
+  <main class="bg-beige page-padding-top flex-grow-1">
     <div class="container py-8">
       <!-- breadcrumb -->
       <ol class="breadcrumb mb-3">
@@ -19,10 +19,10 @@
         <div class="bg-beige bg-opacity-75 p-6 gradient-border gradient-border-2">
           <template v-if="!query.index">
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h1>
-            <ul class="position-relative list-unstyled mb-0" style="z-index: 2;">
-              <li class="d-inline-block" v-for="(value, key) in catagories" :key="value.name">
+            <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
+              <li class="col-auto" v-for="(value, key) in catagories" :key="value.name">
                 <RouterLink :to="`/products?index=${key}`"
-                  class="fs-7 me-2 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg">繪畫{{ value.name }}
+                  class="fs-7 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg">繪畫{{ value.name }}
                 </RouterLink>
               </li>
             </ul>
@@ -31,16 +31,16 @@
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">
               {{ query.filter ? query.filter : `繪畫${catagories[query.index].name}` }}
             </h1>
-            <ul class="position-relative list-unstyled mb-0" style="z-index: 2;">
-              <li class="d-inline-block">
+            <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
+              <li class="col-auto">
                 <RouterLink :to="`/products?index=${query.index}`"
-                  class="fs-7 me-2 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg"
+                  class="fs-7 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg"
                   :class="{'active': !query.filter }">全部
                 </RouterLink>
               </li>
-              <li class="d-inline-block" v-for="item in catagories[query.index].sub" :key="item">
+              <li class="col-auto" v-for="item in catagories[query.index].sub" :key="item">
                 <RouterLink :to="`/products?index=${query.index}&filter=${item}`"
-                  class="fs-7 me-2 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg"
+                  class="fs-7 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg"
                   :class="{'active': query.filter === item }">{{ item }}
                 </RouterLink>
               </li>
@@ -50,12 +50,12 @@
       </div>
       <!-- sort button -->
       <div class="d-flex justify-content-end mb-2">
-        <button type="button" class="border-0 bg-transparent text-decoration-none px-4 py-1"
-                :class="sort_by === 'enabledTime' ? 'text-secondary' : 'text-dark-3'"
+        <button type="button" class="border-0 bg-transparent px-4 py-1"
+                :class="sort_by === 'enabledTime' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
                 @click="sortProd('enabledTime')">最新上架</button>
         <div class="py-1"><div class="vr align-bottom"></div></div>
-        <button type="button" class="border-0 bg-transparent text-decoration-none ps-4 py-1"
-                :class="sort_by === 'classmates' ? 'text-secondary' : 'text-dark-3'"
+        <button type="button" class="border-0 bg-transparent ps-4 py-1"
+                :class="sort_by === 'classmates' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
                 @click="sortProd('classmates')">最熱門</button>
       </div>
       <!-- products list -->

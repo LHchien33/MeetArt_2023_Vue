@@ -1,5 +1,5 @@
 <template>
-  <div class="step-progress position-relative w-75 mx-auto">
+  <div class="step-progress position-relative mx-auto" :class="progressBarWidth">
     <div class="position-absolute base-bar w-75 top-50 start-0 end-0 mx-auto"></div>
     <ul class="list-unstyled row g-0 mb-0">
       <li class="col step step-1"></li>
@@ -12,11 +12,12 @@
 
 <script>
 export default {
-  props: ['activeStep']
+  props: ['activeStep', 'progressBarWidth']
 }
 </script>
 
 <style scoped>
+/* 原始狀態 start */
 .base-bar{
   height: 2px;
   background-color: #fff;
@@ -37,7 +38,6 @@ export default {
   color: var(--bs-secondary);
   font-size: 0.875rem;
 }
-
 .step-2::before{
   content: '2';
 }
@@ -47,7 +47,9 @@ export default {
 .step-4::before{
   content: '4';
 }
+/* 原始狀態 end */
 
+/* active step 漸層圓圈 */
 .step-1::before,
 .step-progress .active::before{
   background-color: transparent;
@@ -56,6 +58,7 @@ export default {
   color: var(--bs-dark-1);
 }
 
+/* active step 2 ~ 4 漸層線段 */
 .step-progress .active::after{
   content: '';
   display: block;

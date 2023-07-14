@@ -1,6 +1,6 @@
 <template>
   <!-- title -->
-  <h1 class="fs-4 fs-xxl-3 mb-0 mb-md-5">
+  <h1 class="fs-4 fs-xxl-3 mb-3 mb-md-5">
     <span class="material-symbols-outlined align-bottom me-1">shopping_cart</span>購物車
   </h1>
   <div class="row">
@@ -9,9 +9,11 @@
       <div v-if="carts.length === 0" class="px-4 py-8 bg-white bg-opacity-75">
         <span class="material-symbols-outlined fs-d4 d-block text-center mb-3">production_quantity_limits</span>
         <p class="text-center">- 購物車是空的 -</p>
-        <RouterLink to="/products" class="btn btn-primary py-2 w-25 d-block mx-auto">回去探索課程</RouterLink>
+        <RouterLink to="/products" class="btn btn-primary py-2 w-75 w-sm-50 w-lg-25 d-block mx-auto">回去探索課程</RouterLink>
       </div>
+      <!-- cart list -->
       <div v-else>
+        <!-- cart list header -->
         <div class="row text-dark-3 d-none d-md-flex">
           <div class="col-6">
             <p class="mb-0">課程名稱</p>
@@ -27,6 +29,7 @@
           </div>
         </div>
         <hr class="my-3">
+        <!-- cart list body -->
         <ul class="list-unstyled">
           <li v-for="cart in carts" :key="cart.id">
             <div class="row gy-3">
@@ -57,6 +60,7 @@
             <hr>
           </li>
         </ul>
+        <!-- cart list footer -->
         <div class="d-flex justify-content-between">
           <RouterLink to="/products" class="btn btn-sm btn-outline-secondary">
             <span class="material-symbols-outlined align-bottom fs-6">chevron_left</span>
@@ -136,6 +140,12 @@ export default {
         alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`)
       })
     },
+  },
+  beforeRouteLeave(to, from){
+    if(to.fullPath === "/checkout/order" && this.carts.length === 0){
+      alert('請先在購物車加入商品！')
+      return false
+    }
   },
   mounted(){
     this.$emit('updateStep', 1)

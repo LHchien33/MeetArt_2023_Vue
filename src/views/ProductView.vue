@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-beige">
-    <main class="page-padding-top min-vh-100">
+  <div class="bg-beige flex-grow-1">
+    <main class="page-padding-top">
       <div class="container py-8">
         <!-- breadcrumb -->
         <ol class="breadcrumb mb-3">
@@ -61,17 +61,17 @@
               <ul class="py-3 px-8 nav">
                 <li class="nav-item">
                   <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'brief'}" @click="currentTab = 'brief'">課程簡介
-                    <span :class="{' gradient-line-8': currentTab === 'brief'}" class="gradient-line d-block mt-n2"></span>
+                    <span :class="{'w-0': currentTab !== 'brief'}" class="gradient-line gradient-line-8 d-block mt-n2"></span>
                   </button>
                 </li>
                 <li class="nav-item">
                   <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'outlines'}" @click="currentTab = 'outlines'">課程章節
-                    <span :class="{' gradient-line-8': currentTab === 'outlines'}" class="gradient-line d-block mt-n2"></span>
+                    <span :class="{'w-0': currentTab !== 'outlines'}" class="gradient-line gradient-line-8 d-block mt-n2"></span>
                   </button>
                 </li>
                 <li class="nav-item">
                   <button type="button" class="btn btn-link text-decoration-none tab-color" :class="{'text-dark-1': currentTab === 'QA'}" @click="currentTab = 'QA'">常見問題
-                    <span :class="{' gradient-line-8': currentTab === 'QA'}" class="gradient-line d-block mt-n2"></span>
+                    <span :class="{'w-0': currentTab !== 'QA'}" class="gradient-line gradient-line-8 d-block mt-n2"></span>
                   </button>
                 </li>
               </ul>
@@ -144,7 +144,7 @@
             <!-- 992px 以下版面 start -->
             <div class="bg-white p-3 sticky-bottom d-lg-none border-top mb-8">
               <div class="row g-2 align-items-center">
-                <div class="col flex-grow-0">
+                <div class="col-12 col-sm flex-grow-0">
                   <p class="text-accent fw-semibold text-nowrap mb-0">NT$ {{ numToPriceString(product.price) }}</p>
                 </div>
                 <div class="col">
