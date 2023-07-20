@@ -29,6 +29,24 @@ defineRule('email', email);
 defineRule('url', url);
 defineRule('min_value', min_value);
 defineRule('regex', regex);
+defineRule('phoneNumber', (value) => {
+  const format = /^(?!.*--)[0-9\-]+$/;
+  if(!format.test(value)){
+    return '僅接受數字及不連續的連字號（-）';
+  }
+  
+  const number = value.split('').filter(num => num !== '-')
+  if(number.length < 9 || 10 < number.length){
+    return '號碼長度需介於 9 ~ 10 碼';
+  }
+
+  const startNum = /^(0)[2-9]{1}/;
+  if(!startNum.test(value)){
+    return  '請確認號碼開頭介於 02 ~ 09';
+  }
+
+  return true
+});
 
 const app = createApp(App);
 

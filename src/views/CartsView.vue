@@ -77,7 +77,8 @@
           <div class="p-4 bg-white bg-opacity-75 mb-3">
             <label for="coupon" class="w-100 border-0 bg-transparent text-start px-0 pb-3 text-dark-3">使用折扣代碼</label>
             <input v-if="!couponInfo.code" v-model="couponInput" type="text" id="coupon" class="form-control mb-2" placeholder="請輸入折扣代碼">
-            <div v-if="couponInfo.code" class="badge text-secondary border border-secondary">折扣碼：{{ couponInfo.code }}</div>
+            <div v-if="couponInfo.code" class="badge text-secondary border border-secondary">
+              <span>{{ couponInfo.title }}</span>：{{ couponInfo.code }}</div>
             <div v-if="!couponInfo.code" class="d-flex justify-content-end text-nowrap">
               <button type="button" @click="couponInput = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
               <button type="button" @click="useCoupon(couponInput)" class="btn btn-sm btn-primary">使用</button>
@@ -94,7 +95,7 @@
               <p class="mb-0">NT$ {{ total }}</p>
             </div>
             <div v-if="couponInfo.code" class="d-flex justify-content-between text-secondary mt-4">
-              <p class="mb-0 me-2">折扣碼</p>
+              <p class="mb-0 me-2">{{ couponInfo.title }}</p>
               <p class="mb-0">- NT$ {{ total - Math.round(final_total) }}</p>
             </div>
             <div class="gradient-line gradient-line-2 py-4"></div>

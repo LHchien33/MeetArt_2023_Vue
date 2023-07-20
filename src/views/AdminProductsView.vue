@@ -70,8 +70,7 @@
             <td class="text-start text-nowrap text-md-wrap">{{ prod.title }}</td>
             <td>{{ numToPriceString(prod.origin_price) }}</td>
             <td>{{ numToPriceString(prod.price) }}</td>
-            <td
-                :class="prod.is_enabled ? 'text-accent' : 'text-secondary' ">{{ prod.is_enabled ? '是' : '否' }}</td>
+            <td :class="prod.is_enabled ? 'text-accent' : 'text-muted' ">{{ prod.is_enabled ? '是' : '否' }}</td>
             <td>
               <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap" data-bs-toggle="modal"     
                       data-bs-target="#infoModal" @click="updateTempProd(prod)">查看</button>

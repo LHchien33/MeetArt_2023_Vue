@@ -133,7 +133,7 @@
                 <span class="text-danger"> *</span>
                 <ErrorMessage name="link" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField type="text" rules="required|url" name="link" id="link" class="form-control" placeholder="請提供可瀏覽/下載檔案的連結"
+              <VField type="text" :rules="{ required: true, url: '^https?://.+' }" name="link" id="link" class="form-control" placeholder="請提供可瀏覽/下載檔案的連結"
                       :class="{ 'is-invalid': errors.link }"></VField>
             </div>
             <!-- 簡述問題 -->
@@ -193,7 +193,7 @@
                 <p class="mb-0">NT$ {{ total }}</p>
               </div>
               <div v-if="couponInfo.code" class="d-flex justify-content-between text-secondary mt-4">
-                <p class="mb-0 me-2">折扣碼</p>
+                <p class="mb-0 me-2">{{ couponInfo.title }}</p>
                 <p class="mb-0">- NT$ {{ total - Math.round(final_total) }}</p>
               </div>
               <div class="gradient-line gradient-line-2 py-4"></div>
@@ -233,25 +233,6 @@ configure({
       problem: '簡述問題'
     }
   })
-});
-
-defineRule('phoneNumber', (value) => {
-  const format = /^(?!.*--)[0-9\-]+$/;
-  if(!format.test(value)){
-    return '僅接受數字及不連續的連字號（-）';
-  }
-  
-  const number = value.split('').filter(num => num !== '-')
-  if(number.length < 9 || 10 < number.length){
-    return '號碼長度需介於 9 ~ 10 碼';
-  }
-
-  const startNum = /^(0)[2-9]{1}/;
-  if(!startNum.test(value)){
-    return  '請確認號碼開頭介於 02 ~ 09';
-  }
-
-  return true
 });
 
 defineRule('wordLimit',(value, [max]) => {
@@ -316,7 +297,8 @@ export default {
             "payMethod": val.payMethod,
             "link": val.link,
             "problem": val.problem,
-            "background": {...val.background}
+            "background": {...val.background},
+            "order_completed": val.applyType ? false : undefined
           },
         }
       }

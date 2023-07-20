@@ -29,7 +29,7 @@
             <td>{{ coupon.code }}</td>
             <td class="text-center">{{ coupon.percent }}%</td>
             <td class="text-center">{{ dateConverter(coupon.due_date * 1000, 'whole') }}</td>
-            <td class="text-center" :class="coupon.is_enabled ? 'text-accent' : 'text-secondary' ">{{ coupon.is_enabled ? '是' : '否' }}</td>
+            <td class="text-center" :class="coupon.is_enabled ? 'text-accent' : 'text-muted' ">{{ coupon.is_enabled ? '是' : '否' }}</td>
             <td class="text-center">
               <button type="button" class="btn p-0 bg-gradient border-0 m-1"
                       @click="editCoupon(coupon)">
@@ -43,7 +43,7 @@
       </table>
     </div>
   </div>
-  <InfoModal ref="InfoModal" id="infoModal">
+  <InfoModal ref="InfoModal">
     <template #modal-title>{{ tempData.id ? '編輯' : '新增' }}優惠券</template>
     <template #modal-content>
       <AdminCouponModal ref="couponModal" :tempData="{...tempData}"></AdminCouponModal>
