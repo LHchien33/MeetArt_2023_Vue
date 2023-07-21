@@ -226,4 +226,10 @@ export default {
 .hover-bg-transparent:active {
   --bs-bg-opacity: 0;
 }
+
+.hover-bg-light-2:hover,
+.hover-bg-light-2:active {
+  color: #1a1a1a !important;
+  background: rgba(100,100,100, 0.1);
+}
 </style>

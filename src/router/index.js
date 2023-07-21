@@ -78,6 +78,9 @@ const router = createRouter({
           path: 'orders',
           name: '後台訂單管理',
           component: () => import('../views/AdminOrdersView.vue'),
+          props: (route) => ({
+            query: route.query
+          })
         },
         {
           path: 'products',

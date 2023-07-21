@@ -85,9 +85,9 @@
         </tbody>
       </table>
     </div>
+    <!-- 分頁導覽 -->
+    <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/orders'}" class="w-fit-content mx-auto"></Pagination>
   </div>
-  <!-- 分頁導覽 -->
-  <!-- <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/products'}" class="w-fit-content mx-auto"></Pagination> -->
   <!-- 訂單詳情 Modal -->
   <InfoModal ref="infoModal">
     <template #modal-title>{{ editing ? '編輯訂單' : '訂單詳情' }}</template>
@@ -119,6 +119,7 @@ import Pagination from '@/components/Pagination.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
+  props: ['query'],
   components: {
     InfoModal,
     ConfirmModal,
@@ -135,7 +136,16 @@ export default {
         itemName: '',
         title: '刪除訂單',
         confirmBtnText: '確定刪除'
-      }
+      },
+      pagination: {}
+    }
+  },
+  watch: {
+    'query.page'(newVal, oldVal){
+      if(newVal === '1' && oldVal === undefined)
+      return
+
+      this.getOrders(newVal);
     }
   },
   methods: {
@@ -148,10 +158,11 @@ export default {
         alert('複製失敗')
       });
     },
-    getOrders(){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/orders`;
+    getOrders(page=1){
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/orders?page=${page}`;
       this.$http.get(url).then(res => {
         this.orders = res.data.orders;
+        this.pagination = res.data.pagination;
       })
       .catch(err => {
         alert(`無法取得訂單，錯誤代碼：${err.response.status}`)
@@ -214,15 +225,7 @@ export default {
     }
   },
   mounted(){
-    this.getOrders();
+    this.getOrders(this.query.page);
   }
 }
 </script>
-
-<style scoped>
-.hover-bg-light-2:hover,
-.hover-bg-light-2:active {
-  color: #1a1a1a !important;
-  background: rgba(100,100,100, 0.1);
-}
-</style>
