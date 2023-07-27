@@ -7,7 +7,9 @@
       <div v-if="tempProduct.id" class="bg-beige gradient-border gradient-border-3 p-6 mb-3 text-secondary">
         <div class="row position-relative" style="z-index: 2;">
           <div class="col">
-            <p class="mb-0 text-nowrap">課程編號： {{ tempProduct.id }}</p>
+            <p class="mb-0 text-nowrap">課程編號：
+              <span class="user-select-all">{{ tempProduct.id }}</span>
+            </p>
           </div>
           <div class="col">
             <p class="mb-0 text-nowrap">已售出： {{ tempProduct.classmates }}</p>
@@ -15,7 +17,7 @@
         </div>
       </div>
       <!-- 表單 -->
-      <VForm ref="VForm" v-slot="{ errors, meta, setFieldTouched }" @submit="onSubmit" :initial-values="tempProduct"  @invalid-submit="onInvalidSubmit">
+      <VForm ref="VForm" v-slot="{ errors, meta, setFieldTouched }" @submit="onSubmit" :initial-values="tempProduct"  @invalid-submit="scrollErrorIntoView">
         <div class="accordion accordion-flush">
           <!-- 課程基本資訊 -->
           <div class="accordion-item mb-3">
@@ -27,8 +29,8 @@
             <div id="prodData_basic" class="accordion-collapse collapse show" aria-labelledby="prodData_basic_heading">
               <div class="accordion-body p-6">
                 <div class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <label for="title" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="d-sm-flex align-items-center">
+                    <label for="title" class="form-label mb-sm-0 me-2 text-nowrap">
                       <span class="text-danger">* </span>課程標題：
                     </label>
                     <VField type="text" rules="required" name="title" id="title" class="form-control d-inline-block flex-grow-1"
@@ -37,46 +39,45 @@
                   <ErrorMessage name="title" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                 </div>
                 <div class="mb-4">
-                  <div class="d-flex align-items-center">
-                    <label for="imageUrl" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="d-sm-flex flex-wrap align-items-center position-relative">
+                    <label for="imageUrl" class="form-label mb-sm-0 me-2 text-nowrap">
                       <span class="text-danger">* </span>主要圖片：
                     </label>
                     <!-- 新增圖片按鈕 -->
-                    <label v-if="!previewImgUrl && !uploadedImgUrl" for="imageUrl" class="btn btn-secondary">新增圖片
+                    <label v-if="!previewImgUrl && !uploadedImgUrl" for="imageUrl" class="btn btn-secondary text-nowrap">新增圖片
                       <input type="file" id="imageUrl" class="visually-hidden" @change="previewImg($event)">
                     </label>
-                    <div>
-                      <!-- 預覽區 -->
-                      <div v-if="previewImgUrl || uploadedImgUrl " style="width: 240px; height: 160px;"
-                            class="position-relative border border-3 border-dashed overflow-hidden hover-animation"
-                            :class="{'touched': imgOptionsShow}" @touchstart.stop="imgOptionsShow = !imgOptionsShow">
-                        <img :src="previewImgUrl || uploadedImgUrl " alt="預覽圖片" class="w-100 h-100 object-fit-contain">
-                        <span class="badge text-secondary bg-light border border-1 border-secondary position-absolute top-0 start-0 m-3">
-                          {{ uploadedImgUrl ? '已上傳' : '上傳預覽' }}
-                        </span>
-                        <!-- 圖片操作選項 -->
-                        <div class="position-absolute top-100 w-100 p-2 bg-light bg-opacity-75 d-flex justify-content-around transition-transform-3 translate-y-n100">
-                          <button type="button" class="btn btn-sm btn-danger"
-                                  @click.prevent="removeImg()"
-                                  @touchstart.prevent="removeImg()">移除圖片</button>
-                          <button v-if="!uploadedImgUrl" type="button" class="btn btn-sm btn-primary"
-                                  @click.prevent="uploadImg()"
-                                  @touchstart.prevent="uploadImg()">上傳圖片</button>
-                        </div>
-                        <!-- 上傳圖片 spinner -->
-                        <div v-if="imgUploading" class="position-absolute top-0 w-100 h-100 bg-dark-1 bg-opacity-50 spinner"></div>
+                    <!-- 預覽區 -->
+                    <div v-if="previewImgUrl || uploadedImgUrl " style="width: 240px; height: 160px;"
+                          class="position-relative border border-3 border-dashed overflow-hidden hover-animation"
+                          :class="{'touched': imgOptionsShow}" @touchstart.stop="imgOptionsShow = !imgOptionsShow">
+                      <img :src="previewImgUrl || uploadedImgUrl " alt="預覽圖片" class="w-100 h-100 object-fit-contain">
+                      <span class="badge text-secondary bg-light border border-1 border-secondary position-absolute top-0 start-0 m-3">
+                        {{ uploadedImgUrl ? '已上傳' : '上傳預覽' }}
+                      </span>
+                      <!-- 圖片操作選項 -->
+                      <div class="position-absolute top-100 w-100 p-2 bg-light bg-opacity-75 d-flex justify-content-around transition-transform-3 translate-y-n100">
+                        <button type="button" class="btn btn-sm btn-danger"
+                                @click.prevent="removeImg()"
+                                @touchstart.prevent="removeImg()">移除圖片</button>
+                        <button v-if="!uploadedImgUrl" type="button" class="btn btn-sm btn-primary"
+                                @click.prevent="uploadImg()"
+                                @touchstart.prevent="uploadImg()">上傳圖片</button>
                       </div>
-                      <!-- 驗證/存回傳 url -->
-                      <VField ref="imageUrl" type="text" rules="required" name="imageUrl" class="d-none"></VField>
+                      <!-- 上傳圖片 spinner -->
+                      <div v-if="imgUploading" class="position-absolute top-0 w-100 h-100 bg-dark-1 bg-opacity-50 spinner"></div>
                     </div>
+                    <!-- 驗證/存回傳 url -->
+                    <VField ref="imageUrl" type="text" rules="required" name="imageUrl"
+                            class="invisible position-absolute start-0"></VField>
                   </div>
                   <ErrorMessage name="imageUrl" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                 </div>
                 <div>
-                  <div class="row gy-4">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <label for="category" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="row row-cols-1 row-cols-md-2 gy-4">
+                    <div class="col">
+                      <div class="d-sm-flex align-items-center">
+                        <label for="category" class="form-label mb-sm-0 me-2 text-nowrap">
                           <span class="text-danger">* </span>繪畫媒材：
                         </label>
                         <VField as="select" rules="required" name="category" id="category" class="form-select"
@@ -88,9 +89,9 @@
                       <ErrorMessage name="category" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                     </div>
                     <template v-for="(value, key) in catagories" :key="key">
-                      <div v-if="key !== 'category'" class="col-6">
-                        <div class="d-flex align-items-center">
-                          <label :for="key" class="form-label mb-0 me-2 text-nowrap ms-11px">繪畫{{ value.name }}：</label>
+                      <div v-if="key !== 'category'" class="col">
+                        <div class="d-sm-flex align-items-center">
+                          <label :for="key" class="form-label mb-sm-0 me-2 text-nowrap ms-11px">繪畫{{ value.name }}：</label>
                           <VField as="select" :name="key" :id="key" class="form-select">
                             <option value="" selected class="text-light-2">請選擇繪畫{{ value.name }}</option>
                             <option v-for="item in value.sub" :value="item">{{ item }}</option>
@@ -106,16 +107,16 @@
           <!-- 銷售資訊 -->
           <div class="accordion-item mb-3">
             <h2 class="accordion-header" id="prodData_sell_heading">
-              <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_sell" aria-expanded="false" aria-controls="prodData_sell">
+              <button class="accordion-button fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_sell" aria-expanded="false" aria-controls="prodData_sell">
                 銷售資訊
               </button>
             </h2>
-            <div id="prodData_sell" class="accordion-collapse collapse" aria-labelledby="prodData_sell_heading">
+            <div id="prodData_sell" class="accordion-collapse collapse show" aria-labelledby="prodData_sell_heading">
               <div class="accordion-body p-6">
-                <div class="row gy-4">
-                  <div class="col-6">
-                    <div class="d-flex align-items-center">
-                      <label for="origin_price" class="form-label mb-0 me-2 text-nowrap">
+                <div class="row row-cols-1 row-cols-md-2 gy-4">
+                  <div class="col">
+                    <div class="d-sm-flex align-items-center">
+                      <label for="origin_price" class="form-label mb-sm-0 me-2 text-nowrap">
                         <span class="text-danger">* </span>原價：
                       </label>
                       <VField rules="required|min_value:0" type="number" name="origin_price" id="origin_price"
@@ -124,9 +125,9 @@
                     </div>
                     <ErrorMessage name="origin_price" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                   </div>
-                  <div class="col-6">
-                    <div class="d-flex align-items-center">
-                      <label for="unit" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="col order-2 order-md-1">
+                    <div class="d-sm-flex align-items-center">
+                      <label for="unit" class="form-label mb-sm-0 me-2 text-nowrap">
                         <span class="text-danger">* </span>單位：
                       </label>
                       <VField type="text" rules="required" name="unit" id="unit"
@@ -135,9 +136,9 @@
                     </div>
                     <ErrorMessage name="unit" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                   </div>
-                  <div class="col-6">
-                    <div class="d-flex align-items-center">
-                      <label for="price" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="col order-1 order-md-2">
+                    <div class="d-sm-flex align-items-center">
+                      <label for="price" class="form-label mb-sm-0 me-2 text-nowrap">
                         <span class="text-danger">* </span>售價：
                       </label>
                       <VField type="number" rules="required|min_value:0" name="price" id="price"
@@ -146,9 +147,9 @@
                     </div>
                     <ErrorMessage name="price" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                   </div>
-                  <div class="col-6">
-                    <div class="d-flex align-items-center">
-                      <label for="is_enabled" class="form-label mb-0 me-2 text-nowrap ms-11px">上架：</label>
+                  <div class="col order-3">
+                    <div class="d-sm-flex align-items-center">
+                      <label for="is_enabled" class="form-label mb-sm-0 me-2 text-nowrap ms-11px">上架：</label>
                       <VField as="select" name="is_enabled" id="is_enabled" class="form-select">
                         <option value="1">是</option>
                         <option value="0" selected>否</option>
@@ -162,16 +163,16 @@
           <!-- 授課老師資料 -->
           <div class="accordion-item mb-3">
             <h2 class="accordion-header" id="prodData_teacher_heading">
-              <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_teacher" aria-expanded="false" aria-controls="prodData_teacher">
+              <button class="accordion-button fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_teacher" aria-expanded="false" aria-controls="prodData_teacher">
                 授課老師資料
               </button>
             </h2>
-            <div id="prodData_teacher" class="accordion-collapse collapse" aria-labelledby="prodData_teacher_heading">
+            <div id="prodData_teacher" class="accordion-collapse collapse show" aria-labelledby="prodData_teacher_heading">
               <div class="accordion-body p-6">
                 <div class="row mb-4">
-                  <div class="col-6">
-                    <div class="d-flex align-items-center">
-                      <label for="name" class="form-label mb-0 me-2 text-nowrap">
+                  <div class="col-md-6">
+                    <div class="d-sm-flex align-items-center">
+                      <label for="name" class="form-label mb-sm-0 me-2 text-nowrap">
                         <span class="text-danger">* </span>老師名字：
                       </label>
                       <VField type="text" rules="required" name="teacher.name" id="name"
@@ -181,8 +182,8 @@
                     <ErrorMessage name="teacher.name" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                   </div>
                 </div>
-                <div class="d-flex">
-                  <label for="brief" class="form-label mb-0 me-2 text-nowrap">
+                <div class="d-sm-flex">
+                  <label for="brief" class="form-label mb-sm-0 me-2 text-nowrap">
                     <span class="text-danger">* </span>老師簡介：
                   </label>
                   <VField as="textarea" rules="required" name="teacher.brief" id="brief" class="form-control"
@@ -195,11 +196,11 @@
           <!-- 課程簡介 -->
           <div class="accordion-item mb-3">
             <h2 class="accordion-header" id="prodData_intro_heading">
-              <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_intro" aria-expanded="false" aria-controls="prodData_intro">
+              <button class="accordion-button fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_intro" aria-expanded="false" aria-controls="prodData_intro">
                 課程簡介
               </button>
             </h2>
-            <div id="prodData_intro" class="accordion-collapse collapse" aria-labelledby="prodData_intro_heading">
+            <div id="prodData_intro" class="accordion-collapse collapse show" aria-labelledby="prodData_intro_heading">
               <div class="accordion-body p-6">
                 <div class="mb-5">
                   <label for="willLearn" class="form-label me-2 text-nowrap d-block"
@@ -208,8 +209,8 @@
                   </label>
                   <ErrorMessage name="intro.willLearn" class="invalid-feedback d-block ms-11px mb-2"></ErrorMessage>
                   <VField as="textarea" rules="required" name="intro.willLearn" id="willLearn" class="form-control d-none"
-                          v-model="editorWillLearnData"></VField>
-                  <ckeditor :editor="editorWillLearn" v-model="editorWillLearnData" :config="editorConfig"
+                          v-model="editorData.willLearn"></VField>
+                  <ckeditor :editor="editorWillLearn" v-model="editorData.willLearn" :config="editorConfig"
                             @blur.once="setFieldTouched('intro.willLearn', true)"></ckeditor>
                 </div>
                 <div>
@@ -219,8 +220,8 @@
                   </label>
                   <ErrorMessage name="intro.preparation" class="invalid-feedback d-block ms-11px mb-2"></ErrorMessage>
                   <VField as="textarea" rules="required" name="intro.preparation" id="preparation" class="form-control d-none"
-                          v-model="editorPreparationData"></VField>
-                  <ckeditor :editor="editorPreparation" v-model="editorPreparationData" :config="editorConfig"
+                          v-model="editorData.preparation"></VField>
+                  <ckeditor :editor="editorPreparation" v-model="editorData.preparation" :config="editorConfig"
                             @blur.once="setFieldTouched('intro.preparation', true)"></ckeditor>
                 </div>
               </div>
@@ -229,16 +230,16 @@
           <!-- 課程大綱 -->
           <div class="accordion-item mb-3 border-bottom">
             <h2 class="accordion-header" id="prodData_outline_heading">
-              <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_outline" aria-expanded="false" aria-controls="prodData_outline">
+              <button class="accordion-button fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#prodData_outline" aria-expanded="false" aria-controls="prodData_outline">
                 課程大綱
               </button>
             </h2>
-            <div id="prodData_outline" class="accordion-collapse collapse" aria-labelledby="prodData_outline_heading">
+            <div id="prodData_outline" class="accordion-collapse collapse show" aria-labelledby="prodData_outline_heading">
               <div class="accordion-body p-6">
                 <VFieldArray name="outlines" v-slot="{ fields, push, remove }">
                   <template v-for="(entry, idx) in fields" :key="entry.key">
                     <div class="row gy-4 mb-4">
-                      <div class="col-6">
+                      <div class="col-md-6">
                         <div class="mb-4">
                           <label :for="`outlines[${idx}].title`" class="form-label me-2 text-nowrap d-block">
                             <span class="text-danger">* </span>章節標題：
@@ -248,8 +249,8 @@
                                   label="章節標題" :class="{ 'is-invalid': errors[`outlines[${idx}].title`] }"></VField>
                           <ErrorMessage :name="`outlines[${idx}].title`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                         </div>
-                        <div class="row">
-                          <div class="col-6">
+                        <div class="row gx-3 gy-4">
+                          <div class="col-sm-6">
                             <label :for="`outlines[${idx}].lectures`" class="form-label me-2 text-nowrap d-block">
                               <span class="text-danger">* </span>單元數：
                             </label>
@@ -259,7 +260,7 @@
                                     label="單元數"></VField>
                             <ErrorMessage :name="`outlines[${idx}].lectures`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                           </div>
-                          <div class="col-6">
+                          <div class="col-sm-6">
                             <label :for="`outlines[${idx}].minutes`" class="form-label me-2 text-nowrap d-block">
                               <span class="text-danger">* </span>總時長（分鐘）：
                             </label>
@@ -271,14 +272,16 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-6">
+                      <div class="col-md-6">
                         <div class="d-flex flex-column h-100">
                           <label :for="`outlines[${idx}].brief`" class="form-label me-2 text-nowrap">
-                            <span class="text-danger">* </span>章節概述：
+                            <span class="text-danger">*</span>
+                            章節概述<small class="text-muted">（限中英文 50 字，含標點）</small>：
                           </label>
                           <VField as="textarea" class="form-control flex-grow-1" placeholder="請輸入關於此章節的內容概述"
-                                  rules="required" :name="`outlines[${idx}].brief`" :id="`outlines[${idx}].brief`"
-                                  label="章節概述" :class="{ 'is-invalid': errors[`outlines[${idx}].brief`] }"></VField>
+                                  rules="required|wordLimit:50,章節概述" :name="`outlines[${idx}].brief`" :id="`outlines[${idx}].brief`"
+                                  label="章節概述" :class="{ 'is-invalid': errors[`outlines[${idx}].brief`] }"
+                                  style="min-height: 4rem;"></VField>
                           <ErrorMessage :name="`outlines[${idx}].brief`" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                         </div>
                       </div>
@@ -300,19 +303,18 @@
           <button type="submit" class="btn btn-primary">確認{{ updateId === 'new' ? '新增' : '編輯' }}</button>
         </div>
         <!-- 離開頁面確認 modal -->
-        <ConfirmModal ref="ConfirmModal" v-bind="modalContent">
+        <ConfirmModal ref="ConfirmModal" v-bind="{cancelBtnText: '繼續編輯',confirmBtnText: '捨棄'}">
           <template #modal-content>
             <p class="mb-0">尚未儲存，<span class="text-danger">捨棄變更</span>嗎？</p>
           </template>
         </ConfirmModal>
       </VForm>
     </div>
-
   </div>
 </template>
 
 <script>
-import { mapWritableState, mapState } from 'pinia';
+import { mapWritableState, mapState, mapActions } from 'pinia';
 import { useAdminProdStore } from '@/stores/adminProducts';
 import { useCommonStore } from '@/stores/common';
 import { FieldArray, Field, Form, ErrorMessage, configure } from 'vee-validate';
@@ -371,18 +373,16 @@ export default {
       imgOptionsShow: false,
       editorWillLearn: ClassicEditor,
       editorPreparation: ClassicEditor,
-      editorWillLearnData: '',
-      editorPreparationData: '',
+      editorData: {
+        willLearn: '',
+        preparation: ''
+      },
       editorConfig: {
         toolbar: [
           'heading', '|',
           'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
           'undo', 'redo'
         ]
-      },
-      modalContent: {
-        cancelBtnText: '繼續編輯',
-        confirmBtnText: '捨棄'
       },
       discardEdit: false,
       productSaved: false,
@@ -393,14 +393,15 @@ export default {
     ...mapState(useCommonStore, ['catagories']),
   },
   methods: {
+    ...mapActions(useCommonStore, ['scrollErrorIntoView']),
     setInitialVal(){
       if(this.updateId === 'new'){
         this.tempProduct.unit = '門';
         this.tempProduct.is_enabled = 0;
         this.tempProduct.outlines = [{title: '', minutes: null, lectures: null, brief: ''}];
       } else {
-        this.editorWillLearnData = this.tempProduct.intro?.willLearn;
-        this.editorPreparationData = this.tempProduct.intro?.preparation;
+        this.editorData.willLearn = this.tempProduct.intro?.willLearn;
+        this.editorData.preparation = this.tempProduct.intro?.preparation;
         this.uploadedImgUrl = this.tempProduct.imageUrl;
       }
     },
@@ -456,15 +457,6 @@ export default {
         return acc;
       }, { outlines: val.outlines.length, minutes: 0, lectures: 0, });
       return val
-    },
-    onInvalidSubmit({ values, errors}){
-      const firstError = Object.keys(errors)[0];
-      const targetElement = document.getElementsByName(firstError)[0];
-      targetElement.scrollIntoView({
-        block: "center",
-        behavior: "smooth"
-      })
-      setTimeout(() => alert(`${errors[firstError]}`), 500);
     },
     onSubmit(values){
       const requestData = this.valueProcessing(values);

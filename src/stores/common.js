@@ -40,6 +40,23 @@ export const useCommonStore = defineStore('common', {
       return format === 'whole' ?
                         `${y}/${m}/${d} ${hr}:${min}:${sec}` :
                         `${y}/${m}/${d}`;
-    }
+    },
+    scrollErrorIntoView({ values, errors}){
+      const firstError = Object.keys(errors)[0];
+      const targetElement = document.getElementsByName(firstError)[0];
+      targetElement.scrollIntoView({
+        block: "center",
+        behavior: "smooth"
+      })
+      setTimeout(() => alert(`${errors[firstError]}`), 500);
+    },
+    async copyText(text){
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('已複製到剪貼簿');
+      } catch (error) {
+        alert('複製失敗')
+      }
+    },
   }
 })

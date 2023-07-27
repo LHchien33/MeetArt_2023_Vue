@@ -54,10 +54,10 @@
         </thead>
         <tbody>
           <tr v-for="order in orders" :key="order.id">
-            <th class="fw-normal" style="word-break: break-all;">{{ order.id }}</th>
+            <th class="fw-normal user-select-all" style="word-break: break-all;">{{ order.id }}</th>
             <td style="word-break: break-all;">{{ dateConverter(order.create_at*1000) }}</td>
-            <td class="text-nowrap">{{ order.user?.name }}</td>
-            <td style="word-break: break-all;">{{ order.user?.email }}</td>
+            <td class="text-nowrap user-select-all">{{ order.user?.name }}</td>
+            <td class="user-select-all" style="word-break: break-all;">{{ order.user?.email }}</td>
             <td class="text-center">
               <span :class="order.is_paid ? 'text-muted' : 'text-accent'">
                 {{ order.is_paid ? '已付款' : '未付款' }}
@@ -92,8 +92,8 @@
   <InfoModal ref="infoModal">
     <template #modal-title>{{ editing ? '編輯訂單' : '訂單詳情' }}</template>
     <template #modal-content>
-      <AdminOrderEditModal ref="orderEditModal" v-if="editing" :tempData="tempData" @copyOrderId="copyOrderId"></AdminOrderEditModal>
-      <AdminOrderInfoModal v-else :tempData="tempData" @copyOrderId="copyOrderId"></AdminOrderInfoModal>
+      <AdminOrderEditModal ref="orderEditModal" v-if="editing" :tempData="tempData" @copyOrderId="copyText"></AdminOrderEditModal>
+      <AdminOrderInfoModal v-else :tempData="tempData" @copyOrderId="copyText"></AdminOrderInfoModal>
     </template>
     <template #confirm-btn="{ hideModal }">
       <button v-if="editing" @click="updateOrder(tempData.id)" class="btn btn-primary">確定編輯</button>
@@ -142,22 +142,14 @@ export default {
   },
   watch: {
     'query.page'(newVal, oldVal){
-      if(newVal === '1' && oldVal === undefined)
-      return
-
+      if(newVal === '1' && oldVal === undefined){
+        return
+      }
       this.getOrders(newVal);
     }
   },
   methods: {
-    ...mapActions(useCommonStore, ['dateConverter']),
-    copyOrderId(orderId){
-      navigator.clipboard.writeText(orderId).then(() => {
-        alert('已複製到剪貼簿');
-      })
-      .catch((err) => {
-        alert('複製失敗')
-      });
-    },
+    ...mapActions(useCommonStore, ['dateConverter', 'scrollErrorIntoView', 'copyText']),
     getOrders(page=1){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/orders?page=${page}`;
       this.$http.get(url).then(res => {
@@ -181,7 +173,6 @@ export default {
           // 整理資料
           values.is_paid = JSON.parse(values.is_paid);
           values.paid_date = values.is_paid ? Math.floor(Date.now() / 1000) : null ;
-
           if(values.user.order_completed){
             values.user.order_completed = JSON.parse(values.user.order_completed);
           }
@@ -189,18 +180,15 @@ export default {
           // 送出
           const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${orderId}`;
           this.$http.put(url, {data: {...values}}).then(res => {
-            alert(`已更新訂單`)
+            alert(`已更新訂單`);
             this.$refs.infoModal.hideModal();
-            this.getOrders()
+            this.getOrders();
           })
           .catch(err => {
-            alert(`無法更新訂單，錯誤代碼：${err.response.status}`)
+            alert(`無法更新訂單，錯誤代碼：${err.response.status}`);
           })
         } else {
-          const firstError = Object.keys(res.errors)[0];
-          const targetEl = document.getElementsByName(firstError)[0];
-          targetEl.scrollIntoView({block: "center", behavior: "smooth"})
-          setTimeout(() => alert(res.errors[firstError]), 500)
+          this.scrollErrorIntoView(res);
         }
       })
       .catch(err => {
@@ -209,18 +197,18 @@ export default {
     },
     deleteOrder(id){
       this.delModalContent.itemName = id;
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${id}`;
       let alertText = '';
 
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${id}`;
       this.$refs.ConfirmModal.openModal().then(res => {
-        return this.$http.delete(url)
+        return this.$http.delete(url);
       }).then(res => {
         alertText = '已刪除訂單';
         this.getOrders();
-      }).catch(err => {
-        alertText = err === false ? '已取消刪除' : `無法刪除訂單，錯誤代碼：${err.response.status}`;
+      }).catch(err => {  // 刪除請求失敗 or modal 取消刪除
+        alertText = err ? `無法刪除訂單，錯誤代碼：${err.response.status}` : '已取消刪除';
       }).finally(() => {
-        setTimeout(() => alert(alertText), 500)
+        setTimeout(() => alert(alertText), 500);
       })
     }
   },

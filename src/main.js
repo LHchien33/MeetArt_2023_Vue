@@ -47,6 +47,15 @@ defineRule('phoneNumber', (value) => {
 
   return true
 });
+defineRule('wordLimit',(value, [max, target]) => {
+  let totalCharCount = value.match(/(?:[a-zA-Z]+|\S)/g).length || 0;
+
+  if (totalCharCount > max) {
+    return `請精簡 ${target} 內容（目前約 ${totalCharCount} 個字）`
+  }
+  
+  return true
+});
 
 const app = createApp(App);
 

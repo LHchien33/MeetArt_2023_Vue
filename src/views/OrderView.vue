@@ -143,7 +143,7 @@
                 <span class="text-danger">*</span>
                 <ErrorMessage name="problem" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField as="textarea" rules="required|wordLimit:300" name="problem" :class="{ 'is-invalid': errors.problem }"
+              <VField as="textarea" rules="required|wordLimit:300,簡述問題" name="problem" :class="{ 'is-invalid': errors.problem }"
                       class="form-control invalid-icon-position" id="problem" style="height: 8rem;"
                       placeholder="例如：想針對作品的某部分請老師給予建議、學習卡關不知道怎麼進行下一步...等">
               </VField>
@@ -234,18 +234,6 @@ configure({
     }
   })
 });
-
-defineRule('wordLimit',(value, [max]) => {
-  let totalCharCount = value.match(/(?:[a-zA-Z]+|\S)/g).length || 0;
-
-  if (totalCharCount > max) {
-    return `請精簡內容（目前約 ${totalCharCount} 個字）`
-  }
-  
-  return true
-});
-
-
 
 export default {
   emits: ['updateStep'],

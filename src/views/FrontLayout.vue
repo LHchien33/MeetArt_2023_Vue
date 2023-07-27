@@ -160,6 +160,7 @@ export default {
   },
   methods: {
     ...mapActions(useCartsStore, ['getCarts']),
+    ...mapActions(useCommonStore, ['copyText']),
     scrollHandler: _throttle(function(){
       if (window.pageYOffset > 50){
         this.isOnTheTop = false
@@ -169,19 +170,10 @@ export default {
       }
     }, 300),
     copyCoupon(){
-      navigator.clipboard.writeText(this.coupon.code).then(() => {
-        alert('已複製到剪貼簿');
-        this.couponToastShow = false;
-      })
-      .catch((err) => {
-        alert('複製失敗')
-      });
+      this.copyText(this.coupon.code).then(() => this.couponToastShow = false);
     },
     backToTop(){
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   },
   mounted(){

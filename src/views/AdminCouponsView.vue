@@ -86,7 +86,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useCommonStore, ['dateConverter']),
+    ...mapActions(useCommonStore, ['dateConverter', 'scrollErrorIntoView']),
     getCoupons(){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/coupons`;
       this.$http.get(url).then(res => {
@@ -122,13 +122,7 @@ export default {
             alert(`無法更新優惠券，錯誤代碼：${err.response.status}`)
           })
         } else {
-          const firstError = Object.keys(res.errors)[0];
-          const targetEl = document.getElementsByName(firstError)[0];
-          targetEl.scrollIntoView({
-            block: "center",
-            behavior: "smooth"
-          })
-          setTimeout(() => alert(res.errors[firstError]), 500)
+          this.scrollErrorIntoView(res);
         }
       })
       .catch(err => {

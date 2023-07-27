@@ -18,7 +18,7 @@
             </div>
             <div class="col">
               <span class="me-1" style="word-break: break-all;">{{ orderId }}</span>
-              <button type="button" @click="copyOrderId" class="btn btn-sm btn-outline-secondary fs-8" id="orderIdCopyBtn">複製</button>
+              <button type="button" @click="copyText(orderId)" class="btn btn-sm btn-outline-secondary fs-8" id="orderIdCopyBtn">複製</button>
             </div>
           </li>
           <li class="mb-3">訂單日期： {{ dateConverter(orderData.create_at * 1000, 'whole') }}</li>
@@ -111,7 +111,7 @@
       </div>
     </div>
     <!-- 課外輔導需求 -->
-    <div class="mb-4">
+    <div v-if="user.applyType" class="mb-4">
       <h2 class="mb-0">
         <button class="accordion-button collapsed fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#tutor-accordion-body" aria-expanded="false" aria-controls="tutor-accordion-body">
           課外輔導需求
@@ -190,7 +190,7 @@ export default {
     ConfirmModal
   },
   methods: {
-    ...mapActions(useCommonStore, ['dateConverter']),
+    ...mapActions(useCommonStore, ['dateConverter', 'copyText']),
     getOrder(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/order/${id}`;
       this.$http.get(url).then(res => {
@@ -198,19 +198,11 @@ export default {
         const { products, user } = res.data.order;
         this.buyList = products;
         this.user = user;
-        this.couponInfo = Object.values(this.buyList)[0].coupon
+        this.couponInfo = Object.values(this.buyList)[0].coupon;
       })
       .catch(err => {
         alert(`無法取得訂單資料，錯誤代碼：${err.response.status}`)
       })
-    },
-    copyOrderId(){
-      navigator.clipboard.writeText(this.orderId).then(() => {
-        alert('已複製到剪貼簿');
-      })
-      .catch((err) => {
-        alert('複製失敗')
-      });
     },
     checkout(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/pay/${id}`;
