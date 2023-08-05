@@ -17,7 +17,10 @@
       <!-- page title -->
       <div class="bg-gradient mb-5">
         <div class="bg-beige bg-opacity-75 p-6 gradient-border gradient-border-2">
-          <template v-if="!query.index">
+          <template v-if="finalSearchPattern">
+            <h1 class="fs-2 fs-xxl-1 mx-1">"{{ finalSearchPattern }}" 相關的搜尋結果</h1>
+          </template>
+          <template v-else-if="!query.index">
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h1>
             <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
               <li class="col-auto" v-for="(value, key) in catagories" :key="value.name">
@@ -51,17 +54,17 @@
       <!-- sort button -->
       <div class="d-flex justify-content-end mb-2">
         <button type="button" class="border-0 bg-transparent px-4 py-1"
-                :class="sort_by === 'enabledTime' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
-                @click="sortProd('enabledTime')">最新上架</button>
+                :class="sortBy === 'enabledTime' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
+                @click="sortBy = 'enabledTime'">最新上架</button>
         <div class="py-1"><div class="vr align-bottom"></div></div>
         <button type="button" class="border-0 bg-transparent ps-4 py-1"
-                :class="sort_by === 'classmates' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
-                @click="sortProd('classmates')">最熱門</button>
+                :class="sortBy === 'classmates' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
+                @click="sortBy = 'classmates'">最熱門</button>
       </div>
       <!-- products list -->
-      <div v-show="filteredProd.length === 0" class="text-center">- 沒有符合此分類的課程 -</div>
+      <div v-if="sortedPd.length === 0" class="text-center">- 沒有符合此分類的課程 -</div>
       <div class="row row-cols-1 row-cols-lg-3 row-cols-xl-4 gy-5 mb-5">
-        <div class="col" v-for="prod in prodContainer" :key="prod.id">
+        <div class="col" v-for="prod in singlePagePd" :key="prod.id">
           <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column flex-sm-row flex-lg-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
             <div class="overflow-hidden prod-img-size">
               <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
@@ -85,7 +88,7 @@
         </div>
       </div>
       <!-- pagination -->
-      <div v-show="filteredProd.length > 12" class="py-5">
+      <div v-if="sortedPd.length > 12" class="py-5">
         <Pagination class="w-fit-content mx-auto" v-bind="setPagination"></Pagination>
       </div>
     </div>
@@ -93,49 +96,32 @@
 </template>
 
 <script>
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import { mapActions, mapState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
+import { useProdStore } from '@/stores/product';
 import Pagination from '@/components/Pagination.vue';
-const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
   props: ['query'],
   data(){
     return {
-      allProducts: [],
-      sort_by: 'enabledTime',
-      prodContainer: []
+      filteredPd: [],
+      sortedPd: [],
+      sortBy: 'enabledTime',
+      singlePagePd: []
     }
   },
   components: {
     RouterLink,
     Pagination
   },
-  watch: {
-    filteredProd(newVal, oldVal){
-      const n = this.query.page ? Number(this.query.page) : 1;
-      if(newVal.length > 12){
-        this.prodContainer = newVal.slice(12*(n-1), 12*n);
-      } else {
-        this.prodContainer = newVal;
-      }
-    }
-  },
   computed:{
     ...mapState(useCommonStore, ['catagories']),
-    filteredProd(){
-      return this.allProducts.filter(item => {
-        if(this.query.filter){
-          return item[this.query.index] === this.query.filter;
-        } else {
-          return this.allProducts;
-        }
-      })
-    },
+    ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult']),
     setPagination(){
-      const total = Math.ceil(this.filteredProd.length/12);
-      const current = this.query.page ? Number(this.query.page) : 1;
+      const total = Math.ceil(this.sortedPd.length/12);
+      const current = Number(this.query.page) || 1;
       return {
         pathData: { path: '/products', query: {...this.query}},
         total_pages:  total,
@@ -145,27 +131,56 @@ export default {
       };
     }
   },
+  // 集中控制
+  watch: {
+    "query.filter"(){
+      this.filterProd();
+      this.sortProd();
+      this.sliceProd();
+    },
+    "query.page"(){
+      this.sliceProd();
+    },
+    sortBy(){
+      this.sortProd();
+      this.sliceProd();
+    }
+  },
   methods: {
     ...mapActions(useCommonStore, ['numToPriceString']),
-    getAllProd(){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
-      this.$http.get(url).then(res => {
-        this.allProducts = res.data.products;
-        this.sortProd();
-      })
-      .catch(err => {
-        alert(`無法取得產品，錯誤代碼：${err.response.status}`)
-      })
+    ...mapActions(useProdStore, ['getAllProds']),
+    filterProd(){
+      if(!this.query.filter){
+        this.filteredProd = [];
+      } else {
+        this.filteredPd = this.allProducts.filter(pd => pd[this.query.index] === this.query.filter);
+      }
     },
-    sortProd(sortBy='enabledTime'){
-      this.sort_by = sortBy;
-      this.allProducts.sort((a, b) => {
-        return b[sortBy] - a[sortBy];
-      })
+    sortProd(){
+      const arr = this.query.filter ? this.filteredPd : this.finalSearchPattern ? this.pdFromFinalSearch() : this.allProducts;
+      this.sortedPd = arr.toSorted((a, b) => b[this.sortBy] - a[this.sortBy]);
     },
+    sliceProd(){
+      const n = Number(this.query.page) || 1;
+      if(this.sortedPd.length > 12){  // 固定一頁 12 個
+        this.singlePagePd = this.sortedPd.slice(12*(n-1), 12*n);
+      } else {
+        this.singlePagePd = this.sortedPd;
+      }
+    },
+    pdFromFinalSearch(){
+      return this.allProducts.filter(item => this.finalSearchResult.includes(item.id))
+    }
   },
-  mounted(){
-    this.getAllProd();
+  async mounted(){
+    try {
+      await this.getAllProds();
+      this.filterProd();
+      this.sortProd();
+      this.sliceProd();
+    } catch (err) {
+      alert(err)
+    }
   }
 }
 </script>

@@ -2,7 +2,9 @@
   <div class="bg-beige gradient-border gradient-border-3 p-6 mb-3 text-secondary">
     <div class="row position-relative" style="z-index: 2;">
       <div class="col">
-        <p class="mb-0 text-nowrap">課程編號： {{ tempProd.id }}</p>
+        <p class="mb-0 text-nowrap">課程編號：
+          <span class="user-select-all">{{ tempProd.id }}</span>
+        </p>
       </div>
       <div class="col">
         <p class="mb-0 text-nowrap">已售出： {{ tempProd.classmates }}</p>

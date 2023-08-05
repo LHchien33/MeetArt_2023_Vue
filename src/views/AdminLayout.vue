@@ -120,30 +120,28 @@ export default {
       this.$http.defaults.headers.common.Authorization = token;
       const url = `${VITE_BASE}/v2/api/user/check`;
 
-      this.$http.post(url)
-      .then(res => {
+      this.$http.post(url).then(res => {
         this.isLoggedIn = true;
-      })
-      .catch(err => {
-        alert('驗證錯誤，請先登入');
-        this.$router.push('/login')
+      }).catch(err => {
+        const text = err.response.data.message || '使用者驗證錯誤';
+        alert(`${text}，請重新登入`);
+        this.$router.push('/login');
       })
     }
   },
   created(){
     this.checkAdmin();
   },
-  async beforeRouteLeave (to, from) {
-    if(to.path === '/login' && this.isLoggedIn === true) {
+  async beforeRouteLeave (to, from){
+    if(to.path === '/login' && this.isLoggedIn === true){
       try {
-        const response = await this.$http.post(`${VITE_BASE}/v2/logout`);
+        await this.$http.post(`${VITE_BASE}/v2/logout`);
         document.cookie = 'MeetArtToken = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         alert('登出成功');
-        return true
-      }
-      catch (err){
-        alert(`登出失敗，錯誤代碼：${err.response.status}`)
-        return false
+        return true;
+      } catch (err){
+        alert(`登出失敗，錯誤代碼：${err.response.status}`);
+        return false;
       }
     }
   }

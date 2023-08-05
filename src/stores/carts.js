@@ -18,34 +18,27 @@ export const useCartsStore = defineStore('carts', {
         this.carts = res.data.data.carts;
         this.total = res.data.data.total;
         this.final_total = res.data.data.final_total;
-
-        if(this.carts[0]?.coupon){
-          this.couponInfo = this.carts[0].coupon;
-        } else {
-          this.couponInfo = {}
-        }
-      })
-      .catch(err => {
+        this.couponInfo = this.carts[0]?.coupon || {} ;
+      }).catch(err => {
         alert(`無法取得購物車資料，錯誤代碼：${err.response.status}`)
       })
     },
     findRepeatItem(id){
       const repeatedProd = this.carts.find(item => item.product_id === id);
-      repeatedProd ? this.itemRepeated = true : this.itemRepeated = false;
+      this.itemRepeated = repeatedProd || false;
     },
-    addToCart(id, buyNow = false){
-      this.findRepeatItem(id);
+    async addToCart(id){
       if(this.itemRepeated){
-        return
+        throw '購物車已有該品項！';
       }
 
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
-      return axios.post(url, {data: {"product_id": id, "qty": 1}}).then(res => {
+      try {
+        await axios.post(url, { data: { "product_id": id, "qty": 1 } });
         this.getCarts();
-      })
-      .catch(err => {
+      } catch (err) {
         throw `無法加入購物車，錯誤代碼：${err.response.status}`;
-      })
+      }
     },
     useCoupon(couponCode){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/coupon`;
@@ -53,9 +46,12 @@ export const useCartsStore = defineStore('carts', {
         if(!this.couponInfo.code){ alert(`已套用優惠券`) };
         this.couponInput = '';
         this.getCarts();
-      })
-      .catch(err => {
-        alert(`無法使用優惠券，錯誤代碼：${err.response.status}`)
+      }).catch(err => {
+        let { message } = err.response.data;
+        if(typeof message !== 'string' || !message){
+          message =  `無法使用優惠券，錯誤代碼：${err.response.status}`;
+        }
+        alert(message);
       })
     }
   },

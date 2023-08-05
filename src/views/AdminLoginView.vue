@@ -73,14 +73,12 @@ export default {
       const { VITE_BASE } = import.meta.env;
       const url = `${VITE_BASE}/v2/admin/signin`;
 
-      this.$http.post(url, values)
-      .then(res => {
+      this.$http.post(url, values).then(res => {
         const { token, expired } = res.data;
         document.cookie = `MeetArtToken = ${token}; expires = ${new Date(expired)};`;
         alert(res.data.message)
         this.$router.push('/admin/orders');
-      })
-      .catch(err => {
+      }).catch(err => {
         alert(`登入失敗，錯誤代碼：${err.response.status}`);
       })
     }

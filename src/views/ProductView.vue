@@ -8,7 +8,10 @@
             <RouterLink to="/">首頁</RouterLink>
           </li>
           <li class="breadcrumb-item">
-            <RouterLink :to="{path:'/products', query: {index: breadcrumb.index}}">繪畫{{ catagories[breadcrumb.index]?.name }}</RouterLink>
+            <RouterLink :to="{path:'/products', query: breadcrumb.index ? {index: breadcrumb.index} : {}}">
+              <span v-if="breadcrumb.index">所有繪畫{{ catagories[breadcrumb.index]?.name }}</span>
+              <span v-else>所有課程</span>
+            </RouterLink>
           </li>
           <li v-if="breadcrumb.filter" class="breadcrumb-item">
             <RouterLink :to="{path:'/products', query: {...breadcrumb}}">{{ breadcrumb.filter }}</RouterLink>
@@ -29,7 +32,7 @@
               <div class="row gy-3 text-nowrap">
                 <div class="col">
                   <p class="fs-7 mb-1 text-muted">課程時長</p>
-                  <p class="mb-0">{{ convertToHour(product.outlines_total?.minutes) }}</p>
+                  <p class="mb-0">{{ minToHour(product.outlines_total?.minutes) }}</p>
                 </div>
                 <div class="col">
                   <p class="fs-7 mb-1 text-muted">單元數</p>
@@ -156,7 +159,7 @@
                   </button>
                 </div>
                 <div class="col" :class="{ 'd-none': itemRepeated }">
-                  <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">立即購買</button>
+                  <button @click="addProduct(product.id, true)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">立即購買</button>
                 </div>
               </div>
             </div>
@@ -179,7 +182,7 @@
             </div>
             <!-- 992px 版面 end -->
           </div>
-          <!-- 右欄 -->
+          <!-- 右欄 (992px 以上)-->
           <div class="d-none d-lg-block col-lg-4">
             <div class="p-6 bg-white bg-opacity-75 mb-8">
               <h1 class="fs-4 fw-bold mb-0">{{ product.title }}</h1>
@@ -187,7 +190,7 @@
               <div class="row row-cols-2 gy-3">
                 <div class="col">
                   <p class="fs-7 mb-1 text-muted">課程時長</p>
-                  <p class="mb-0">{{ convertToHour(product.outlines_total?.minutes) }}</p>
+                  <p class="mb-0">{{ minToHour(product.outlines_total?.minutes) }}</p>
                 </div>
                 <div class="col">
                   <p class="fs-7 mb-1 text-muted">單元數</p>
@@ -222,7 +225,7 @@
                   <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                 </div>
               </button>
-              <button @click="buyNow(product.id)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
+              <button @click="addProduct(product.id, true)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;"
                       :class="{ 'd-none': itemRepeated }">立即購買</button>
             </div>
             <div>
@@ -248,11 +251,14 @@
     </main>
     <!-- 課程推薦 -->
     <section class="py-10">
-      <h4 class="text-center mb-6 fw-semibold">其他人也看了這些課程</h4>
       <div v-if="errorMessage !== ''" class="container">
-        <p class="mb-0 text-muted">{{ errorMessage }}</p>
+        <h4 class="text-center mb-6 fw-semibold">其他人也看了這些課程</h4>
+        <div>
+          <p class="mb-0 text-muted text-center">{{ errorMessage }}</p>
+        </div>
       </div>
       <div v-else class="swiper-theme-set">
+        <h4 class="text-center mb-6 fw-semibold">其他人也看了這些課程</h4>
         <div class="d-flex mb-9 justify-content-center align-items-center">
           <swiper class="flex-shrink-1 order-1 px-3 mx-0 container-xl"
                   :breakpoints="{
@@ -274,7 +280,7 @@
                   }"
                   :modules="modules"
                   >
-            <swiper-slide class="h-auto" v-for="prod in filteredProducts" :key="prod.id">
+            <swiper-slide class="h-auto" v-for="(prod, idx) in filteredProducts" :key="prod.id + idx">
               <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 185px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
@@ -317,7 +323,7 @@ import { RouterLink } from 'vue-router';
 import { mapActions, mapState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
 import { useCartsStore } from '@/stores/carts';
-const { VITE_BASE, VITE_API } = import.meta.env;
+import { useProdStore } from '@/stores/product';
 
 export default {
   props:['prodId'],
@@ -328,12 +334,12 @@ export default {
   },
   data(){
     return {
-      product: {
-        outlines: []
-      },
+      product: {},
       currentTab: 'brief',
+      breadcrumb: {},
+      errorMessage: '',
+      swiperInstance: null,
       modules: [ Navigation, FreeMode ],
-      allProducts: [],
       commonQuestions: [
         {
           question: '如何觀看已購買的影音課程？',
@@ -355,103 +361,34 @@ export default {
           question: '課程購買後可以退費嗎？如何申請？',
           answer: '<ul class="mb-4"><li>購買 7 日內未觀看任一付費單元，退還 100% 課程費用。</li><li>購買 8 - 14 日內未觀看任一付費單元，退還 30% 課程費用。</li><li>購買第 15 日起，恕不提供退費。</li></ul><p class="mb-2">※ 如欲申請退費請來信 <a href="#">MeetArt 客服信箱</a> 說明原因，信件內容應包含以下：</p><ul><li>使用者帳號</li><li>課程名稱</li><li>退款原因</li></ul>'
         }
-      ],
-      breadcrumb: {},
-      errorMessage: ''
+      ]
     }
   },
   watch: {
-    "product.category"(newVal, oldVal){
-      if(!this.breadcrumb.index){
-        this.breadcrumb = {
-          index: 'category',
-          filter: newVal
-        };
+    // 調整 breadcrumb 用
+    "keywords"(newVal, oldVal){
+      const bread = this.breadcrumb.index;
+      const oldFilter = oldVal.find(item => item.index === bread)?.filter;
+      const newFilter = newVal.find(item => item.index === bread)?.filter;
+      if(this.breadcrumb.filter && newFilter !== oldFilter){
+        this.breadcrumb.filter = newFilter;
+        sessionStorage.setItem("from", JSON.stringify(this.breadcrumb))
       }
     },
     prodId(){
       this.getSingleProd();
       this.findRepeatItem(this.prodId);
+      this.swiperInstance.slideTo(0, 0);
     },
     carts(){
       this.findRepeatItem(this.prodId);
     }
   },
-  methods: {
-    ...mapActions(useCommonStore, ['numToPriceString', 'dateConverter']),
-    ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem', 'couponInfo']),
-    getSingleProd(){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/product/${this.prodId}`;
-      this.$http.get(url).then(res => {
-        this.product = res.data.product;
-      })
-      .catch(err => {
-        alert(`無法取得產品，錯誤代碼：${err.response.status}`)
-      })
-    },
-    convertToHour(min){
-      return `${(min/60).toFixed(0)} 小時 ${min%60} 分鐘`
-    },
-    getAllProducts(){
-      this.errorMessage = '';
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
-      this.$http.get(url).then(res => {
-        this.allProducts = res.data.products;
-      })
-      .catch(err => {
-        this.errorMessage = `無法取得產品，錯誤代碼：${err.response.status}`;
-      })
-    },
-    addProduct(id){
-      this.addToCart(id, true).then(res => {
-        alert('已加入購物車')
-      })
-      .catch(err => {
-        alert(err)
-      })
-    },
-    buyNow(id) {
-      this.addToCart(id, true).then(res => {
-        this.$router.push('/checkout/carts');
-      })
-      .catch(err => {
-        alert(err)
-      })
-    }
-  },
   computed: {
     ...mapState(useCommonStore, ['catagories']),
     ...mapState(useCartsStore, ['carts','itemRepeated']),
-    filteredProducts(){
-      if(this.allProducts.length !== 0 && this.product.id){
-        const keys =  Object.keys(this.catagories);
-        const total0 = [], total1 = [], total2 = [], total3 = [], total4 = [];
-
-        this.allProducts.forEach(item => {
-          let count = 0;
-          if(item.id !== this.product.id){
-            keys.forEach(key => {
-              if(item[key] === this.product[key] && item[key]){
-                key === 'category' ? count += 3 : count += 1;
-              }
-            })
-          }
-          switch (count){
-            case 1: total1.push(item); break;
-            case 2: total2.push(item); break;
-            case 3: total3.push(item); break;
-            case 4: total4.push(item); break;
-            case 5: total4.unshift(item); break;
-            default: if(item.id !== this.product.id){ total0.push(item); };
-          }
-        })
-
-        total0.sort((a, b) => b.classmates - a.classmates);
-        return [...total4, ...total3, ... total2, ...total1, ...total0].slice(0, 10);
-      } else {
-        return []
-      }
-    },
+    ...mapState(useProdStore, ['allProducts']),
+    // 課程關鍵字標籤路由
     keywords(){
       const temp = [];
       const keys = Object.keys(this.catagories);
@@ -464,22 +401,84 @@ export default {
         }
       })
       return temp
+    },
+    // 相關推薦課程計算
+    filteredProducts(){
+      if(this.allProducts.length === 0 || !this.product.id){
+        return []
+      }
+
+      const keys =  Object.keys(this.catagories);
+      const total0 = [], total1 = [], total2 = [], total3 = [], total4 = [];
+
+      this.allProducts.forEach((item, idx) => {
+        let count = 0;
+        if(item.id !== this.product.id){
+          // 比對 category、theme、style，有相同且為有效值則計分
+          keys.forEach(key => {
+            if(item[key] === this.product[key] && item[key]){
+              // category 為主，權重高
+              key === 'category' ? count += 3 : count += 1;
+            }
+          })
+        }
+        switch (count){
+          case 1: total1.push(item); break;
+          case 2: total2.push(item); break;
+          case 3: total3.push(item); break;
+          case 4: total4.push(item); break;
+          case 5: total4.unshift(item); break;
+          default: if(item.id !== this.product.id){ total0.push(item); };
+        }
+      })
+
+      total0.sort((a, b) => b.classmates - a.classmates); // 得分 0 以熱門程度排序
+      return [...total4, ...total3, ... total2, ...total1, ...total0].slice(0, 10); // 最多取前 10 個
+    }
+  },
+  methods: {
+    ...mapActions(useCommonStore, ['numToPriceString']),
+    ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem']),
+    ...mapActions(useProdStore, ['getAllProds']),
+    getSingleProd(){
+      const currentPd = this.allProducts.find(item => item.id === this.prodId);
+      if(currentPd){
+        this.product = currentPd;
+      } else {
+        alert('找不到課程，該課程不存在或已下架');
+        this.$router.push('/products');
+      }
+    },
+    minToHour(min){
+      return `${(min/60).toFixed(0)} 小時 ${min%60} 分鐘`
+    },
+    async addProduct(id, buyNow=false){
+      try {
+        await this.addToCart(id);
+        buyNow ? this.$router.push('/checkout/carts') : alert('已加入購物車');
+      } catch (err) {
+        alert(err);
+      }
     }
   },
   mounted(){
-    this.getSingleProd();
-    this.getAllProducts();
+    this.getAllProds().then(res => {
+      this.getSingleProd();
+      this.swiperInstance = document.querySelector('.swiper').swiper;
+    }).catch(err => this.errorMessage = err);
+
     this.findRepeatItem(this.prodId);
+    this.breadcrumb =  JSON.parse(sessionStorage.getItem("from"));
   },
   beforeRouteEnter(to, from, next) {
-    if(from.name === '前台課程列表'){
-      next(vm => vm.breadcrumb = from.query);
-    } else {
-      next()
+    if(from.matched.length !== 0){
+      sessionStorage.setItem("from", JSON.stringify(from.query));
     }
+    next();
   }
 }
 </script>
+
 <style scoped>
 .image-container{
   width: 100%;

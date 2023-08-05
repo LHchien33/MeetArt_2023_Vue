@@ -66,8 +66,8 @@
                 <img :src="prod.imageUrl" alt="課程圖片" class="object-fit-cover w-100 h-100">
               </div>
             </td>
-            <td class="text-start text-nowrap text-md-wrap" style="word-break: break-all;">{{ prod.id }}</td>
-            <td class="text-start text-nowrap text-md-wrap">{{ prod.title }}</td>
+            <td class="text-start text-nowrap text-md-wrap user-select-all" style="word-break: break-all;">{{ prod.id }}</td>
+            <td class="text-start text-nowrap text-md-wrap user-select-all">{{ prod.title }}</td>
             <td>{{ numToPriceString(prod.origin_price) }}</td>
             <td>{{ numToPriceString(prod.price) }}</td>
             <td :class="prod.is_enabled ? 'text-accent' : 'text-muted' ">{{ prod.is_enabled ? '是' : '否' }}</td>
@@ -160,14 +160,14 @@ export default {
       let alertText = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${id}`;
       this.$refs.ConfirmModal.openModal().then(res => {
-        return this.$http.delete(url)
+        return this.$http.delete(url);
       }).then(res => {
         alertText = res.data.message;
         this.getPageProducts();
       }).catch(err => {
-        err === false ? alertText = '已取消刪除' : alertText = `刪除失敗，錯誤代碼：${err.response.status}`
+        err === false ? alertText = '已取消刪除' : alertText = `刪除失敗，錯誤代碼：${err.response.status}`;
       }).finally(() => {
-        setTimeout(() => alert(alertText), 500)
+        setTimeout(() => alert(alertText), 500);
       })
     }
   },
