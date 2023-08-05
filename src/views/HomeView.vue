@@ -9,21 +9,48 @@
               <h1 class="col-lg-6 text-lg-end fw-bolder fs-2 fs-md-d5 fs-lg-1 fs-xxl-d5 mb-3 mb-lg-0">MeetArt 繪課室</h1>
               <p class="col-lg-6 text-lg-start mb-0 fs-5 fs-md-2 fs-lg-3 fs-xxl-2">在繪畫中遇見更好的自己</p>
             </div>
+            <!-- 搜尋欄 -->
             <div class="mx-xxl-8">
               <div class="d-flex align-items-center bg-light-1 rounded-pill p-1 ps-5 mb-3 mb-lg-4">
+                <!-- 放大鏡 icon -->
                 <picture>
                   <source srcset="../assets/images/ic_search_s.png" media="(max-width: 1399.98px)">
                   <source srcset="../assets/images/ic_search.png" media="(min-width: 1400px)">
                   <img src="../assets/images/ic_search_s.png" alt="搜尋">
                 </picture>
-                <!-- <span class="material-symbols-outlined">search</span> -->
-                <input type="text" class="flex-grow-1 w-100 border-0 fs-lg-5 py-2 py-lg-3 mx-2 mx-lg-4 focus-outline-none" placeholder="找課程">
-                <button type="button" class="btn btn-primary rounded-pill py-2 px-3 py-lg-3 px-lg-6 py-xxl-5 px-xxl-8 fs-6 fs-lg-5 fs-xxl-4 text-light-1 text-nowrap">搜尋課程</button>
+                <!-- 輸入框 -->
+                <div class="input-clear-wrapper flex-grow-1">
+                  <!-- 另外以 compositionend event 監聽 IME 的 composition session -->
+                  <input type="text" v-model="searchPattern" @input="searchHandler($event)" @compositionend="searchHandler($event)"
+                          class="w-100 border-0 fs-lg-5 px-2 px-lg-3 lh-lg focus-outline-none" placeholder="找課程">
+                  <!-- 清除輸入的 x -->
+                  <button type="button" @click="clearSearchBtn()" :class="{ 'd-block': inputClearBtnShow }"
+                          class="material-symbols-outlined input-clear-btn p-1 text-muted fs-5 fs-lg-4">cancel</button>
+                  <!-- 搜尋建議 -->
+                  <ul class="position-absolute list-group w-100" style="z-index: 2; top: 120%;">
+                    <li v-if="searchDisabled" class="list-group-item text-muted">- 搜尋中 -</li>
+                    <li v-else-if="inputClearBtnShow && searchSuggestion.length === 0"
+                        class="list-group-item text-muted">- 沒有找到相關課程 -</li>
+                    <template v-else-if="searchSuggestion.length !== 0">
+                      <li v-for="item in searchSuggestion" :key="item.id" class="list-group-item list-group-item-action p-0">
+                        <RouterLink :to="`/product/${item.id}`"
+                                    class="d-block p-2 px-lg-3 text-decoration-none text-dark-1">{{ item.title }}</RouterLink>
+                      </li>
+                      <li v-if="matchPatterns.length > 5" class="list-group-item">...</li>
+                    </template>
+                  </ul>
+                </div>
+                <!-- 搜尋按鈕 -->
+                <button type="button" @click="goToSearchResult()" :class="{'disabled': searchDisabled}" :disabled="searchDisabled"
+                        class="btn btn-primary rounded-pill py-2 px-3 py-lg-3 px-lg-6 py-xxl-5 px-xxl-8 fs-6 fs-lg-5 fs-xxl-4 text-light-1 text-nowrap">搜尋課程
+                </button>
               </div>
+              <!-- 靜態的快速連結 -->
               <div>
-                <a href="#" class="fs-6 me-2 px-3 py-1 shadow-none rounded-pill btn btn-outline-primary">素描</a>
-                <a href="#" class="fs-6 me-2 px-3 py-1 shadow-none rounded-pill btn btn-outline-primary">水彩</a>
-                <a href="#" class="fs-6 me-2 px-3 py-1 shadow-none rounded-pill btn btn-outline-primary">人物插畫</a>
+                <template v-for="item in quickLink" :key="item">
+                  <RouterLink :to="{path: '/products', query: {index: 'category', filter: item}}"
+                              class="me-2 px-3 py-1 shadow-none rounded-pill btn btn-outline-primary">{{ item }}</RouterLink>
+                </template>
               </div>
             </div>
           </div>
@@ -150,7 +177,7 @@
       <div v-if="errorMessage !== ''" class="container">
         <p class="mb-0 fs-5 text-muted">{{ errorMessage }}</p>
       </div>
-      <div v-else class="swiper-theme-set">
+      <div class="swiper-theme-set">
         <div class="d-flex mb-9 justify-content-center align-items-center">
           <swiper class="flex-shrink-1 order-1 px-3 mx-0 container-xl"
                   :breakpoints="{
@@ -177,7 +204,7 @@
                   }"
                   :modules="modules"
                   >
-            <swiper-slide class="h-auto" v-for="prod in filteredProducts" :key="prod.id">
+            <swiper-slide class="h-auto" v-for="prod in prodPromotion" :key="prod.id">
               <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 185px;">
                   <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
@@ -249,10 +276,10 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Navigation, Pagination, FreeMode } from 'swiper';
 
 import { RouterLink } from 'vue-router';
-import { mapActions } from 'pinia';
+import { mapState, mapActions, mapWritableState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
-const { VITE_BASE, VITE_API } = import.meta.env;
-
+import { useProdStore } from '@/stores/product';
+import { debounce as _debounce } from 'lodash';
 
 export default {
   components: {
@@ -262,10 +289,15 @@ export default {
   },
   data(){
     return {
-      students: [],
-      modules: [ Navigation, Pagination, FreeMode ],
+      searchPattern: '',
+      matchPatterns: [],
+      inputClearBtnShow: false,
+      searchDisabled: false,
       products: [],
       errorMessage: '',
+      students: [],
+      quickLink: ['素描', '水彩', '色鉛筆'],
+      modules: [ Navigation, Pagination, FreeMode ],
       articles: [
         {
           image: 'https://images.unsplash.com/photo-1513758173941-bfbd2e4166f5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=900&h=600&q=80',
@@ -290,46 +322,89 @@ export default {
   },
   methods: {
     ...mapActions(useCommonStore, ['numToPriceString', 'dateConverter']),
+    ...mapActions(useProdStore, ['getAllProds']),
     getRandomUsers(){
-      this.$http.get('https://randomuser.me/api/?inc=name,picture&nat=us&results=3')
-      .then(res => {
-        this.studentsData(res.data.results)
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      const url = 'https://randomuser.me/api/?inc=name,picture&nat=us&results=3';
+      this.$http.get(url).then(res => {
+        const data = res.data?.results;
+        data.forEach(item => {
+          const name = item.name.first;
+          const img = item.picture.medium;
+          this.students.push({ name, img });
+        })
+      }).catch(err => console.log(err))
     },
-    studentsData(data){
-      data.forEach(item => {
-        const name = `${item.name.first}`;
-        const img = item.picture.medium;
-        this.students.push({ name, img })
-      })
+    clearSearchBtn(){
+      this.searchPattern = '';
+      this.matchPatterns = [];
+      this.searchDisabled = false;
+      this.inputClearBtnShow = false;
     },
-    getAllProducts(){
-      this.errorMessage = '';
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/products/all`;
-      this.$http.get(url)
-      .then(res => {
-        this.products = res.data.products;
-      })
-      .catch(err => {
-        this.errorMessage = `資料取得失敗，錯誤代碼：${err.response.status}`;
-      })
+    searchHandler: _debounce(function(e){
+      this.matchPatterns = [];
+      this.searchDisabled = e.target.value ? true : false;
+      this.inputClearBtnShow = e.target.value ? true : false;
+      
+      if(!e.target.value){
+        return
+      }
+
+      // a boolean that indicates if the event is fired within a composition session
+      // 需要組字/選字，文字下方有虛線的輸入法類型，例如注音為 true，英文則為 false
+      if(e.isComposing){
+        return
+      }
+
+      setTimeout(() => this.searchPdTitle(e), 500);
+
+    }, 500),
+    searchPdTitle(e){
+      this.searchPattern = e.target.value;
+      this.searchDisabled = false;
+
+      // 去頭尾空白、特殊符號跳脫
+      const escapePattern = e.target.value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const separated = escapePattern.replace(/\s+/g, '|'); // 句中空白替換成 |
+      const combined = escapePattern.replace(/\s+/g, '');   // 句中空白替換成 ""（組字）
+      // 兩者是否相等（搜尋時有沒有使用空白格）
+      const rule = separated === combined ? `[${escapePattern}]+` : `${separated}|[${combined}]+`;
+      const regex = new RegExp(rule, 'g');
+
+      this.allProducts.forEach(item => {
+        const matches = item.title.match(regex);  // Array or null
+        const matchCount = matches ? matches.length : 0;
+        if(matches){
+          this.matchPatterns.push({ title: item.title, id: item.id, count: matchCount });
+        }
+      });
+      this.matchPatterns.sort((a, b) => b.count - a.count);
+    },
+    goToSearchResult(){
+      this.finalSearchPattern = this.searchPattern;
+      this.finalSearchResult = this.matchPatterns.map(item => item.id);
+      this.finalSearchPattern ? this.$router.push('/products') : alert('請先輸入欲搜尋的內容！');
     }
   },
   computed: {
-    filteredProducts(){
-      if(this.products.length !== 0){
-        return this.products.filter(item => item.classmates > 500).slice(0, 12)
+    ...mapState(useProdStore, ['allProducts']),
+    ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult']),
+    searchSuggestion(){
+      return this.matchPatterns.slice(0, 5);
+    },
+    prodPromotion(){
+      if(this.allProducts.length !== 0){
+        this.errorMessage = '';
+        const temp = this.allProducts.toSorted((a, b) => b.classmates - a.classmates);
+        return temp.filter(item => item.classmates > 300).slice(0, 12);
       } else {
-        return []
+        this.errorMessage = '資料取得失敗';
+        return [];
       }
     }
   },
   mounted(){
     this.getRandomUsers();
-    this.getAllProducts();
+    this.getAllProds().catch(err => alert(err));
   }
 }
 </script>
@@ -412,5 +487,19 @@ export default {
     width: 50px;
     height: 50px;
   }
+}
+
+.input-clear-wrapper {
+  position: relative;
+}
+
+.input-clear-btn {
+  display: none;
+  background: transparent;
+  border: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  translate: -50% -50%;
 }
 </style>
