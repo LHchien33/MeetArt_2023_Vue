@@ -6,10 +6,10 @@
         <li class="breadcrumb-item">
           <RouterLink to="/">首頁</RouterLink>
         </li>
-        <li v-if="!query.filter" class="breadcrumb-item active">{{ query.index ? `繪畫${catagories[query.index].name}` : '所有課程' }}</li>
+        <li v-if="!query.filter" class="breadcrumb-item active">{{ query.index ? `繪畫${categories[query.index].name}` : '所有課程' }}</li>
         <template v-else-if="query.index && query.filter">
           <li class="breadcrumb-item">
-            <RouterLink :to="`/products?index=${query.index}`">繪畫{{ catagories[query.index].name }}</RouterLink>
+            <RouterLink :to="`/products?index=${query.index}`">繪畫{{ categories[query.index].name }}</RouterLink>
           </li>
           <li class="breadcrumb-item active" aria-current="page">{{ query.filter }}</li>
         </template>
@@ -23,7 +23,7 @@
           <template v-else-if="!query.index">
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h1>
             <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
-              <li class="col-auto" v-for="(value, key) in catagories" :key="value.name">
+              <li class="col-auto" v-for="(value, key) in categories" :key="value.name">
                 <RouterLink :to="`/products?index=${key}`"
                   class="fs-7 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg">繪畫{{ value.name }}
                 </RouterLink>
@@ -32,7 +32,7 @@
           </template>
           <template v-else>
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">
-              {{ query.filter ? query.filter : `繪畫${catagories[query.index].name}` }}
+              {{ query.filter ? query.filter : `繪畫${categories[query.index].name}` }}
             </h1>
             <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
               <li class="col-auto">
@@ -41,7 +41,7 @@
                   :class="{'active': !query.filter }">全部
                 </RouterLink>
               </li>
-              <li class="col-auto" v-for="item in catagories[query.index].sub" :key="item">
+              <li class="col-auto" v-for="item in categories[query.index].sub" :key="item">
                 <RouterLink :to="`/products?index=${query.index}&filter=${item}`"
                   class="fs-7 px-3 py-1 shadow-none rounded-pill btn btn-primary-white-bg"
                   :class="{'active': query.filter === item }">{{ item }}
@@ -80,7 +80,8 @@
                 <p class="mb-0">{{ prod.classmates }} 位同學</p>
               </div>
               <div class="text-end">
-                <p class="fs-7 mb-0 text-dark-3"><s>NT$ {{ numToPriceString(prod.origin_price) }}</s></p>
+                <p :class="{'invisible': prod.origin_price === prod.price }" class="fs-7 mb-0 text-dark-3">
+                  <s>NT$ {{ numToPriceString(prod.origin_price) }}</s></p>
                 <p class="mb-0 fs-5 fw-semibold text-accent">NT$ {{ numToPriceString(prod.price) }}</p>
               </div>
             </div>
@@ -117,8 +118,8 @@ export default {
     Pagination
   },
   computed:{
-    ...mapState(useCommonStore, ['catagories']),
-    ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult']),
+    ...mapState(useCommonStore, ['categories']),
+    ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult', 'tutorPdId']),
     setPagination(){
       const total = Math.ceil(this.sortedPd.length/12);
       const current = Number(this.query.page) || 1;
@@ -129,6 +130,12 @@ export default {
         has_pre: current !== 1,
         has_next: (total - current) > 0
       };
+    },
+    pdFromFinalSearch(){
+      return this.allProducts.filter(item => this.finalSearchResult.includes(item.id) && item.id !== this.tutorPdId);
+    },
+    usualProducts(){
+      return this.allProducts.filter(item => item.id !== this.tutorPdId);
     }
   },
   // 集中控制
@@ -153,11 +160,11 @@ export default {
       if(!this.query.filter){
         this.filteredProd = [];
       } else {
-        this.filteredPd = this.allProducts.filter(pd => pd[this.query.index] === this.query.filter);
+        this.filteredPd = this.usualProducts.filter(pd => pd[this.query.index] === this.query.filter);
       }
     },
     sortProd(){
-      const arr = this.query.filter ? this.filteredPd : this.finalSearchPattern ? this.pdFromFinalSearch() : this.allProducts;
+      const arr = this.query.filter ? this.filteredPd : this.finalSearchPattern ? this.pdFromFinalSearch : this.usualProducts;
       this.sortedPd = arr.toSorted((a, b) => b[this.sortBy] - a[this.sortBy]);
     },
     sliceProd(){
@@ -167,9 +174,6 @@ export default {
       } else {
         this.singlePagePd = this.sortedPd;
       }
-    },
-    pdFromFinalSearch(){
-      return this.allProducts.filter(item => this.finalSearchResult.includes(item.id))
     }
   },
   async mounted(){

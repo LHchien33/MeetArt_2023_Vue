@@ -82,13 +82,14 @@
                         </label>
                         <VField as="select" rules="required" name="category" id="category" class="form-select"
                                 :class="{ 'is-invalid': errors['category'] }">
-                          <option value="" selected class="text-light-2">請選擇繪畫{{ catagories.category.name }}</option>
-                          <option v-for="item in catagories.category.sub" :key="item" :value="item">{{ item }}</option>
+                          <option value="" selected class="text-light-2">請選擇繪畫{{ categories.category.name }}</option>
+                          <option v-for="item in categories.category.sub" :key="item" :value="item">{{ item }}</option>
+                          <option value="課外輔導">課外輔導</option>
                         </VField>
                       </div>
                       <ErrorMessage name="category" class="invalid-feedback d-block ms-11px"></ErrorMessage>
                     </div>
-                    <template v-for="(value, key) in catagories" :key="key">
+                    <template v-for="(value, key) in categories" :key="key">
                       <div v-if="key !== 'category'" class="col">
                         <div class="d-sm-flex align-items-center">
                           <label :for="key" class="form-label mb-sm-0 me-2 text-nowrap ms-11px">繪畫{{ value.name }}：</label>
@@ -390,7 +391,7 @@ export default {
   },
   computed: {
     ...mapWritableState(useAdminProdStore, ['originTempProd']),
-    ...mapState(useCommonStore, ['catagories']),
+    ...mapState(useCommonStore, ['categories']),
   },
   methods: {
     ...mapActions(useCommonStore, ['scrollErrorIntoView']),
@@ -513,13 +514,13 @@ export default {
   created(){
     const storedData = localStorage.getItem('adminTempProd');
     if(storedData){
-      this.tempProduct = JSON.parse(storedData)
-      this.originTempProd = this.tempProduct
+      this.tempProduct = JSON.parse(storedData);
+      this.originTempProd = this.tempProduct;
     } else {
-      this.tempProduct = {...this.originTempProd}
+      this.tempProduct = {...this.originTempProd};
     }
     this.setInitialVal();
-    window.addEventListener('beforeunload', this.handleBeforeUnload)
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
 }
 </script>

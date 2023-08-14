@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useCommonStore = defineStore('common', {
   state: () => ({
-    catagories: {
+    categories: {
       category: {
         name: '媒材',
         sub: ['素描', '水彩', '油畫', '色鉛筆']

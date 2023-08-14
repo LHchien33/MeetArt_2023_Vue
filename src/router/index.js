@@ -32,10 +32,28 @@ const router = createRouter({
           })
         },
         {
-          path: 'product/:prodId',
+          path: 'product',
           name: '前台單一課程',
-          component: () => import('../views/ProductView.vue'),
-          props: true
+          component: () => import('../views/ProductLayout.vue'),
+          props: (route) => ({
+            prodId: route.params.urlPdId || route.matched[1].children[0].path
+          }),
+          children: [
+            {
+              path: '-Nb8fXN7LRUba7pY8IhX',
+              components: {
+                mainContent: () => import('../views/TutorPdMainView.vue'),
+                sideBar: () => import('../components/TutorProductInfo.vue')
+              }
+            },
+            {
+              path: ':urlPdId',
+              components: {
+                mainContent: () => import('../views/UsualPdMainView.vue'),
+                sideBar: () => import('../components/UsualProductInfo.vue')
+              }
+            }
+          ]
         },
         {
           path: 'checkout',

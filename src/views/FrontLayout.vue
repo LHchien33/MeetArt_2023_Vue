@@ -60,7 +60,7 @@
                 <li class="px-3">
                   <RouterLink to="/products" class="dropdown-item p-3 py-lg-2 p-xxl-3 text-secondary">所有課程</RouterLink>
                 </li>
-                <template v-for="(value, key) in catagories" :key="value.name">
+                <template v-for="(value, key) in categories" :key="value.name">
                   <li class="dropdown-hover px-3">
                     <button type="button" class="dropdown-item p-3 py-lg-2 py-xxl-3 d-flex align-items-center" data-bs-toggle="dropdown">
                       依繪畫{{ value.name }}
@@ -84,7 +84,7 @@
             </li>
             <!-- 探索課程下拉選單 end -->
             <li class="nav-item">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課外輔導</a>
+              <RouterLink :to="`/product/${tutorPdId}`" class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5">課外輔導</RouterLink>
             </li>
             <li class="nav-item">
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課室專欄</a>
@@ -135,6 +135,7 @@ import { throttle as _throttle } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useCommonStore } from '@/stores/common';
 import { useCartsStore } from '@/stores/carts';
+import { useProdStore } from '@/stores/product';
 
 export default {
   props: ['currentPath'],
@@ -155,8 +156,9 @@ export default {
     }
   },
   computed:{
-    ...mapState(useCommonStore, ['catagories']),
+    ...mapState(useCommonStore, ['categories']),
     ...mapState(useCartsStore, ['carts']),
+    ...mapState(useProdStore, ['tutorPdId']),
   },
   methods: {
     ...mapActions(useCartsStore, ['getCarts']),

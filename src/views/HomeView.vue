@@ -370,7 +370,7 @@ export default {
       const rule = separated === combined ? `[${escapePattern}]+` : `${separated}|[${combined}]+`;
       const regex = new RegExp(rule, 'g');
 
-      this.allProducts.forEach(item => {
+      this.normalProducts.forEach(item => {
         const matches = item.title.match(regex);  // Array or null
         const matchCount = matches ? matches.length : 0;
         if(matches){
@@ -386,15 +386,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(useProdStore, ['allProducts']),
+    ...mapState(useProdStore, ['allProducts', 'tutorPdId']),
     ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult']),
+    normalProducts(){
+      return this.allProducts.filter(item => item.id !== this.tutorPdId);
+    },
     searchSuggestion(){
       return this.matchPatterns.slice(0, 5);
     },
     prodPromotion(){
-      if(this.allProducts.length !== 0){
+      if(this.normalProducts.length !== 0){
         this.errorMessage = '';
-        const temp = this.allProducts.toSorted((a, b) => b.classmates - a.classmates);
+        const temp = this.normalProducts.toSorted((a, b) => b.classmates - a.classmates);
         return temp.filter(item => item.classmates > 300).slice(0, 12);
       } else {
         this.errorMessage = '資料取得失敗';
