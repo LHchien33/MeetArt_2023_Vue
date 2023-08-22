@@ -33,9 +33,11 @@
         <ul class="list-unstyled">
           <li v-for="cart in carts" :key="cart.id">
             <div class="row gy-3">
-              <div class="col-8 col-md-6 flex-grow-1">
+              <div class="col-sm-8 col-md-6 flex-grow-1">
                 <RouterLink :to="`/product/${cart.product_id}`" class="d-flex align-items-start text-decoration-none text-dark-1">
-                  <img :src="cart.product.imageUrl" :alt="cart.product.title" style="width: 30%; max-width: 100px;" class="me-2">
+                  <div class="me-2 overflow-hidden flex-shrink-0" style="max-width: 100px; aspect-ratio: 16 / 10;">
+                    <img :src="cart.product.imageUrl" :alt="cart.product.title" class="w-100 h-100 object-fit-cover">
+                  </div>
                   <p class="mb-0 fw-semibold">{{ cart.product.title }}</p>
                 </RouterLink>
               </div>
@@ -81,7 +83,7 @@
               <span>{{ couponInfo.title }}</span>：{{ couponInfo.code }}</div>
             <div v-if="!couponInfo.code" class="d-flex justify-content-end text-nowrap">
               <button type="button" @click="couponInput = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
-              <button type="button" @click="useCoupon(couponInput)" class="btn btn-sm btn-primary">使用</button>
+              <button type="button" @click="useCoupon(couponInput, true)" class="btn btn-sm btn-primary">使用</button>
             </div>
           </div>
         </div>
@@ -117,7 +119,8 @@
 <script>
 import { RouterLink } from 'vue-router';
 import { mapActions, mapState, mapWritableState } from 'pinia';
-import { useCartsStore } from '@/stores/carts'
+import { useCartsStore } from '@/stores/carts';
+import { useProdStore } from '@/stores/product';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
@@ -127,30 +130,82 @@ export default {
   },
   computed: {
     ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
-    ...mapWritableState(useCartsStore, ['couponInput'])
+    ...mapState(useProdStore, ['tutorPdId', 'tutorOriginPricedId', 'tutorDiscountedId']),
+    ...mapWritableState(useCartsStore, ['couponInput']),
+  },
+  watch: {
+    async "carts.length"(length){
+      if(length === 1){
+        const coupon = this.carts[0].coupon; // undefined or coupon obj
+        await this.replaceTutorPd(coupon);
+        if(coupon){
+          this.useCoupon(coupon.code)
+        }
+      }
+    }
   },
   methods: {
     ...mapActions(useCartsStore, ['getCarts', 'useCoupon']),
     deleteCartItem(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart/${id}`;
       this.$http.delete(url).then(res => {
-        alert('刪除成功')
         this.getCarts();
+        alert('刪除成功');
       })
       .catch(err => {
-        alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`)
+        alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`);
       })
     },
+    async replaceTutorPd(coupon){
+      let delId = '';   // cart item id
+      let postId = '';  // product id
+      // 替換成原價的
+      if(this.carts.length === 1 && this.carts[0].product_id === this.tutorDiscountedId){
+        delId = this.carts[0].id;
+        postId = this.tutorOriginPricedId;
+      // 替換成加購的
+      } else if (this.carts.length > 1){
+        const idx = this.carts.findIndex(item => item.product_id === this.tutorOriginPricedId);
+        if(idx > -1){
+          delId = this.carts[idx].id;
+          postId = this.tutorDiscountedId;
+        }
+      }
+      if(!delId || !postId){
+        return
+      }
+      const delApi = `${VITE_BASE}/v2/api/${VITE_API}/cart/${delId}`;
+      const postApi = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
+      return Promise.all([
+        this.$http.delete(delApi),
+        this.$http.post(postApi, { data: { "product_id": postId, "qty": 1 } })
+      ]).then(res => {
+        if(!coupon){  // undefined or coupon obj
+          this.getCarts();
+        }
+      }).catch(err => {
+        const message = err.response.data?.message || '發生錯誤（課外輔導）';
+        const status = err.response?.status;
+        alert(`${message}，錯誤代碼：${status}`);
+      })
+    }
   },
   beforeRouteLeave(to, from){
     if(to.fullPath === "/checkout/order" && this.carts.length === 0){
-      alert('請先在購物車加入商品！')
-      return false
+      alert('請先在購物車加入商品！');
+      return false;
+    }
+    const urlId = to.params.urlPdId;
+    if(urlId === this.tutorOriginPricedId || urlId === this.tutorDiscountedId){
+      return `/product/${this.tutorPdId}`;
     }
   },
-  mounted(){
-    this.$emit('updateStep', 1)
-    if(this.couponInfo.code){ this.useCoupon(this.couponInfo.code) }
+  async mounted(){
+    this.$emit('updateStep', 1);
+    await this.replaceTutorPd(this.couponInfo.code);
+    if(this.couponInfo.code){ 
+      this.useCoupon(this.couponInfo.code);
+    }
   }
 }
 </script>
@@ -161,5 +216,4 @@ export default {
     padding-right: revert !important;
   }
 }
-
 </style>

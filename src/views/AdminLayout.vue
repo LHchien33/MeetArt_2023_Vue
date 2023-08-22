@@ -123,8 +123,8 @@ export default {
       this.$http.post(url).then(res => {
         this.isLoggedIn = true;
       }).catch(err => {
-        const text = err.response.data.message || '使用者驗證錯誤';
-        alert(`${text}，請重新登入`);
+        const text = err.response.data.message || '使用者驗證錯誤，請重新登入';
+        alert(text);
         this.$router.push('/login');
       })
     }

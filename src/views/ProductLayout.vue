@@ -173,8 +173,7 @@ export default {
     }
   },
   watch: {
-    // 調整 breadcrumb 用
-    "keywords"(newVal, oldVal){
+    keywords(newVal, oldVal){  // 調整 breadcrumb 用
       const bread = this.breadcrumb.index;
       const oldFilter = oldVal.find(item => item.index === bread)?.filter;
       const newFilter = newVal.find(item => item.index === bread)?.filter;
@@ -204,8 +203,7 @@ export default {
     usualProducts(){
       return this.allProducts.filter(item => item.id !== this.tutorPdId);
     },
-    // 相關推薦課程計算
-    filteredProducts(){
+    filteredProducts(){ // 相關推薦課程計算
       if(this.usualProducts.length === 0 || !this.currentPd.id){
         return []
       }
@@ -265,12 +263,13 @@ export default {
   },
   mounted(){
     this.isTutor = this.prodId === this.tutorPdId ? true : false;
+    this.findRepeatItem(this.prodId);
+    
     this.getAllProds().then(res => {
       this.getSingleProd();
       this.swiperInstance = document.querySelector('.swiper').swiper;
-    }).catch(err => this.errorMessage = err);
+      }).catch(err => this.errorMessage = err);
 
-    this.findRepeatItem(this.prodId);
     this.breadcrumb = JSON.parse(sessionStorage.getItem("from"));
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },

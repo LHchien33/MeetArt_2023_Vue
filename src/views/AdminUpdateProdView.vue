@@ -500,7 +500,7 @@ export default {
       try {
         const response = await this.$refs.ConfirmModal.openModal();
         localStorage.removeItem('adminTempProd');
-        window.removeEventListener('beforeunload', this.handleBeforeUnload)
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
         return true
       }
       catch (err){
@@ -508,7 +508,7 @@ export default {
       }
     } else {
       localStorage.removeItem('adminTempProd');
-      window.removeEventListener('beforeunload', this.handleBeforeUnload)
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
   },
   created(){

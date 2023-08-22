@@ -105,6 +105,11 @@ export default {
   computed: {
     ...mapState(useProdStore, ['currentPd']),
   },
+  watch: {
+    "currentPd.id"(){
+      this.currentTab = 'brief'
+    }
+  },
   data(){
     return {
       currentTab: 'brief',

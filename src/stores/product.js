@@ -6,6 +6,8 @@ const { VITE_BASE, VITE_API } = import.meta.env;
 export const useProdStore = defineStore('product', {
   state: () => ({
     tutorPdId: '-Nb8fXN7LRUba7pY8IhX',
+    tutorOriginPricedId: '-Na7DVZwX2D-82ngmV-_',
+    tutorDiscountedId: '-Nb8dDSmBnjcfyDim7bD',
     allProducts: [],
     currentPd: {
       outlines_total: []
@@ -14,7 +16,7 @@ export const useProdStore = defineStore('product', {
     finalSearchResult: [],
   }),
   getters: {
-    keywords({currentPd, tutorPdId}){
+    keywords({currentPd}){
       const common = useCommonStore();
       const temp = [];
       const keys = Object.keys(common.categories);
