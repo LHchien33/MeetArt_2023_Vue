@@ -30,8 +30,7 @@
   </div>
   <!-- nav backdrop -->
   <div class="d-lg-none position-fixed bg-dark-1 w-100 opacity-0" style="z-index: 1030; height: 0; transition: opacity .3s"
-        data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-        :class="isCollapsed ? '' : ['h-100', 'opacity-50']" @click="isCollapsed = true"></div>
+        :class="isCollapsed ? '' : ['h-100', 'opacity-50']" @click="toggleNavbar()"></div>
   <!-- header --> 
   <header class="fixed-top transition-all-3 shadow-sm bg-beige"
           :class="isOnTheTop && currentPath === '/' ? ['shadow-none', 'bg-transparent'] : '' ">
@@ -44,11 +43,10 @@
             <img src="../assets/images/logo_m.png" alt="MeetArt 繪課室">
           </picture>
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"
-          @click="isCollapsed = !isCollapsed">
+        <button class="navbar-toggler border-0" type="button" @click="toggleNavbar()">
           <span class="material-symbols-outlined text-secondary fs-3 fw-semibold">{{ isCollapsed ? 'menu' : 'close' }}</span>
         </button>
-        <div class="collapse navbar-collapse fs-4 fs-lg-6 fs-xxl-5 fw-semibold" id="navbarNavDropdown">
+        <div ref="navbarCollapse" class="collapse navbar-collapse fs-4 fs-lg-6 fs-xxl-5 fw-semibold">
           <ul class="navbar-nav w-100 align-items-lg-center py-2 py-lg-0">
             <!-- 探索課程下拉選單 start -->
             <li class="nav-item dropdown dropdown-hover">
@@ -136,6 +134,7 @@ import { mapState, mapActions } from 'pinia';
 import { useCommonStore } from '@/stores/common';
 import { useCartsStore } from '@/stores/carts';
 import { useProdStore } from '@/stores/product';
+import { Collapse } from 'bootstrap';
 
 export default {
   props: ['currentPath'],
@@ -145,6 +144,7 @@ export default {
   },
   data(){
     return {
+      navbarCollapse: {},
       isCollapsed: true,
       isOnTheTop: true,
       couponBtnShow: true,
@@ -171,6 +171,10 @@ export default {
         this.couponToastShow = false;
       }
     }, 300),
+    toggleNavbar(){
+      this.isCollapsed = !this.isCollapsed;
+      this.navbarCollapse.toggle();
+    },
     copyCoupon(){
       this.copyText(this.coupon.code).then(() => this.couponToastShow = false);
     },
@@ -179,11 +183,16 @@ export default {
     }
   },
   mounted(){
+    this.navbarCollapse = new Collapse(this.$refs.navbarCollapse, {toggle: false});
     window.addEventListener('scroll', this.scrollHandler)
     this.getCarts();
   },
   unmounted(){
     window.removeEventListener('scroll', this.scrollHandler)
+  },
+  beforeRouteUpdate(){
+    this.isCollapsed = true;
+    this.navbarCollapse.hide();
   }
 }
 </script>

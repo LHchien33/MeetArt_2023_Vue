@@ -67,9 +67,9 @@
         <div class="col" v-for="prod in singlePagePd" :key="prod.id">
           <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column flex-sm-row flex-lg-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
             <div class="overflow-hidden prod-img-size">
-              <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
+              <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover w-100 h-100 scale-11 transition-all-3">
             </div>
-            <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50">
+            <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50 border-top">
               <h2 class="mb-2 fs-5 fw-semibold text-dark-1">{{ prod.title }}</h2>
               <p class="fs-7 mb-2 text-secondary fw-semibold d-flex align-items-center">
                 <span class="material-symbols-outlined me-1">auto_fix_high</span>

@@ -48,8 +48,8 @@
                       <input type="file" id="imageUrl" class="visually-hidden" @change="previewImg($event)">
                     </label>
                     <!-- 預覽區 -->
-                    <div v-if="previewImgUrl || uploadedImgUrl " style="width: 240px; height: 160px;"
-                          class="position-relative border border-3 border-dashed overflow-hidden hover-animation"
+                    <div v-if="previewImgUrl || uploadedImgUrl"
+                          class="position-relative border border-3 border-dashed overflow-hidden hover-animation img-container"
                           :class="{'touched': imgOptionsShow}" @touchstart.stop="imgOptionsShow = !imgOptionsShow">
                       <img :src="previewImgUrl || uploadedImgUrl " alt="預覽圖片" class="w-100 h-100 object-fit-contain">
                       <span class="badge text-secondary bg-light border border-1 border-secondary position-absolute top-0 start-0 m-3">
@@ -288,11 +288,13 @@
                       </div>
                     </div>
                     <button v-if="fields.length !== 1" type="button" class="btn btn-outline-danger d-block w-fit-content ms-auto"
-                            @click="remove(idx)">移除章節</button>
+                            @click="remove(idx); setFieldTouched('title', true)">移除章節</button>
+                            <!-- 借 title 當 touched 標記，用於 beforeCancel -->
                     <hr class="my-6">
                   </template>
                   <button type="button" class="btn btn-outline-secondary d-block w-100"
-                          @click="push({})">新增章節</button>
+                          @click="push({brief: '', lectures: null, minutes: null, title: ''});
+                                  setFieldTouched('title', true)">新增章節</button>
                 </VFieldArray>
               </div>
             </div>
@@ -526,6 +528,18 @@ export default {
 </script>
 
 <style scoped>
+.img-container {
+  max-width: 240px;
+  height: 160px;
+}
+
+@media (min-width: 576px) {
+  .img-container {
+    width: 240px;
+    max-width: unset;
+  }
+}
+
 .ms-11px{
   margin-left: 11px;
 }

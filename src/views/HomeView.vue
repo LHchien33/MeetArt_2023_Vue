@@ -207,9 +207,9 @@
             <swiper-slide class="h-auto" v-for="prod in prodPromotion" :key="prod.id">
               <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
                 <div class="overflow-hidden" style="height: 185px;">
-                  <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover object-position-top w-100 h-100 scale-11 transition-all-3">
+                  <img :src="prod.imageUrl" :alt="prod.title" class="object-fit-cover w-100 h-100 scale-11 transition-all-3">
                 </div>
-                <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50 ">
+                <div class="flex-grow-1 p-4 d-flex flex-column bg-white bg-opacity-50 border-top">
                   <h3 class="mb-2 fs-4 fw-semibold text-dark-1">{{ prod.title }}</h3>
                   <p class="mb-2 text-secondary fw-semibold d-flex align-items-center">
                     <span class="material-symbols-outlined me-1">auto_fix_high</span>
@@ -372,7 +372,7 @@ export default {
 
       this.normalProducts.forEach(item => {
         const matches = item.title.match(regex);  // Array or null
-        const matchCount = matches ? matches.length : 0;
+        const matchCount = matches?.reduce((ac, cu) => cu.length > 1 ? ac + cu.length*10 : ac + 1, 0);
         if(matches){
           this.matchPatterns.push({ title: item.title, id: item.id, count: matchCount });
         }

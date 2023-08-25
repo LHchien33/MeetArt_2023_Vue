@@ -36,7 +36,7 @@
         <h2 class="fw-bold fs-5 mb-1">繪課室能提供的協助有：</h2>
       </div>
       <!--  -->
-      <div class="row gx-2 gx-md-5 justify-content-center icon-wght-300 pb-5">
+      <div class="row gx-2 gx-md-5 justify-content-center pb-5">
         <div class="col-4 col-md-3">
           <div class="ratio ratio-1x1">
             <div class="gradient-border gradient-border-3 position-absolute rounded-circle d-flex flex-column justify-content-center align-items-center px-3 text-center">

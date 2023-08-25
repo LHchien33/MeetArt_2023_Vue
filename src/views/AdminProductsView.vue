@@ -62,7 +62,7 @@
         <tbody>
           <tr v-for="prod in pageProducts" :key="prod.id" class="text-center">
             <td>
-              <div style="max-width:92px; max-height: 45px;" class="overflow-hidden">
+              <div style="max-width:92px; height: 45px;" class="overflow-hidden">
                 <img :src="prod.imageUrl" alt="課程圖片" class="object-fit-cover w-100 h-100">
               </div>
             </td>
