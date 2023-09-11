@@ -9,16 +9,19 @@ export const useAdminProdStore = defineStore('adminProd', {
     pagination: {},
   }),
   actions: {
-    getPageProducts(page=1){
+    async getPageProducts(page=1){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/products?page=${page}`;
-      axios.get(url)
-      .then(res => {
+      try {
+        const res = await axios.get(url);
         this.pageProducts = res.data.products;
         this.pagination = res.data.pagination;
-      })
-      .catch(err => {
-        alert(`資料取得失敗，錯誤代碼：${err.response.status}`);
-      })
+      } catch (err) {
+        throw {
+          errName: 'getPageProducts',
+          message: '無法取得頁面資料',
+          status: err.response?.status
+        }
+      }
     }
   },
 })

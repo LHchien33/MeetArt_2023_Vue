@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { toast } from '../plugins/GlobalToast';
 
 export const useCommonStore = defineStore('common', {
   state: () => ({
@@ -41,21 +42,21 @@ export const useCommonStore = defineStore('common', {
                         `${y}/${m}/${d} ${hr}:${min}:${sec}` :
                         `${y}/${m}/${d}`;
     },
-    scrollErrorIntoView({ values, errors}){
+    scrollErrorIntoView({errors}){
       const firstError = Object.keys(errors)[0];
       const targetElement = document.getElementsByName(firstError)[0];
       targetElement.scrollIntoView({
         block: "center",
         behavior: "smooth"
       })
-      setTimeout(() => alert(`${errors[firstError]}`), 500);
+      setTimeout(() => toast({toastType: 'failed'}).fire({title: errors[firstError]}), 500)
     },
     async copyText(text){
       try {
         await navigator.clipboard.writeText(text);
-        alert('已複製到剪貼簿');
+        toast({toastType: 'success'}).fire({title: '已複製到剪貼簿'})
       } catch (error) {
-        alert('複製失敗')
+        toast({toastType: 'failed'}).fire({title: '複製失敗'})
       }
     },
   }

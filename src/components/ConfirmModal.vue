@@ -50,7 +50,7 @@ export default {
       if(res){
         this.resolve(res)
       } else {
-        this.reject(res)
+        this.reject({errName: 'modalRes', message: '已取消'})
       }
       this.hideModal();
     }

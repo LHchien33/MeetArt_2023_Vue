@@ -17,7 +17,7 @@
       <!-- page title -->
       <div class="bg-gradient mb-5">
         <div class="bg-beige bg-opacity-75 p-6 gradient-border gradient-border-2">
-          <template v-if="finalSearchPattern">
+          <template v-if="useSearchHistory">
             <h1 class="fs-2 fs-xxl-1 mx-1">"{{ finalSearchPattern }}" 相關的搜尋結果</h1>
           </template>
           <template v-else-if="!query.index">
@@ -98,7 +98,7 @@
 
 <script>
 import { RouterLink } from 'vue-router';
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
 import { useProdStore } from '@/stores/product';
 import Pagination from '@/components/Pagination.vue';
@@ -110,7 +110,8 @@ export default {
       filteredPd: [],
       sortedPd: [],
       sortBy: 'enabledTime',
-      singlePagePd: []
+      singlePagePd: [],
+      useSearchHistory: null
     }
   },
   components: {
@@ -120,6 +121,7 @@ export default {
   computed:{
     ...mapState(useCommonStore, ['categories']),
     ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult', 'tutorPdId']),
+    ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult', 'routerPositionRecord']),
     setPagination(){
       const total = Math.ceil(this.sortedPd.length/12);
       const current = Number(this.query.page) || 1;
@@ -164,7 +166,7 @@ export default {
       }
     },
     sortProd(){
-      const arr = this.query.filter ? this.filteredPd : this.finalSearchPattern ? this.pdFromFinalSearch : this.usualProducts;
+      const arr = this.query.filter ? this.filteredPd : this.useSearchHistory ? this.pdFromFinalSearch : this.usualProducts;
       this.sortedPd = arr.toSorted((a, b) => b[this.sortBy] - a[this.sortBy]);
     },
     sliceProd(){
@@ -177,13 +179,17 @@ export default {
     }
   },
   async mounted(){
+    let loader = this.$loading.show();
+    this.useSearchHistory = this.routerPositionRecord === this.$router.options.history.state.position;
     try {
       await this.getAllProds();
       this.filterProd();
       this.sortProd();
       this.sliceProd();
     } catch (err) {
-      alert(err)
+      this.$toast({toastType: 'failed'}).fire({title: err});
+    } finally {
+      loader.hide();
     }
   }
 }

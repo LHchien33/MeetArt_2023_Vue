@@ -49,6 +49,7 @@
               <div>
                 <template v-for="item in quickLink" :key="item">
                   <RouterLink :to="{path: '/products', query: {index: 'category', filter: item}}"
+                              @click="finalSearchPattern = ''; finalSearchResult = []"
                               class="me-2 px-3 py-1 shadow-none rounded-pill btn btn-outline-primary">{{ item }}</RouterLink>
                 </template>
               </div>
@@ -382,12 +383,17 @@ export default {
     goToSearchResult(){
       this.finalSearchPattern = this.searchPattern;
       this.finalSearchResult = this.matchPatterns.map(item => item.id);
-      this.finalSearchPattern ? this.$router.push('/products') : alert('請先輸入欲搜尋的內容！');
+      if(this.finalSearchPattern){
+        this.$router.push('/products');
+        this.routerPositionRecord = this.$router.options.history.state.position + 1;
+      } else {
+        this.$toast({toastType: 'failed'}).fire({title: '請先輸入欲搜尋的課程名稱！'})
+      }
     }
   },
   computed: {
     ...mapState(useProdStore, ['allProducts', 'tutorPdId']),
-    ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult']),
+    ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult', 'routerPositionRecord']),
     normalProducts(){
       return this.allProducts.filter(item => item.id !== this.tutorPdId);
     },
@@ -407,7 +413,7 @@ export default {
   },
   mounted(){
     this.getRandomUsers();
-    this.getAllProds().catch(err => alert(err));
+    this.getAllProds().catch(err => this.$toast({toastType: 'failed'}).fire({title: err}));
   }
 }
 </script>

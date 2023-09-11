@@ -2,7 +2,7 @@
   <h1 class="fs-4 fs-xxl-3 mb-3 mb-md-5">
     <span class="material-symbols-outlined align-bottom me-1">assignment</span>填寫訂單資訊
   </h1>
-  <VForm v-slot="{ errors }" @submit="onSubmit" @invalid-submit="onInvalidSubmit" @keydown.enter.exact="preventEnter($event)">
+  <VForm v-slot="{ errors }" @submit="onSubmit" @invalid-submit="scrollErrorIntoView" @keydown.enter.exact="preventEnter($event)">
     <div class="row">
       <!-- 左欄 -->
       <div class="col-lg-9 mb-8">
@@ -217,7 +217,9 @@
 import { RouterLink } from 'vue-router';
 import { mapState, mapActions } from 'pinia';
 import { useCartsStore } from '@/stores/carts';
-import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
+import { useCommonStore } from '@/stores/common';
+import { useProdStore } from '@/stores/product';
+import { Field, Form, ErrorMessage, configure } from 'vee-validate';
 import { localize } from '@vee-validate/i18n';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
@@ -250,29 +252,26 @@ export default {
         category: ['素描', '水彩', '油畫', '色鉛筆', '以上皆無'],
         time: ['半年以下', '半年至一年', '一年以上']
       },
-      hasTutoring: true
     }
   },
   computed: {
     ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
+    ...mapState(useProdStore, ['tutorOriginPricedId', 'tutorDiscountedId']),
+    hasTutoring(){
+      return this.carts.find(item => {
+        switch (item.product_id) {
+          case this.tutorOriginPricedId:
+          case this.tutorDiscountedId:
+            return true
+          default:
+            return false
+        }
+      })
+    }
   },
   methods: {
     ...mapActions(useCartsStore, ['getCarts']),
-    onInvalidSubmit({ values, errors}){
-      if(this.carts.length === 0){
-        alert('請先在購物車加入商品！');
-        this.$router.push('/checkout/carts');
-        return
-      }
-      
-      const firstError = Object.keys(errors)[0];
-      const targetElement = document.getElementsByName(firstError)[0];
-      targetElement.scrollIntoView({
-        block: "center",
-        behavior: "smooth"
-      })
-      setTimeout(() => alert(`${errors[firstError]}`), 500);
-    },
+    ...mapActions(useCommonStore, [ 'scrollErrorIntoView']),
     onSubmit(val){
       const requestData = {
         "data": {
@@ -292,13 +291,14 @@ export default {
       }
       const url = `${VITE_BASE}/v2/api/${VITE_API}/order`;
       this.$http.post(url, requestData).then(res => {
-        alert('成功建立訂單');
         this.getCarts();
         sessionStorage.setItem('orderId', res.data.orderId);
+        this.$toast({toastType: 'success'}).fire({title: '成功建立訂單'})
         this.$router.push(`/checkout/payment`);
-      })
-      .catch(err => {
-        alert(`無法建立訂單，錯誤代碼：${err.response.status}`);
+      }).catch(err => {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `無法建立訂單，錯誤代碼：${err.response.status}`
+        })
       })
     },
     preventEnter(e){
@@ -306,6 +306,13 @@ export default {
         e.preventDefault();
         return
       }
+    }
+  },
+  created(){
+    if(this.carts.length === 0){
+      this.$toast({toastType: 'failed'}).fire({title: '請先在購物車加入商品！'})
+      this.$router.push('/checkout/carts');
+      return
     }
   },
   mounted(){

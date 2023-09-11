@@ -188,3 +188,16 @@
   --bs-btn-active-bg: var(--bs-btn-hover-bg);
   --bs-btn-active-border-color: var(--bs-btn-hover-bg);
 }
+
+@keyframes custom-toast-show {
+  0% {
+    transform: translateY(-1.5rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.custom-toast-show {
+  animation: custom-toast-show .5s;
+}

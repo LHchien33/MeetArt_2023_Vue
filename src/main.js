@@ -11,6 +11,12 @@ import { required, email, url, min_value, regex } from '@vee-validate/rules';
 import { localize, setLocale } from '@vee-validate/i18n';
 import zh_TW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 
+import { LoadingPlugin } from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
+
+import 'sweetalert2/dist/sweetalert2.min.css';
+import customToast from './plugins/GlobalToast';
+
 import './assets/all.scss';
 import * as bootstrap from 'bootstrap';
 
@@ -62,5 +68,11 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(VueAxios, axios);
+app.use(LoadingPlugin, {
+  zIndex: 1059,
+  color: '#fff',
+  backgroundColor: '#999',
+})
+app.use(customToast);
 
 app.mount('#app');

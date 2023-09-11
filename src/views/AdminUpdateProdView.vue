@@ -65,7 +65,11 @@
                                 @touchstart.prevent="uploadImg()">上傳圖片</button>
                       </div>
                       <!-- 上傳圖片 spinner -->
-                      <div v-if="imgUploading" class="position-absolute top-0 w-100 h-100 bg-dark-1 bg-opacity-50 spinner"></div>
+                      <div v-if="imgUploading" class="position-absolute top-0 w-100 h-100 bg-dark-1 bg-opacity-50 d-flex justify-content-center align-items-center">
+                        <div class="spinner-border text-light" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
                     </div>
                     <!-- 驗證/存回傳 url -->
                     <VField ref="imageUrl" type="text" rules="required" name="imageUrl"
@@ -423,7 +427,6 @@ export default {
     },
     uploadImg(){
       this.imgUploading = true;
-
       const formData = new FormData();
       formData.append('file-to-upload', this.imgFile)
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/upload`;
@@ -433,10 +436,12 @@ export default {
         this.previewImgUrl = URL.revokeObjectURL(this.previewImgUrl);
         this.uploadedImgUrl = res.data.imageUrl;
         // 觸發欄位驗證
-        this.$refs.imageUrl.handleChange(this.uploadedImgUrl, true)
-        alert('圖片上傳成功')
+        this.$refs.imageUrl.handleChange(this.uploadedImgUrl, true);
+        this.$toast({toastType: 'success'}).fire({title: '圖片上傳成功'})
       }).catch(err => {
-        alert(`圖片上傳失敗，錯誤代碼：${err.response.status}`);
+        this.$toast({toastType: 'failed'}).fire({
+          title: `圖片上傳失敗，錯誤代碼：${err.response.status}`
+        })
       }).finally(() => this.imgUploading = false)
     },
     valueProcessing(val){
@@ -461,28 +466,33 @@ export default {
       }, { outlines: val.outlines.length, minutes: 0, lectures: 0, });
       return val
     },
-    onSubmit(values){
+    async onSubmit(values){
       const requestData = this.valueProcessing(values);
       const method = this.updateId === 'new' ? 'post' : 'put';
       const path = this.updateId === 'new' ? '' : this.updateId
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${path}`;
 
-      this.$http[method](url, {data: {...requestData}}).then(res => {
-        alert(res.data.message);
+      try {
+        const res = await this.$http[method](url, {data: {...requestData}})  
         this.productSaved = true;
-        method === 'post' ? location.reload() : this.$router.go(-1);
-      }).catch(err => {
-        alert(`新增商品失敗，錯誤代碼：${err.response.status}`);
-      })
-    },
-    beforeCancel(formTouched){
-      if(!this.productSaved && formTouched){
-        this.$refs.ConfirmModal.openModal().then(res => {
-          this.discardEdit = true;
-          setTimeout(() => this.$router.push('/admin/products'), 500)
-        }).catch(err => {
-          this.discardEdit = false;
+        this.$toast({toastType: 'success'}).fire({title: res.data.message});
+        this.$router.push('/admin/products');
+      } catch (err) {
+        const txt = method === 'post' ? '新增' : '更新';
+        this.$toast({toastType: 'failed'}).fire({
+          title: `${txt}失敗，錯誤代碼：${err.response.status}`
         })
+      }
+    },
+    async beforeCancel(formTouched){
+      if(!this.productSaved && formTouched){
+        try {
+          await this.$refs.ConfirmModal.openModal();
+          this.discardEdit = true;
+          this.$router.push('/admin/products');
+        } catch (err) {
+          this.discardEdit = false;
+        }
       } else {
         this.discardEdit = true;
         this.$router.go(-1);
@@ -493,28 +503,27 @@ export default {
       if(!this.productSaved && formTouched){
         e.returnValue = '';
       }   
-      localStorage.setItem('adminTempProd', JSON.stringify(this.originTempProd));
+      sessionStorage.setItem('adminTempProd', JSON.stringify(this.originTempProd));
     }
   },
   async beforeRouteLeave () {
     const formTouched = this.$refs.VForm.getMeta().touched;
     if(!this.discardEdit && !this.productSaved && formTouched) {
       try {
-        const response = await this.$refs.ConfirmModal.openModal();
-        localStorage.removeItem('adminTempProd');
+        await this.$refs.ConfirmModal.openModal();
+        sessionStorage.removeItem('adminTempProd');
         window.removeEventListener('beforeunload', this.handleBeforeUnload);
         return true
-      }
-      catch (err){
+      } catch (err){
         return false
       }
     } else {
-      localStorage.removeItem('adminTempProd');
+      sessionStorage.removeItem('adminTempProd');
       window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
   },
   created(){
-    const storedData = localStorage.getItem('adminTempProd');
+    const storedData = sessionStorage.getItem('adminTempProd');  
     if(storedData){
       this.tempProduct = JSON.parse(storedData);
       this.originTempProd = this.tempProduct;
@@ -546,31 +555,5 @@ export default {
 
 .border-dashed{
   border-style: dashed !important;
-}
-
-.spinner::after {
-  content: '';
-  display: block;
-  height: 30%;
-  border: 5px solid white;
-  border-right-color: transparent;
-  border-radius: 50%;
-  aspect-ratio: 1/1;
-  animation: infinite spin .7s linear;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 </style>

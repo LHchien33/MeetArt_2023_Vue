@@ -155,24 +155,41 @@ export default {
     updateTempProd(product={}){
       this.originTempProd = product;
     },
-    deleteProduct(id, title){
+    async deleteProduct(id, title){
       this.modalContent.itemName = title;
-      let alertText = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${id}`;
-      this.$refs.ConfirmModal.openModal().then(res => {
-        return this.$http.delete(url);
-      }).then(res => {
-        alertText = res.data.message;
-        this.getPageProducts();
-      }).catch(err => {
-        err === false ? alertText = '已取消刪除' : alertText = `刪除失敗，錯誤代碼：${err.response.status}`;
-      }).finally(() => {
-        setTimeout(() => alert(alertText), 500);
-      })
+      try {
+        await this.$refs.ConfirmModal.openModal();
+        const res = await this.$http.delete(url);
+        await this.getPageProducts();
+        this.$toast({toastType: 'success'}).fire({title: res.data.message});
+      } catch (err) {
+        let toastTxt = '';
+        const { errName, message:msg, status } = err;
+        switch (errName){
+          case 'modalRes':
+            toastTxt = '已取消刪除';
+            break;
+          case 'getPageProducts':
+            toastTxt = `${msg}，錯誤代碼：${status}`;
+            break;
+          default:
+            toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
+        }
+        this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      }
     }
   },
-  mounted(){
-    this.getPageProducts(this.query.page);
+  async mounted(){
+    let loader = this.$loading.show();
+    try {
+      await this.getPageProducts(this.query.page);
+    } catch (err) {
+      const { message:msg, status } = err;
+      this.$toast({toastType: 'failed'}).fire({title: `${msg}，錯誤代碼：${status}`})
+    } finally {
+      loader.hide();
+    }
   }
 }
 </script>

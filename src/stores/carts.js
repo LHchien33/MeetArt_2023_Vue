@@ -13,19 +13,6 @@ export const useCartsStore = defineStore('carts', {
     couponInput: ''
   }),
   actions: {
-    async getCarts(){
-      const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
-      await axios.get(url).then(res => {
-        const { carts, total, final_total } = res.data.data;
-        this.carts = carts;
-        this.total = total;
-        this.final_total = final_total;
-        const idx = this.carts.findIndex(item => item.coupon?.code)
-        this.couponInfo = this.carts[idx]?.coupon || {} ;
-      }).catch(err => {
-        alert(`無法取得購物車資料，錯誤代碼：${err.response?.status}`)
-      })
-    },
     findRepeatItem(id){
       let repeatedPdIdx = '';
       const pdStore = useProdStore();
@@ -61,27 +48,56 @@ export const useCartsStore = defineStore('carts', {
         await axios.post(url, { data: { "product_id": requestId, "qty": 1 } });
         await this.getCarts();
       } catch (err) {
-        throw `無法加入購物車，錯誤代碼：${err.response?.status}`;
+        const { errName, message:msg, status } = err;
+        throw errName === 'getCarts' ? `${msg}，錯誤代碼：${status}` : `無法加入購物車，錯誤代碼：${err.response?.status}`;
       }
     },
-    useCoupon(couponCode, showAlert=false){
+    async getCarts(){
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
+      try {
+        const res = await axios.get(url);
+        const { carts, total, final_total } = res.data?.data;
+        this.carts = carts;
+        this.total = total;
+        this.final_total = final_total;
+
+        const idx = this.carts.findIndex(item => item.coupon?.code);
+        this.couponInfo = this.carts[idx]?.coupon || {} ;
+      } catch (err) {
+        this.carts = [];
+        this.total = 0;
+        this.final_total = 0;
+        this.couponInfo = {};
+        throw {
+          errName: 'getCarts',
+          message: '無法取得購物車資料',
+          status: err.response?.status
+        }
+      }
+    },
+    async useCoupon(couponCode){
       if(this.carts.length === 0){
-        alert('購物車是空的！')
-        return
+        return {
+          toastType: 'failed',
+          message: '購物車是空的！'
+        }
       }
 
       const url = `${VITE_BASE}/v2/api/${VITE_API}/coupon`;
-      axios.post(url, {data: {code: couponCode}}).then(res => {
-        if(showAlert){ alert(`成功套用優惠券`) }
+      try {
+        await axios.post(url, {data: {code: couponCode}});
         this.couponInput = '';
-        this.getCarts();
-      }).catch(err => {
-        let { message } = err.response.data;
-        if(typeof message !== 'string' || !message){
-          message =  `無法使用優惠券，錯誤代碼：${err.response.status}`;
+        return {
+          toastType: 'success',
+          message: '成功套用優惠券'
         }
-        alert(message);
-      })
+      } catch (err) {
+        throw {
+          errName: 'useCoupon',
+          message: '無法使用優惠券',
+          status: err.response?.status
+        }
+      }
     }
   },
 })

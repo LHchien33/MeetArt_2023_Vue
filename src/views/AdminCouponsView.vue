@@ -91,9 +91,10 @@ export default {
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/coupons`;
       this.$http.get(url).then(res => {
         this.coupons = res.data.coupons;
-      })
-      .catch(err => {
-        alert(`無法取得優惠券，錯誤代碼：${err.response.status}`)
+      }).catch(err => {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `無法取得優惠券，錯誤代碼：${err.response.status}`
+        })
       })
     },
     editCoupon(item){
@@ -114,12 +115,15 @@ export default {
           values.due_date = values.due_date/1000;
           // 送出
           this.$http[method](url, {data: {...values}}).then(res => {
-            alert(`已${values.id ? '更新' : '新增'}優惠券`)
-            this.$refs.InfoModal.hideModal();
             this.getCoupons();
-          })
-          .catch(err => {
-            alert(`無法更新優惠券，錯誤代碼：${err.response.status}`)
+            this.$refs.InfoModal.hideModal();
+            this.$toast({toastType: 'success'}).fire({
+              title: `已${values.id ? '更新' : '新增'}優惠券`
+            })
+          }).catch(err => {
+            this.$toast({toastType: 'failed'}).fire({
+              title: `無法更新優惠券，錯誤代碼：${err.response.status}`
+            })
           })
         } else {
           this.scrollErrorIntoView(res);
@@ -129,22 +133,23 @@ export default {
         console.log(err);
       })
     },
-    deleteCoupon(id, title){
+    async deleteCoupon(id, title){
       this.modalContent.itemName = title;
-      let alertText = '';
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/coupon/${id}`;
-      this.$refs.ConfirmModal.openModal().then(res => {
-        return this.$http.delete(url)
-      }).then(res => {
-        alertText = '已刪除優惠券';
+      try {
+        await this.$refs.ConfirmModal.openModal();
+        await this.$http.delete(url);
+        this.$toast({toastType: 'success'}).fire({title: '已刪除優惠券'})
         this.getCoupons();
-      }).catch(err => {
-        err === false ?
-        alertText = '已取消刪除' :
-        alertText = `無法刪除優惠券，錯誤代碼：${err.response.status}`;
-      }).finally(() => {
-        setTimeout(() => alert(alertText), 500)
-      })
+      } catch (err) {
+        let toastTxt = '';
+        if(err.errName === 'modalRes'){
+          toastTxt = '已取消刪除';
+        } else {
+          toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
+        }
+        this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      }
     }
   },
   mounted(){

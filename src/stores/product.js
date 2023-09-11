@@ -14,6 +14,7 @@ export const useProdStore = defineStore('product', {
     },
     finalSearchPattern: '',
     finalSearchResult: [],
+    routerPositionRecord: null
   }),
   getters: {
     keywords({currentPd}){

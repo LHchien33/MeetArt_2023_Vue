@@ -36,15 +36,23 @@
                   <p class="text-accent fw-semibold text-nowrap mb-0">NT$ {{ numToPriceString(currentPd.price) }}</p>
                 </div>
                 <div class="col">
-                  <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 text-nowrap"
-                          :class="{ 'disabled': itemRepeated }" @click="addProduct(prodId)">
-                    <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
+                  <button :class="{ 'disabled': itemRepeated || loading }" type="button"
+                          class="btn p-0 w-100 bg-gradient border-0 me-2 text-nowrap">
+                    <div :class="{ 'hover-bg-transparent': !itemRepeated }"
+                          @click="addProduct($event, prodId)" data-btn-value="cart"
+                          class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">
+                      <span :class="{'spinner-border': loading === 'cart'}" class="spinner-border-sm me-1"></span>
+                      {{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                       <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                     </div>
                   </button>
                 </div>
                 <div class="col" :class="{ 'd-none': itemRepeated }">
-                  <button @click="addProduct(currentPd.id, true)" type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">立即購買</button>
+                  <button :class="{ 'disabled': loading }"
+                      @click="addProduct($event, currentPd.id)" data-btn-value="buyNow"
+                      type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">
+                    <span :class="{'spinner-border': loading === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
+                  </button>
                 </div>
               </div>
             </div>
@@ -62,13 +70,21 @@
                   <span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(currentPd.price) }}</span>
                 </p>
               </div>
-              <button type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 mb-2"
-                      :class="{ 'disabled': itemRepeated }" @click="addProduct(prodId)">
-                <div :class="{ 'hover-bg-transparent': !itemRepeated }" class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">{{ itemRepeated ? '已加入購物車' : '加入購物車' }}
+              <button :class="{ 'disabled': itemRepeated || loading }"
+                      type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 mb-2">
+                <div :class="{ 'hover-bg-transparent': !itemRepeated }"
+                      @click="addProduct($event, prodId)" data-btn-value="cart"
+                      class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">
+                  <span :class="{'spinner-border': loading === 'cart'}" class="spinner-border-sm me-1"></span>
+                  {{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                   <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                 </div>
               </button>
-              <button @click="addProduct(currentPd.id, true)" type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;" :class="{ 'd-none': itemRepeated }">立即購買</button>
+              <button :class="{ 'd-none': itemRepeated, 'disabled': loading }"
+                      @click="addProduct($event, currentPd.id)" data-btn-value="buyNow"
+                      type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;">
+                <span :class="{'spinner-border': loading === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
+              </button>
             </div>
             <!-- 課外輔導導購連結 -->
             <TutorPageAd v-if="!isTutor"></TutorPageAd>
@@ -165,6 +181,7 @@ export default {
   },
   data(){
     return {
+      loading: '',
       isTutor: null,
       breadcrumb: {},
       errorMessage: '',
@@ -245,16 +262,28 @@ export default {
       if(currentPd){
         this.currentPd = currentPd;
       } else {
-        alert('找不到課程，該課程不存在或已下架');
+        this.$toast({
+          toastType: 'failed',
+          otherMixins: {
+            timer: 2000,
+          }
+        }).fire({ title: '找不到課程，該課程不存在或已下架' });
         this.$router.push('/products');
       }
     },
-    async addProduct(id, buyNow=false){
+    async addProduct(e, id){
+      this.loading = e.target.dataset.btnValue;
       try {
         await this.addToCart(id);
-        buyNow ? this.$router.push('/checkout/carts') : alert('已加入購物車');
+        if(this.loading === 'buyNow'){
+          this.$router.push('/checkout/carts');
+        } else {
+          this.$toast({toastType: 'success'}).fire({title: '已加入購物車'});
+        }
       } catch (err) {
-        alert(err);
+        this.$toast({toastType: 'failed'}).fire({title: err});
+      } finally {
+        this.loading = ''
       }
     },
     handleBeforeUnload(){
@@ -262,16 +291,21 @@ export default {
     }
   },
   mounted(){
+    let loader = this.$loading.show();
     this.isTutor = this.prodId === this.tutorPdId ? true : false;
     this.findRepeatItem(this.prodId);
-    
+    this.breadcrumb = JSON.parse(sessionStorage.getItem("from"));
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+
     this.getAllProds().then(res => {
       this.getSingleProd();
       this.swiperInstance = document.querySelector('.swiper').swiper;
-      }).catch(err => this.errorMessage = err);
+      }).catch(err => {
+        this.errorMessage = err
+      }).finally(() => {
+        loader.hide();
+      })
 
-    this.breadcrumb = JSON.parse(sessionStorage.getItem("from"));
-    window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeRouteEnter(to, from, next) {
     if(from.matched.length !== 0){  // 不是重新整理的狀況

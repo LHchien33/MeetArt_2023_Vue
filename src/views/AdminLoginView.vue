@@ -76,10 +76,12 @@ export default {
       this.$http.post(url, values).then(res => {
         const { token, expired } = res.data;
         document.cookie = `MeetArtToken = ${token}; expires = ${new Date(expired)};`;
-        alert(res.data.message)
+        this.$toast({toastType: 'success'}).fire({title: res.data.message})
         this.$router.push('/admin/orders');
       }).catch(err => {
-        alert(`登入失敗，錯誤代碼：${err.response.status}`);
+        this.$toast({toastType: 'failed'}).fire({
+          title: `登入失敗，錯誤代碼：${err.response.status}`
+        })
       })
     }
   }

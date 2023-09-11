@@ -199,18 +199,20 @@ export default {
         this.buyList = products;
         this.user = user;
         this.couponInfo = Object.values(this.buyList)[0].coupon;
-      })
-      .catch(err => {
-        alert(`無法取得訂單資料，錯誤代碼：${err.response.status}`)
+      }).catch(err => {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `無法取得訂單資料，錯誤代碼：${err.response.status}`
+        })
       })
     },
     checkout(id){
       const url = `${VITE_BASE}/v2/api/${VITE_API}/pay/${id}`;
       this.$http.post(url).then(res => {
         this.$router.push('/checkout/complete')
-      })
-      .catch(err => {
-        alert(`付款失敗，錯誤代碼：${err.response.status}`)
+      }).catch(err => {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `付款失敗，錯誤代碼：${err.response.status}`
+        })
       })
     }
   },

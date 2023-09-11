@@ -155,9 +155,10 @@ export default {
       this.$http.get(url).then(res => {
         this.orders = res.data.orders;
         this.pagination = res.data.pagination;
-      })
-      .catch(err => {
-        alert(`無法取得訂單，錯誤代碼：${err.response.status}`)
+      }).catch(err => {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `無法取得訂單，錯誤代碼：${err.response.status}`
+        })
       })
     },
     showOrderModal(order, type){
@@ -165,10 +166,11 @@ export default {
       this.editing = type === 'edit' ? true : false ;
       this.$refs.infoModal.openModal();
     },
-    updateOrder(orderId){      
+    async updateOrder(orderId){      
       const orderEditForm = this.$refs.orderEditModal.$refs.orderEditForm;
-      orderEditForm.validate().then(res => {
-        if(res.valid){
+      try {
+        const formRes = await orderEditForm.validate();
+        if(formRes.valid){
           const values = orderEditForm.getValues();
           // 整理資料
           values.is_paid = JSON.parse(values.is_paid);
@@ -176,40 +178,39 @@ export default {
           if(values.user.order_completed){
             values.user.order_completed = JSON.parse(values.user.order_completed);
           }
-          
           // 送出
           const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${orderId}`;
-          this.$http.put(url, {data: {...values}}).then(res => {
-            alert(`已更新訂單`);
-            this.$refs.infoModal.hideModal();
-            this.getOrders();
-          })
-          .catch(err => {
-            alert(`無法更新訂單，錯誤代碼：${err.response.status}`);
-          })
+          await this.$http.put(url, {data: {...values}})
+          this.getOrders();
+          this.$refs.infoModal.hideModal();
+          this.$toast({toastType: 'success'}).fire({title: '已更新訂單'});
         } else {
           this.scrollErrorIntoView(res);
         }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      } catch (err) {
+        this.$toast({toastType: 'failed'}).fire({
+          title: `無法更新訂單，錯誤代碼：${err.response?.status}`
+        });
+      }
     },
-    deleteOrder(id){
+    async deleteOrder(id){
       this.delModalContent.itemName = id;
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${id}`;
-      let alertText = '';
-
-      this.$refs.ConfirmModal.openModal().then(res => {
-        return this.$http.delete(url);
-      }).then(res => {
-        alertText = '已刪除訂單';
+      try {
+        await this.$refs.ConfirmModal.openModal();
+        await this.$http.delete(url);
+        this.$toast({toastType: 'success'}).fire({title: '已刪除訂單'});
         this.getOrders();
-      }).catch(err => {  // 刪除請求失敗 or modal 取消刪除
-        alertText = err ? `無法刪除訂單，錯誤代碼：${err.response.status}` : '已取消刪除';
-      }).finally(() => {
-        setTimeout(() => alert(alertText), 500);
-      })
+      } catch (err) {
+        let toastTxt = '';
+        if(err.errName === 'modalRes'){
+          toastTxt = '已取消刪除';
+        } else {
+          toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
+        }
+        this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      }
+
     }
   },
   mounted(){

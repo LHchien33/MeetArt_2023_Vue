@@ -124,12 +124,12 @@ export default {
         this.isLoggedIn = true;
       }).catch(err => {
         const text = err.response.data.message || '使用者驗證錯誤，請重新登入';
-        alert(text);
+        this.$toast({toastType: 'failed'}).fire({title: text})
         this.$router.push('/login');
       })
     }
   },
-  created(){
+  mounted(){
     this.checkAdmin();
   },
   async beforeRouteLeave (to, from){
@@ -137,10 +137,12 @@ export default {
       try {
         await this.$http.post(`${VITE_BASE}/v2/logout`);
         document.cookie = 'MeetArtToken = ; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        alert('登出成功');
+        this.$toast({toastType: 'success'}).fire({title: '登出成功'})
         return true;
       } catch (err){
-        alert(`登出失敗，錯誤代碼：${err.response.status}`);
+        this.$toast({toastType: 'failed'}).fire({
+          title: `登出失敗，錯誤代碼：${err.response.status}`
+        })
         return false;
       }
     }

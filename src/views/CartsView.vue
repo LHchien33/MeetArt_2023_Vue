@@ -6,7 +6,7 @@
   <div class="row">
     <!-- 左欄 -->
     <div class="col-lg-9 mb-8">
-      <div v-if="carts.length === 0" class="px-4 py-8 bg-white bg-opacity-75">
+      <div v-if="carts.length === 0" ref="loadingContainer" class="vl-parent px-4 py-8 bg-white bg-opacity-75">
         <span class="material-symbols-outlined fs-d4 d-block text-center mb-3">production_quantity_limits</span>
         <p class="text-center">- 購物車是空的 -</p>
         <RouterLink to="/products" class="btn btn-primary py-2 w-75 w-sm-50 w-lg-25 d-block mx-auto">回去探索課程</RouterLink>
@@ -30,7 +30,7 @@
         </div>
         <hr class="my-3">
         <!-- cart list body -->
-        <ul class="list-unstyled">
+        <ul ref="loadingContainer" class="list-unstyled vl-parent">
           <li v-for="cart in carts" :key="cart.id">
             <div class="row gy-3">
               <div class="col-sm-8 col-md-6 flex-grow-1">
@@ -52,9 +52,10 @@
                 <p class="mb-0 text-end text-md-center text-accent">NT$ {{ Math.round(cart.final_total) }}</p>
               </div>
               <div class="col-12 col-md-2">
-                <button type="button" class="border-0 bg-transparent d-flex align-items-center ms-auto text-dark-3 pe-0 pe-md-revert"
-                    @click="deleteCartItem(cart.id)">
-                  <span class="fs-5 material-symbols-outlined">delete</span>
+                <button type="button" @click="deleteCartItem(cart.id)" :disabled="loadingStatus.phase === 'pending'"
+                        class="border-0 bg-transparent d-flex align-items-center ms-auto text-dark-3 pe-0 pe-md-revert">
+                  <span :class="{'d-none': deleteTarget === cart.id }" class="fs-5 material-symbols-outlined">delete</span>
+                  <span :class="{'spinner-border': deleteTarget === cart.id }" class="spinner-border-sm me-1"></span>
                   刪除
                 </button>
               </div>
@@ -67,7 +68,7 @@
           <RouterLink to="/products" class="btn btn-sm btn-outline-secondary">
             <span class="material-symbols-outlined align-bottom fs-6">chevron_left</span>
             繼續選購</RouterLink>
-          <small class="text-end d-block text-dark-3">共計 {{ carts.length }} 堂影音課程</small>
+          <small class="text-end d-block text-dark-3">共計 {{ carts.length }} 項</small>
         </div>
       </div>
     </div>
@@ -82,8 +83,10 @@
             <div v-if="couponInfo.code" class="badge text-secondary border border-secondary">
               <span>{{ couponInfo.title }}</span>：{{ couponInfo.code }}</div>
             <div v-if="!couponInfo.code" class="d-flex justify-content-end text-nowrap">
-              <button type="button" @click="couponInput = ''" class="btn btn-sm btn-outline-light-2 me-2">取消</button>
-              <button type="button" @click="useCoupon(couponInput, true)" class="btn btn-sm btn-primary">使用</button>
+              <button type="button" @click="couponInput = ''" :class="{ 'disabled': loadingStatus.disabled }"
+                      class="btn btn-sm btn-outline-light-2 me-2">取消</button>
+              <button type="button" @click="useCouponByBtn(couponInput, true)" :class="{ 'disabled': loadingStatus.disabled }"
+                      class="btn btn-sm btn-primary">使用</button>
             </div>
           </div>
         </div>
@@ -107,11 +110,13 @@
             </div>
           </div>
           <!-- 前往結帳（lg 以下） -->
-          <RouterLink to="/checkout/order" class="btn btn-primary w-100 py-2 mb-9 d-lg-none">前往結帳</RouterLink>
+          <RouterLink to="/checkout/order" :class="{ 'disabled': loadingStatus.disabled }"
+                      class="btn btn-primary w-100 py-2 mb-9 d-lg-none">前往結帳</RouterLink>
         </div>
       </div>
       <!-- 前往結帳（lg 以上） -->
-      <RouterLink to="/checkout/order" class="btn btn-primary w-100 py-2 mb-9 d-none d-lg-block">前往結帳</RouterLink>
+      <RouterLink to="/checkout/order" :class="{ 'disabled': loadingStatus.disabled }"
+                  class="btn btn-primary w-100 py-2 mb-9 d-none d-lg-block">前往結帳</RouterLink>
     </div>
   </div>
 </template>
@@ -128,43 +133,100 @@ export default {
   components: {
     RouterLink,
   },
+  data(){
+    return {
+      customLoader: {
+        isFullPage: false,
+        width: 32,
+        height: 32
+      },
+      loadingStatus: {
+        phase: '',
+        disabled: ''
+      },
+      deleteTarget: '',
+    }
+  },
   computed: {
     ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
     ...mapState(useProdStore, ['tutorPdId', 'tutorOriginPricedId', 'tutorDiscountedId']),
     ...mapWritableState(useCartsStore, ['couponInput']),
   },
   watch: {
-    async "carts.length"(length){
-      if(length === 1){
-        const coupon = this.carts[0].coupon; // undefined or coupon obj
-        await this.replaceTutorPd(coupon);
-        if(coupon){
-          this.useCoupon(coupon.code)
+    async "loadingStatus.phase"(phase){      
+      if(this.carts.length === 1 && this.carts[0].product_id === this.tutorDiscountedId && phase === 'resolve'){
+        this.loadingStatus = { phase: 'pending', disabled: true };
+        let loader = this.$loading.show({
+          ...this.customLoader,
+          container: this.$refs.loadingContainer
+        });
+        try {
+          await this.replaceTutorPd();
+          if(this.couponInfo.code){
+            await this.useCoupon(this.couponInfo.code);
+          }
+          await this.getCarts();
+          this.loadingStatus = { phase: 'resolve', disabled: false };
+        } catch (err) {
+          const { message, status } = err;
+          this.$toast({toastType: 'failed'}).fire({title: `${message}，錯誤代碼：${status}`});
+          this.loadingStatus = { phase: 'reject', disabled: true };
+        } finally {
+          loader.hide();
         }
       }
-    }
+    },
   },
   methods: {
     ...mapActions(useCartsStore, ['getCarts', 'useCoupon']),
-    deleteCartItem(id){
+    async deleteCartItem(id){
+      this.loadingStatus = { phase: 'pending', disabled: true };
+      this.deleteTarget = id;
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart/${id}`;
-      this.$http.delete(url).then(res => {
-        this.getCarts();
-        alert('刪除成功');
-      })
-      .catch(err => {
-        alert(`無法刪除購物車品項，錯誤代碼：${err.response.status}`);
-      })
+      try {
+        await this.$http.delete(url);        
+        await this.getCarts();
+        this.$toast({toastType: 'success'}).fire({title: '已刪除購物車項目'});
+        this.loadingStatus.phase = 'resolve';
+      } catch (err) {
+        const { errName, message:msg, status } = err;
+        let toastTxt = errName === 'getCarts' ? `${msg}，錯誤代碼：${status}` : `刪除失敗，錯誤代碼：${err.response?.status}`;
+        this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+        this.loadingStatus.phase = 'reject';
+      } finally {
+        this.deleteTarget = '';
+        this.loadingStatus.disabled = false;
+      }
     },
-    async replaceTutorPd(coupon){
+    async useCouponByBtn(couponCode){
+      this.loadingStatus = { phase: 'pending', disabled: true };
+      let loader = this.$loading.show({
+        ...this.customLoader,
+        container: this.$refs.loadingContainer
+      });
+      try {
+        const { message:msg, toastType } = await this.useCoupon(couponCode);
+        await this.getCarts();
+        this.$toast({toastType}).fire({title: msg});
+        this.loadingStatus = { phase: 'resolve', disabled: false };
+      } catch (err) {
+        const { message:msg, status } = err;
+        this.$toast({toastType: 'failed'}).fire({title: `${msg}，錯誤代碼：${status}`});
+        this.loadingStatus = { phase: 'reject', disabled: true };
+      } finally {
+        loader.hide();
+      }
+    },
+    async replaceTutorPd(){
       let delId = '';   // cart item id
       let postId = '';  // product id
+      const { length:cartLength } = this.carts
       // 替換成原價的
-      if(this.carts.length === 1 && this.carts[0].product_id === this.tutorDiscountedId){
+      if(cartLength === 1 && this.carts[0].product_id === this.tutorDiscountedId){
         delId = this.carts[0].id;
         postId = this.tutorOriginPricedId;
-      // 替換成加購的
-      } else if (this.carts.length > 1){
+        // 替換成加購的
+      } else if (cartLength > 1){
         const idx = this.carts.findIndex(item => item.product_id === this.tutorOriginPricedId);
         if(idx > -1){
           delId = this.carts[idx].id;
@@ -172,41 +234,65 @@ export default {
         }
       }
       if(!delId || !postId){
-        return
+        return false
       }
+      
       const delApi = `${VITE_BASE}/v2/api/${VITE_API}/cart/${delId}`;
       const postApi = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
-      return Promise.all([
-        this.$http.delete(delApi),
-        this.$http.post(postApi, { data: { "product_id": postId, "qty": 1 } })
-      ]).then(res => {
-        if(!coupon){  // undefined or coupon obj
-          this.getCarts();
+      try {
+        await Promise.all([
+          this.$http.delete(delApi),
+          this.$http.post(postApi, { data: { "product_id": postId, "qty": 1 } })
+        ])
+        return true
+      } catch (err) {
+        throw {
+          message: '發生錯誤(課外輔導)',
+          status: err.response?.status
         }
-      }).catch(err => {
-        const message = err.response.data?.message || '發生錯誤（課外輔導）';
-        const status = err.response?.status;
-        alert(`${message}，錯誤代碼：${status}`);
-      })
+      }
+    }
+  },
+  async mounted(){
+    this.$emit('updateStep', 1);
+    let loader = this.$loading.show();
+    this.loadingStatus = { phase: 'pending', disabled: true };
+    try {
+      await this.getCarts();
+      const replaceRes = await this.replaceTutorPd();
+      let couponRes = null;
+      if(this.couponInfo.code){
+        couponRes = await this.useCoupon(this.couponInfo.code);
+      }
+      if(replaceRes || couponRes?.toastType === 'success'){
+        await this.getCarts();
+      }
+      this.loadingStatus = { phase: 'resolve', disabled: false };
+    } catch (err) {
+      const { message:msg, status } = err;
+      this.$toast({toastType: 'failed'}).fire({title: `${msg}，錯誤代碼：${status}`});
+      this.loadingStatus = { phase: 'reject', disabled: true };
+    } finally {
+      loader.hide();
     }
   },
   beforeRouteLeave(to, from){
-    if(to.fullPath === "/checkout/order" && this.carts.length === 0){
-      alert('請先在購物車加入商品！');
-      return false;
+    const hasCheckout = to.fullPath.split('/').includes('checkout');
+    if(hasCheckout){
+      if(this.carts.length === 0){
+        this.$toast({toastType: 'failed'}).fire({title: '請先在購物車加入商品！'})
+        return false;
+      }
+      if(this.loadingStatus.disabled){
+        return false
+      }
     }
+
     const urlId = to.params.urlPdId;
     if(urlId === this.tutorOriginPricedId || urlId === this.tutorDiscountedId){
       return `/product/${this.tutorPdId}`;
     }
   },
-  async mounted(){
-    this.$emit('updateStep', 1);
-    await this.replaceTutorPd(this.couponInfo.code);
-    if(this.couponInfo.code){ 
-      this.useCoupon(this.couponInfo.code);
-    }
-  }
 }
 </script>
 

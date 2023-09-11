@@ -184,8 +184,13 @@ export default {
   },
   mounted(){
     this.navbarCollapse = new Collapse(this.$refs.navbarCollapse, {toggle: false});
-    window.addEventListener('scroll', this.scrollHandler)
-    this.getCarts();
+    window.addEventListener('scroll', this.scrollHandler);
+    if(this.currentPath !== '/checkout/carts'){
+      this.getCarts().catch(err => {
+        const { message, status } = err;
+        this.$toast({toastType: 'failed'}).fire({title: `${message}，錯誤代碼：${status}`});
+      })
+    }
   },
   unmounted(){
     window.removeEventListener('scroll', this.scrollHandler)
