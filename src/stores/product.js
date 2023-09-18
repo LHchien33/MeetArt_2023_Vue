@@ -39,7 +39,11 @@ export const useProdStore = defineStore('product', {
         const res = await axios.get(url);
         this.allProducts = res.data.products;
       } catch (err) {
-        throw `無法取得課程資訊，錯誤代碼：${err.response.status}`;
+        throw {
+          errName: 'getAllProds',
+          message: '無法取得課程資訊',
+          status: err.response?.status
+        }
       }
     },
   },

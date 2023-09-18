@@ -23,19 +23,19 @@
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
                         id="creditCard" class="btn-check" value="信用卡付款"></VField>
                 <label class="btn btn-outline-primary fs-7" for="creditCard"
-                      :class="{ 'btn-outline-danger': errors.payMethod }">信用卡付款</label>
+                      :class="{ 'btn-outline-danger': errors.payMethod, 'disabled': uiDisabled }">信用卡付款</label>
               </div>
               <div class="col">
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
                         id="ATM" class="btn-check" value="ATM 轉帳"></VField>
                 <label class="btn btn-outline-primary fs-7" for="ATM"
-                      :class="{ 'btn-outline-danger': errors.payMethod }">ATM 轉帳</label>
+                      :class="{ 'btn-outline-danger': errors.payMethod, 'disabled': uiDisabled }">ATM 轉帳</label>
               </div>
               <div class="col">
                 <VField type="radio" rules="required" name="payMethod" :validateOnChange="true"
                         id="CVS" class="btn-check" value="超商代收"></VField>
                 <label class="btn btn-outline-primary fs-7" for="CVS"
-                      :class="{ 'btn-outline-danger': errors.payMethod }">超商代收</label>
+                      :class="{ 'btn-outline-danger': errors.payMethod, 'disabled': uiDisabled }">超商代收</label>
               </div>
             </div>
           </div>
@@ -50,7 +50,8 @@
                   <span class="text-danger"> *</span>
                   <ErrorMessage name="order_name" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
                 </label>
-                <VField type="text" rules="required" name="order_name" :class="{ 'is-invalid': errors.order_name }"
+                <VField type="text" rules="required" name="order_name"
+                        :class="{ 'is-invalid': errors.order_name }" :disabled="uiDisabled"
                         class="form-control" id="order_name" placeholder="例如：王小明"></VField>
               </div>
               <div class="col">
@@ -58,7 +59,8 @@
                   <span class="text-danger"> *</span>
                   <ErrorMessage name="order_email" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
                 </label>
-                <VField type="text" rules="required|email" name="order_email" :class="{ 'is-invalid': errors.order_email }"
+                <VField type="text" rules="required|email" name="order_email"
+                        :class="{ 'is-invalid': errors.order_email }" :disabled="uiDisabled"
                         class="form-control" id="order_email" placeholder="例如：example@email.com"></VField>
               </div>
               <div class="col">
@@ -66,13 +68,14 @@
                   <span class="text-danger"> *</span>
                   <ErrorMessage name="order_phone" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
                 </label>
-                <VField type="tel" rules="required|phoneNumber" name="order_phone" :class="{ 'is-invalid': errors.order_phone }"
+                <VField type="tel" rules="required|phoneNumber" name="order_phone"
+                        :class="{ 'is-invalid': errors.order_phone }" :disabled="uiDisabled"
                         class="form-control" id="order_phone" placeholder="例如：0912-345678、03-123-4567"></VField>
               </div>
             </div>
           </div>
           <!-- 課外輔導 -->
-          <div v-if="hasTutoring" class="border-top py-6">
+          <div v-if="hasTutor" class="border-top py-6">
             <h2 class="fs-5 w-fit-content mb-4">課外輔導需求
               <span class="gradient-line gradient-line-8 d-block mt-n2"></span>
             </h2>
@@ -81,19 +84,19 @@
               <h3 class="fs-6 fw-normal">學習背景</h3>
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 gy-3">
                 <div class="col">
-                  <VField as="select" name="background.method" class="form-select">
+                  <VField as="select" name="background.method" class="form-select" :disabled="uiDisabled">
                     <option value="" selected>學習方式</option>
                     <option v-for="item in background.method" :key="item" :value="item">{{ item }}</option>
                   </VField>
                 </div>
                 <div class="col">
-                  <VField as="select" name="background.category" class="form-select">
+                  <VField as="select" name="background.category" class="form-select" :disabled="uiDisabled">
                     <option value="" selected>學過哪些媒材</option>
                     <option v-for="item in background.category" :key="item" :value="item">{{ item }}</option>
                   </VField>
                 </div>
                 <div class="col">
-                  <VField as="select" name="background.time" class="form-select">
+                  <VField as="select" name="background.time" class="form-select" :disabled="uiDisabled">
                     <option value="" selected>學了多久</option>
                     <option v-for="item in background.time" :key="item" :value="item">{{ item }}</option>
                   </VField>
@@ -108,22 +111,22 @@
               </h3>
               <div class="form-check form-check-inline">
                 <VField type="radio" rules="required" name="applyType" :validateOnChange="true" id="advice" value="作品檢視"      
-                        :class="{ 'is-invalid': errors.applyType }" class="form-check-input"></VField>
+                        :class="{ 'is-invalid': errors.applyType }" :disabled="uiDisabled" class="form-check-input"></VField>
                 <label class="form-check-label" for="advice">作品檢視</label>
               </div>
               <div class="form-check form-check-inline">
                 <VField type="radio" rules="required" name="applyType" :validateOnChange="true" id="technique" value="技法請教"       
-                        :class="{ 'is-invalid': errors.applyType }" class="form-check-input"></VField>
+                        :class="{ 'is-invalid': errors.applyType }" :disabled="uiDisabled" class="form-check-input"></VField>
                 <label class="form-check-label" for="technique">技法請教</label>
               </div>
               <div class="form-check form-check-inline">
                 <VField type="radio" rules="required" name="applyType" :validateOnChange="true" id="studyPath" value="學習方向諮詢"       
-                        :class="{ 'is-invalid': errors.applyType }" class="form-check-input"></VField>
+                        :class="{ 'is-invalid': errors.applyType }" :disabled="uiDisabled" class="form-check-input"></VField>
                 <label class="form-check-label" for="studyPath">學習方向諮詢</label>
               </div>
               <div class="form-check form-check-inline">
                 <VField type="radio" rules="required" name="applyType" :validateOnChange="true" id="others" value="其他"      
-                        :class="{ 'is-invalid': errors.applyType }" class="form-check-input"></VField>
+                        :class="{ 'is-invalid': errors.applyType }" :disabled="uiDisabled" class="form-check-input"></VField>
                 <label class="form-check-label" for="others">其他（請於下方簡述問題）</label>
               </div>
             </div>
@@ -133,7 +136,8 @@
                 <span class="text-danger"> *</span>
                 <ErrorMessage name="link" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField type="text" :rules="{ required: true, url: '^https?://.+' }" name="link" id="link" class="form-control" placeholder="請提供可瀏覽/下載檔案的連結"
+              <VField type="text" :rules="{ required: true, url: '^https?://.+' }" name="link" id="link" class="form-control"
+                      placeholder="請提供可瀏覽/下載檔案的連結" :disabled="uiDisabled"
                       :class="{ 'is-invalid': errors.link }"></VField>
             </div>
             <!-- 簡述問題 -->
@@ -143,7 +147,8 @@
                 <span class="text-danger">*</span>
                 <ErrorMessage name="problem" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField as="textarea" rules="required|wordLimit:300,簡述問題" name="problem" :class="{ 'is-invalid': errors.problem }"
+              <VField as="textarea" rules="required|wordLimit:300,簡述問題" name="problem"
+                      :class="{ 'is-invalid': errors.problem }" :disabled="uiDisabled"
                       class="form-control invalid-icon-position" id="problem" style="height: 8rem;"
                       placeholder="例如：想針對作品的某部分請老師給予建議、學習卡關不知道怎麼進行下一步...等">
               </VField>
@@ -203,11 +208,13 @@
               </div>
             </div>
             <!-- 送出訂單（lg 以下） -->
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-9 d-lg-none">送出訂單</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-9 d-lg-none" :disabled="uiDisabled">
+              <span :class="{'spinner-border': uiDisabled }" class="spinner-border-sm me-1"></span>送出訂單</button>
           </div>
         </div>
         <!-- 送出訂單（lg 以上） -->
-        <button type="submit" class="btn btn-primary w-100 py-2 mb-9 d-none d-lg-block">送出訂單</button>
+        <button type="submit" class="btn btn-primary w-100 py-2 mb-9 d-none d-lg-block" :disabled="uiDisabled">
+          <span :class="{'spinner-border': uiDisabled }" class="spinner-border-sm me-1"></span>送出訂單</button>
       </div>
     </div>
   </VForm>
@@ -247,6 +254,7 @@ export default {
   },
   data(){
     return {
+      uiDisabled: false,
       background: {
         method: ['影音、書籍自學', '購買線上課程', '參加畫室', '請家教', '以上皆無'],
         category: ['素描', '水彩', '油畫', '色鉛筆', '以上皆無'],
@@ -257,7 +265,7 @@ export default {
   computed: {
     ...mapState(useCartsStore, ['carts', 'total', 'final_total', 'couponInfo']),
     ...mapState(useProdStore, ['tutorOriginPricedId', 'tutorDiscountedId']),
-    hasTutoring(){
+    hasTutor(){
       return this.carts.find(item => {
         switch (item.product_id) {
           case this.tutorOriginPricedId:
@@ -272,34 +280,33 @@ export default {
   methods: {
     ...mapActions(useCartsStore, ['getCarts']),
     ...mapActions(useCommonStore, [ 'scrollErrorIntoView']),
-    onSubmit(val){
+    async onSubmit(val){
+      this.uiDisabled = true;
+      const { order_name:name, order_email:email, order_phone:tel, applyType, payMethod, link, problem, background } = val;
       const requestData = {
         "data": {
           "user": {
-            "name": val.order_name,
-            "email": val.order_email,
-            "tel": val.order_phone,
+            name, email, tel, applyType, payMethod, link, problem, background,
             "address": "-",
-            "applyType": val.applyType,
-            "payMethod": val.payMethod,
-            "link": val.link,
-            "problem": val.problem,
-            "background": {...val.background},
-            "order_completed": val.applyType ? false : undefined
+            "order_completed": applyType ? false : undefined
           },
         }
       }
       const url = `${VITE_BASE}/v2/api/${VITE_API}/order`;
-      this.$http.post(url, requestData).then(res => {
-        this.getCarts();
-        sessionStorage.setItem('orderId', res.data.orderId);
-        this.$toast({toastType: 'success'}).fire({title: '成功建立訂單'})
+      try {
+        const res = await this.$http.post(url, requestData);
+        localStorage.setItem('orderId', res.data?.orderId);
+        this.$toast({toastType: 'success'}).fire({title: '成功建立訂單'});
         this.$router.push(`/checkout/payment`);
-      }).catch(err => {
-        this.$toast({toastType: 'failed'}).fire({
-          title: `無法建立訂單，錯誤代碼：${err.response.status}`
-        })
-      })
+        await this.getCarts();
+      } catch (err) {
+        const { errName, message:msg, status } = err;
+        if(errName !== 'getCarts'){
+          this.$toast({toastType: 'failed'}).fire({title: `${msg}，錯誤代碼：${status}`});
+        }
+      } finally {
+        this.uiDisabled = false;
+      }
     },
     preventEnter(e){
       if(e.target.name !== 'problem'){
@@ -310,12 +317,9 @@ export default {
   },
   created(){
     if(this.carts.length === 0){
-      this.$toast({toastType: 'failed'}).fire({title: '請先在購物車加入商品！'})
       this.$router.push('/checkout/carts');
       return
     }
-  },
-  mounted(){
     this.$emit('updateStep', 2);
   }
 }

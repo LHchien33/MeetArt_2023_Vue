@@ -17,9 +17,7 @@
       <!-- page title -->
       <div class="bg-gradient mb-5">
         <div class="bg-beige bg-opacity-75 p-6 gradient-border gradient-border-2">
-          <template v-if="useSearchHistory">
-            <h1 class="fs-2 fs-xxl-1 mx-1">"{{ finalSearchPattern }}" 相關的搜尋結果</h1>
-          </template>
+          <h1 v-if="useSearchHistory" class="fs-2 fs-xxl-1 mx-1">"{{ finalSearchPattern }}" 相關的搜尋結果</h1>
           <template v-else-if="!query.index">
             <h1 class="fs-2 fs-xxl-1 fw-bold mb-4 mx-1">所有課程</h1>
             <ul class="position-relative list-unstyled mb-0 row g-2" style="z-index: 2;">
@@ -52,7 +50,7 @@
         </div>
       </div>
       <!-- sort button -->
-      <div class="d-flex justify-content-end mb-2">
+      <div v-if="!errMsg && sortedPd.length" class="d-flex justify-content-end mb-2">
         <button type="button" class="border-0 bg-transparent px-4 py-1"
                 :class="sortBy === 'enabledTime' ? ['text-secondary', 'text-decoration-underline'] : 'text-dark-3'"
                 @click="sortBy = 'enabledTime'">最新上架</button>
@@ -62,7 +60,8 @@
                 @click="sortBy = 'classmates'">最熱門</button>
       </div>
       <!-- products list -->
-      <div v-if="sortedPd.length === 0" class="text-center">- 沒有符合此分類的課程 -</div>
+      <div v-if="errMsg" class="text-center py-3">- {{ errMsg }} -</div>
+      <div v-else-if="sortedPd.length === 0" class="text-center py-3">- 沒有符合此分類的課程 -</div>
       <div class="row row-cols-1 row-cols-lg-3 row-cols-xl-4 gy-5 mb-5">
         <div class="col" v-for="prod in singlePagePd" :key="prod.id">
           <RouterLink :to="`/product/${prod.id}`" class="d-flex flex-column flex-sm-row flex-lg-column h-100 rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none">
@@ -98,7 +97,7 @@
 
 <script>
 import { RouterLink } from 'vue-router';
-import { mapActions, mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { useCommonStore } from '@/stores/common';
 import { useProdStore } from '@/stores/product';
 import Pagination from '@/components/Pagination.vue';
@@ -111,7 +110,8 @@ export default {
       sortedPd: [],
       sortBy: 'enabledTime',
       singlePagePd: [],
-      useSearchHistory: null
+      useSearchHistory: null,
+      errMsg: ''
     }
   },
   components: {
@@ -120,8 +120,7 @@ export default {
   },
   computed:{
     ...mapState(useCommonStore, ['categories']),
-    ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult', 'tutorPdId']),
-    ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult', 'routerPositionRecord']),
+    ...mapState(useProdStore, ['allProducts', 'finalSearchPattern', 'finalSearchResult', 'tutorPdId', 'routerPositionRecord']),
     setPagination(){
       const total = Math.ceil(this.sortedPd.length/12);
       const current = Number(this.query.page) || 1;
@@ -187,7 +186,8 @@ export default {
       this.sortProd();
       this.sliceProd();
     } catch (err) {
-      this.$toast({toastType: 'failed'}).fire({title: err});
+      const { message:msg, status } = err;
+      this.errMsg = `${msg}，錯誤代碼：${status}`;
     } finally {
       loader.hide();
     }

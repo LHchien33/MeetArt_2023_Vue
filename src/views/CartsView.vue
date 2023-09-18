@@ -85,7 +85,7 @@
             <div v-if="!couponInfo.code" class="d-flex justify-content-end text-nowrap">
               <button type="button" @click="couponInput = ''" :class="{ 'disabled': loadingStatus.disabled }"
                       class="btn btn-sm btn-outline-light-2 me-2">取消</button>
-              <button type="button" @click="useCouponByBtn(couponInput, true)" :class="{ 'disabled': loadingStatus.disabled }"
+              <button type="button" @click="useCouponByBtn(couponInput)" :class="{ 'disabled': loadingStatus.disabled }"
                       class="btn btn-sm btn-primary">使用</button>
             </div>
           </div>
@@ -180,22 +180,21 @@ export default {
   methods: {
     ...mapActions(useCartsStore, ['getCarts', 'useCoupon']),
     async deleteCartItem(id){
-      this.loadingStatus = { phase: 'pending', disabled: true };
       this.deleteTarget = id;
+      this.loadingStatus = { phase: 'pending', disabled: true };
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart/${id}`;
       try {
         await this.$http.delete(url);        
         await this.getCarts();
         this.$toast({toastType: 'success'}).fire({title: '已刪除購物車項目'});
-        this.loadingStatus.phase = 'resolve';
+        this.loadingStatus = { phase: 'resolve', disabled: false };
       } catch (err) {
         const { errName, message:msg, status } = err;
         let toastTxt = errName === 'getCarts' ? `${msg}，錯誤代碼：${status}` : `刪除失敗，錯誤代碼：${err.response?.status}`;
         this.$toast({toastType: 'failed'}).fire({title: toastTxt});
-        this.loadingStatus.phase = 'reject';
+        this.loadingStatus = { phase: 'reject', disabled: true };
       } finally {
         this.deleteTarget = '';
-        this.loadingStatus.disabled = false;
       }
     },
     async useCouponByBtn(couponCode){
@@ -279,12 +278,11 @@ export default {
   beforeRouteLeave(to, from){
     const hasCheckout = to.fullPath.split('/').includes('checkout');
     if(hasCheckout){
-      if(this.carts.length === 0){
+      if(this.carts.length === 0 && to.fullPath === '/checkout/order'){
         this.$toast({toastType: 'failed'}).fire({title: '請先在購物車加入商品！'})
         return false;
-      }
-      if(this.loadingStatus.disabled){
-        return false
+      } else if (this.loadingStatus.disabled){
+        return false;
       }
     }
 

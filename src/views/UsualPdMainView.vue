@@ -50,7 +50,8 @@
           <h2 class="fw-bold fs-5 mb-1">關於老師：</h2>
         </div>
         <div class="d-flex">
-          <img class="rounded-circle me-3 align-self-start" src="../assets/images/teacher_avatar.jpg" alt="" style="max-width: 60px;">
+          <img class="rounded-circle me-3 align-self-start" src="../assets/images/teacher_avatar.jpg" alt="老師大頭照"
+                style="max-width: 60px;">
           <div>
             <p class="mb-1 fw-semibold">{{ currentPd.teacher?.name }}</p>
             <p class="mb-2 fs-7">{{ currentPd.teacher?.brief }}</p>

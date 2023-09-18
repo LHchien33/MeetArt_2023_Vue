@@ -5,7 +5,7 @@
         <span class="material-symbols-outlined align-bottom me-1">credit_score</span>付款完成
       </h1>
       <p class="w-75 mx-auto mb-5">
-        已完成訂單！若有加購課外輔導，近日請留意信箱訊息，我們將於三日內聯繫您。
+        已完成訂單付款！提醒您若有加購課外輔導，近日請留意信箱訊息，我們將於三個工作天內聯繫您。
       </p>
       <RouterLink to="/products" class="btn btn-primary d-block w-fit-content mx-auto">
         看看其他課程
@@ -27,7 +27,7 @@ export default {
   },
   beforeRouteEnter(to, from){
     if(from.fullPath !== "/checkout/payment"){
-      return from.fullPath
+      return from.fullPath;
     }
   }
 }

@@ -212,14 +212,14 @@ export default {
   }
   .dropdown-item:hover {
     color: #1a1a1a;
-    background: linear-gradient(280.94deg, #F1D49C 19.83%, #B3C8DD 85.28%);
+    background: var(--bs-gradient);
   }
 }
 
 .dropdown-item.active, .dropdown-item:active,
 .dropdown-item:focus {
   color: #1a1a1a;
-  background: linear-gradient(280.94deg, #F1D49C 19.83%, #B3C8DD 85.28%);
+  background: var(--bs-gradient);
 }
 
 .fixed-button-size{

@@ -5,37 +5,37 @@
   </div>
   <!-- 主要內容 -->
   <div class="p-8 bg-white bg-opacity-75">
-    <!-- 什麼是「課外輔導」？ -->
-    <div class="mb-9">
+    <!-- 區塊 1 簡介 -->
+    <section class="mb-9">
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">什麼是「課外輔導」？</h2>
       </div>
       <p>為了協助所有喜愛繪畫的學習者「解決學習卡關的情況，以支持其繼續前進」的額外服務。</p>
-    </div>
-    <!-- 我可以購買這項服務嗎？ -->
-    <div class="mb-9">
+    </section>
+    <!-- 區塊 2 購買資格 -->
+    <section class="mb-9">
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">我可以購買這項服務嗎？</h2>
       </div>
       <p><u>不論有無購買影音課程</u>，只要想在學習的路上尋求專業建議，都可以購買並申請課外輔導。</p>
-    </div>
-    <!-- 有以下問題時，適合購買課外輔導 -->
-    <div class="mb-9">
+    </section>
+    <!-- 區塊 3 購買建議 -->
+    <section class="mb-9">
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">有以下問題時，適合購買課外輔導</h2>
       </div>
       <div v-html="currentPd.intro?.willLearn" class="list-space-sm"></div>
-    </div>
-    <!-- 繪課室能提供的協助有： -->
-    <div class="mb-9">
+    </section>
+    <!-- 區塊 4 服務介紹 -->
+    <section class="mb-9">
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">繪課室能提供的協助有：</h2>
       </div>
-      <!--  -->
+      <!-- 圓圈圖示 -->
       <div class="row gx-2 gx-md-5 justify-content-center pb-5">
         <div class="col-4 col-md-3">
           <div class="ratio ratio-1x1">
@@ -59,11 +59,11 @@
           </div>
         </div>
       </div>
-      <!--  -->
+      <!-- 文字介紹 -->
       <div v-html="currentPd.intro?.preparation" class="list-space-sm"></div>
-    </div>
-    <!-- 服務流程 -->
-    <div class="mb-9">
+    </section>
+    <!-- 區塊 5 服務流程圖示 -->
+    <section class="mb-9">
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">服務流程</h2>
@@ -71,9 +71,9 @@
       <div class="w-100 w-md-75 mx-auto">
         <img class="w-100" src="../assets/images/flowChart.png" alt="">
       </div>
-    </div>
-    <!-- 關於老師 -->
-    <div>
+    </section>
+    <!-- 區塊 6 關於老師 -->
+    <section>
       <div class="d-flex mb-3">
         <div class="bg-gradient me-3" style="width: 4px;"></div>
         <h2 class="fw-bold fs-5 mb-1">關於老師：</h2>
@@ -84,14 +84,14 @@
           <p class="mb-1 fw-semibold">{{ currentPd.teacher?.name }}</p>
           <p class="mb-2 fs-7">{{ currentPd.teacher?.brief }}</p>
           <a class="d-inline-block me-2">
-            <img src="../assets/images/facebook.svg" alt="" style="width: 20px;">
+            <img src="../assets/images/facebook.svg" alt="facebook連結" style="width: 20px;">
           </a>
           <a class="d-inline-block">
-            <img src="../assets/images/instagram.svg" alt="" style="width: 20px;">
+            <img src="../assets/images/instagram.svg" alt="instagram連結" style="width: 20px;">
           </a>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 

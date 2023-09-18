@@ -22,7 +22,8 @@
                 <div class="input-clear-wrapper flex-grow-1">
                   <!-- 另外以 compositionend event 監聽 IME 的 composition session -->
                   <input type="text" v-model="searchPattern" @input="searchHandler($event)" @compositionend="searchHandler($event)"
-                          class="w-100 border-0 fs-lg-5 px-2 px-lg-3 lh-lg focus-outline-none" placeholder="找課程">
+                        :placeholder="errorMessage ? errorMessage : '找課程'"
+                        class="w-100 border-0 fs-lg-5 px-2 px-lg-3 lh-lg focus-outline-none">
                   <!-- 清除輸入的 x -->
                   <button type="button" @click="clearSearchBtn()" :class="{ 'd-block': inputClearBtnShow }"
                           class="material-symbols-outlined input-clear-btn p-1 text-muted fs-5 fs-lg-4">cancel</button>
@@ -36,12 +37,12 @@
                         <RouterLink :to="`/product/${item.id}`"
                                     class="d-block p-2 px-lg-3 text-decoration-none text-dark-1">{{ item.title }}</RouterLink>
                       </li>
-                      <li v-if="matchPatterns.length > 5" class="list-group-item">...</li>
+                      <li v-if="matchPatterns.length > 5" class="list-group-item text-muted">...等 {{ matchPatterns.length }} 項結果</li>
                     </template>
                   </ul>
                 </div>
                 <!-- 搜尋按鈕 -->
-                <button type="button" @click="goToSearchResult()" :class="{'disabled': searchDisabled}" :disabled="searchDisabled"
+                <button type="button" @click="goToSearchResult()" :disabled="errorMessage || searchDisabled"
                         class="btn btn-primary rounded-pill py-2 px-3 py-lg-3 px-lg-6 py-xxl-5 px-xxl-8 fs-6 fs-lg-5 fs-xxl-4 text-light-1 text-nowrap">搜尋課程
                 </button>
               </div>
@@ -333,7 +334,13 @@ export default {
           const img = item.picture.medium;
           this.students.push({ name, img });
         })
-      }).catch(err => console.log(err))
+      }).catch(err => {
+        this.students = [
+          {name: 'Abby', img: 'https://randomuser.me/api/portraits/women/29.jpg'},
+          {name: 'Gary', img: 'https://randomuser.me/api/portraits/men/34.jpg'},
+          {name: 'Christian', img: 'https://randomuser.me/api/portraits/women/68.jpg'}
+        ]
+      })
     },
     clearSearchBtn(){
       this.searchPattern = '';
@@ -343,10 +350,12 @@ export default {
     },
     searchHandler: _debounce(function(e){
       this.matchPatterns = [];
-      this.searchDisabled = e.target.value ? true : false;
-      this.inputClearBtnShow = e.target.value ? true : false;
+      this.searchDisabled = true;
+      this.inputClearBtnShow = true;
       
       if(!e.target.value){
+        this.searchDisabled = false;
+        this.inputClearBtnShow = false;
         return
       }
 
@@ -356,24 +365,22 @@ export default {
         return
       }
 
-      setTimeout(() => this.searchPdTitle(e), 500);
-
+      this.searchPdTitle(e);
+      this.searchDisabled = false;
     }, 500),
     searchPdTitle(e){
       this.searchPattern = e.target.value;
-      this.searchDisabled = false;
-
       // 去頭尾空白、特殊符號跳脫
       const escapePattern = e.target.value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const separated = escapePattern.replace(/\s+/g, '|'); // 句中空白替換成 |
       const combined = escapePattern.replace(/\s+/g, '');   // 句中空白替換成 ""（組字）
       // 兩者是否相等（搜尋時有沒有使用空白格）
-      const rule = separated === combined ? `[${escapePattern}]+` : `${separated}|[${combined}]+`;
+      const rule = separated === combined ? `[${escapePattern}]+` : `[${combined}]+|${separated}`;
       const regex = new RegExp(rule, 'g');
 
       this.normalProducts.forEach(item => {
         const matches = item.title.match(regex);  // Array or null
-        const matchCount = matches?.reduce((ac, cu) => cu.length > 1 ? ac + cu.length*10 : ac + 1, 0);
+        const matchCount = matches?.reduce((ac, cu) => cu.length > 1 ? ac + cu.length*10 : ac + 1, 0); // 加權計算
         if(matches){
           this.matchPatterns.push({ title: item.title, id: item.id, count: matchCount });
         }
@@ -406,14 +413,16 @@ export default {
         const temp = this.normalProducts.toSorted((a, b) => b.classmates - a.classmates);
         return temp.filter(item => item.classmates > 300).slice(0, 12);
       } else {
-        this.errorMessage = '資料取得失敗';
         return [];
       }
     }
   },
   mounted(){
     this.getRandomUsers();
-    this.getAllProds().catch(err => this.$toast({toastType: 'failed'}).fire({title: err}));
+    this.getAllProds().catch(err => {
+      const { message:msg, status } = err;
+      this.errorMessage = `${msg}，錯誤代碼：${status}`;
+    });
   }
 }
 </script>

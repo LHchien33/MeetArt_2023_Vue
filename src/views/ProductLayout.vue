@@ -14,7 +14,7 @@
                 <span v-else>所有課程</span>
               </RouterLink>
             </li>
-            <li v-if="breadcrumb.filter" class="breadcrumb-item">
+            <li v-if="!isTutor && breadcrumb.filter" class="breadcrumb-item">
               <RouterLink :to="{path:'/products', query: {...breadcrumb}}">{{ breadcrumb.filter }}</RouterLink>
             </li>
           </template>
@@ -28,6 +28,7 @@
             <div class="image-container mb-4 bg-light-2">
               <img v-if="currentPd.imageUrl" :src="currentPd.imageUrl" class="object-fit-cover w-100 h-100" :alt="currentPd.title">
             </div>
+            <!-- 主要資訊(含行動版摘要) -->
             <RouterView name="mainContent"></RouterView>
             <!-- (行動版) sticky 價格、購買按鈕 start -->
             <div class="bg-white p-3 sticky-bottom d-lg-none border-top mb-8">
@@ -36,22 +37,22 @@
                   <p class="text-accent fw-semibold text-nowrap mb-0">NT$ {{ numToPriceString(currentPd.price) }}</p>
                 </div>
                 <div class="col">
-                  <button :class="{ 'disabled': itemRepeated || loading }" type="button"
+                  <button :class="{ 'disabled': itemRepeated || disabled }" type="button"
                           class="btn p-0 w-100 bg-gradient border-0 me-2 text-nowrap">
                     <div :class="{ 'hover-bg-transparent': !itemRepeated }"
                           @click="addProduct($event, prodId)" data-btn-value="cart"
                           class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">
-                      <span :class="{'spinner-border': loading === 'cart'}" class="spinner-border-sm me-1"></span>
+                      <span :class="{'spinner-border': disabled === 'cart'}" class="spinner-border-sm me-1"></span>
                       {{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                       <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                     </div>
                   </button>
                 </div>
                 <div class="col" :class="{ 'd-none': itemRepeated }">
-                  <button :class="{ 'disabled': loading }"
+                  <button :class="{ 'disabled': disabled }"
                       @click="addProduct($event, currentPd.id)" data-btn-value="buyNow"
                       type="button" class="btn py-2 btn-primary w-100 text-nowrap" style="--bs-btn-border-width: 3px;">
-                    <span :class="{'spinner-border': loading === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
+                    <span :class="{'spinner-border': disabled === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
                   </button>
                 </div>
               </div>
@@ -62,7 +63,9 @@
           <!-- 右欄 -->
           <div class="d-none d-lg-block col-lg-4">
             <div class="p-6 bg-white bg-opacity-75 mb-8">
+              <!-- 摘要資訊 -->
               <RouterView name="sideBar"></RouterView>
+              <!-- 售價與操作按鈕 -->
               <div class="text-end my-2">
                 <span v-if="currentPd.origin_price !== currentPd.price"><s>NT$ {{ numToPriceString(currentPd.origin_price) }}</s></span>
                 <p class="mb-0">
@@ -70,20 +73,20 @@
                   <span class="fs-4 text-accent fw-semibold">NT$ {{ numToPriceString(currentPd.price) }}</span>
                 </p>
               </div>
-              <button :class="{ 'disabled': itemRepeated || loading }"
+              <button :class="{ 'disabled': itemRepeated || disabled }"
                       type="button" class="btn p-0 w-100 bg-gradient border-0 me-2 mb-2">
                 <div :class="{ 'hover-bg-transparent': !itemRepeated }"
                       @click="addProduct($event, prodId)" data-btn-value="cart"
                       class="btn py-2 w-100 bg-white bg-clip-padding-box border border-3 border-transparent">
-                  <span :class="{'spinner-border': loading === 'cart'}" class="spinner-border-sm me-1"></span>
+                  <span :class="{'spinner-border': disabled === 'cart'}" class="spinner-border-sm me-1"></span>
                   {{ itemRepeated ? '已加入購物車' : '加入購物車' }}
                   <span class="material-symbols-outlined fs-5 align-bottom">shopping_cart</span>
                 </div>
               </button>
-              <button :class="{ 'd-none': itemRepeated, 'disabled': loading }"
+              <button :class="{ 'd-none': itemRepeated, 'disabled': disabled }" 
                       @click="addProduct($event, currentPd.id)" data-btn-value="buyNow"
                       type="button" class="btn py-2 btn-primary w-100" style="--bs-btn-border-width: 3px;">
-                <span :class="{'spinner-border': loading === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
+                <span :class="{'spinner-border': disabled === 'buyNow'}" class="spinner-border-sm me-1"></span>立即購買
               </button>
             </div>
             <!-- 課外輔導導購連結 -->
@@ -181,7 +184,7 @@ export default {
   },
   data(){
     return {
-      loading: '',
+      disabled: '',
       isTutor: null,
       breadcrumb: {},
       errorMessage: '',
@@ -191,10 +194,10 @@ export default {
   },
   watch: {
     keywords(newVal, oldVal){  // 調整 breadcrumb 用
-      const bread = this.breadcrumb.index;
-      const oldFilter = oldVal.find(item => item.index === bread)?.filter;
-      const newFilter = newVal.find(item => item.index === bread)?.filter;
-      if(this.prodId === this.tutorPdId){
+      const currentIndex = this.breadcrumb.index;
+      const oldFilter = oldVal.find(item => item.index === currentIndex)?.filter;
+      const newFilter = newVal.find(item => item.index === currentIndex)?.filter;
+      if(this.isTutor){
         this.breadcrumb = {};
         return
       }
@@ -202,11 +205,15 @@ export default {
         this.breadcrumb.filter = newFilter;
       }
     },
-    prodId(newVal, oldVal){
-      this.isTutor = newVal === this.tutorPdId ? true : false;
-      this.getSingleProd();
-      this.findRepeatItem(this.prodId);
-      this.swiperInstance.slideTo(0, 0); // 推薦列回到第一個 item
+    prodId(newVal){
+      try {
+        this.isTutor = newVal === this.tutorPdId;
+        this.getSingleProd();
+        this.findRepeatItem(newVal);
+        this.swiperInstance.slideTo(0, 0); // 推薦列回到第一個 item
+      } catch (err) {
+        this.$toast({toastType: 'failed'}).fire({ title: err.message });
+      }
     },
     carts(){
       this.findRepeatItem(this.prodId);
@@ -249,7 +256,7 @@ export default {
         }
       })
 
-      total0.sort((a, b) => b.classmates - a.classmates); // 得分 0 以熱門程度排序
+      total0.sort((a, b) => b.classmates - a.classmates); // 得分 0 則以熱門程度排序
       return [...total4, ...total3, ... total2, ...total1, ...total0].slice(0, 10); // 最多取前 10 個
     }
   },
@@ -258,24 +265,22 @@ export default {
     ...mapActions(useCartsStore, ['addToCart', 'findRepeatItem']),
     ...mapActions(useProdStore, ['getAllProds']),
     getSingleProd(){
-      const currentPd = this.allProducts.find(item => item.id === this.prodId);
-      if(currentPd){
-        this.currentPd = currentPd;
+      const result = this.allProducts.find(item => item.id === this.prodId);
+      if(result){
+        this.currentPd = result;
       } else {
-        this.$toast({
-          toastType: 'failed',
-          otherMixins: {
-            timer: 2000,
-          }
-        }).fire({ title: '找不到課程，該課程不存在或已下架' });
         this.$router.push('/products');
+        throw {
+          errName: 'getSingleProd',
+          message: '找不到課程，該課程不存在或已下架',
+        }
       }
     },
     async addProduct(e, id){
-      this.loading = e.target.dataset.btnValue;
+      this.disabled = e.target.dataset.btnValue;
       try {
         await this.addToCart(id);
-        if(this.loading === 'buyNow'){
+        if(this.disabled === 'buyNow'){
           this.$router.push('/checkout/carts');
         } else {
           this.$toast({toastType: 'success'}).fire({title: '已加入購物車'});
@@ -283,32 +288,36 @@ export default {
       } catch (err) {
         this.$toast({toastType: 'failed'}).fire({title: err});
       } finally {
-        this.loading = ''
+        this.disabled = '';
       }
     },
     handleBeforeUnload(){
       sessionStorage.setItem("from", JSON.stringify(this.breadcrumb));
     }
   },
-  mounted(){
+  async mounted(){
     let loader = this.$loading.show();
-    this.isTutor = this.prodId === this.tutorPdId ? true : false;
+    this.isTutor = this.prodId === this.tutorPdId;
     this.findRepeatItem(this.prodId);
     this.breadcrumb = JSON.parse(sessionStorage.getItem("from"));
     window.addEventListener('beforeunload', this.handleBeforeUnload);
+    this.swiperInstance = document.querySelector('.swiper').swiper;
 
-    this.getAllProds().then(res => {
+    try {
+      await this.getAllProds();
       this.getSingleProd();
-      this.swiperInstance = document.querySelector('.swiper').swiper;
-      }).catch(err => {
-        this.errorMessage = err
-      }).finally(() => {
-        loader.hide();
-      })
-
+    } catch (err) {
+      const { message:msg, status, errName } = err;
+      this.errorMessage = `${msg}，錯誤代碼：${status}`;
+      const toastTxt = errName === 'getSingleProd' ? msg : `${msg}，錯誤代碼：${status}`;
+      this.$toast({toastType: 'failed'}).fire({ title: toastTxt });
+      this.disabled = status; // 使按鈕禁用
+    } finally {
+      loader.hide();
+    }
   },
   beforeRouteEnter(to, from, next) {
-    if(from.matched.length !== 0){  // 不是重新整理的狀況
+    if(from.matched.length !== 0){  // 重新整理以外的狀況，紀錄來源為 breadcrumb 所用
       const { index, filter } = from.query;
       if(filter || index){
         sessionStorage.setItem("from", JSON.stringify({index, filter}));
@@ -331,7 +340,8 @@ export default {
 }
 
 .main-content-style-set {
-  --bs-link-color: #AA864E;
+  --bs-link-color: var(--bs-secondary);
+  --bs-link-hover-color: var(--bs-accent);
 }
 
 .main-content-style-set .list-space-lg li + li {
@@ -352,7 +362,7 @@ export default {
 }
 
 .tab-color {
-  --bs-link-color: #666666;
-  --bs-link-hover-color: #1a1a1a;
+  --bs-link-color: var(--bs-dark-3);
+  --bs-link-hover-color: var(--bs-dark-1);
 }
 </style>

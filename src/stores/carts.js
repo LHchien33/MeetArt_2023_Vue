@@ -64,10 +64,7 @@ export const useCartsStore = defineStore('carts', {
         const idx = this.carts.findIndex(item => item.coupon?.code);
         this.couponInfo = this.carts[idx]?.coupon || {} ;
       } catch (err) {
-        this.carts = [];
-        this.total = 0;
-        this.final_total = 0;
-        this.couponInfo = {};
+        this.$reset();
         throw {
           errName: 'getCarts',
           message: '無法取得購物車資料',
