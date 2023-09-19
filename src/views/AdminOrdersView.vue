@@ -86,7 +86,7 @@
       </table>
     </div>
     <!-- 分頁導覽 -->
-    <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/orders'}" class="w-fit-content mx-auto"></Pagination>
+    <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/orders'}" class="justify-content-center"></Pagination>
   </div>
   <!-- 訂單詳情 Modal -->
   <InfoModal ref="infoModal">

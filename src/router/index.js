@@ -81,6 +81,19 @@ const router = createRouter({
               component: () => import('../views/CheckoutCompleteView.vue'),
             },
           ]
+        },
+        {
+          path: 'articles',
+          name: '前台文章列表',
+          component: () => import('../views/ArticlesView.vue'),
+        },
+        {
+          path: 'article/:articleId',
+          name: '前台單一文章',
+          component: () => import('../views/ArticleSingleView.vue'),
+          props: (route) => ({
+            articleId: route.params.articleId
+          })
         }
       ]
     },

@@ -89,7 +89,7 @@
       </div>
       <!-- pagination -->
       <div v-if="sortedPd.length > 12" class="py-5">
-        <Pagination class="w-fit-content mx-auto" v-bind="setPagination"></Pagination>
+        <Pagination class="justify-content-center" v-bind="setPagination"></Pagination>
       </div>
     </div>
   </main>

@@ -110,7 +110,7 @@
               <div class="pb-lg-3 mb-8 mb-md-0 d-lg-flex" style="height: 45%;">
                 <!-- 標題 -->
                 <div class="me-sm-8 mb-6">
-                  <h2 class="fs-2 fs-xxl-1 fw-bold w-fit-content text-nowrap">作品分享
+                  <h2 class="fs-2 fs-xxl-1 fw-bold d-inline-block text-nowrap">作品分享
                     <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
                   </h2>
                   <a class="fs-4 fs-md-6 fs-xxl-4 fw-semibold link-secondary text-decoration-none d-flex align-items-center" href="#">
@@ -172,7 +172,7 @@
     <!-- 熱門推薦 -->
     <section class="section-padding section-recommend-padding">
       <div class="container">
-        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 w-fit-content">熱門課程推薦
+        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 d-inline-block">熱門課程推薦
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
       </div>
@@ -240,7 +240,7 @@
     <!-- 課室專欄 -->
     <div class="container">
       <section class="section-padding">
-        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 w-fit-content">課室專欄
+        <h2 class="fs-2 fs-xxl-1 fw-bold mb-8 mb-xl-9 mb-xxl-10 d-inline-block">課室專欄
           <span class="gradient-line gradient-line-14 d-block mt-n14"></span>
         </h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 flex-lg-column">

@@ -10,7 +10,7 @@
           <!-- 付款方式 -->
           <div class="py-6">
             <div class="mb-4">
-              <h2 class="fs-5 d-inline-block w-fit-content me-1 mb-0">付款方式
+              <h2 class="fs-5 d-inline-block me-1 mb-0">付款方式
                 <span class="gradient-line gradient-line-8 d-block mt-n2"></span>
               </h2>
               <small class="text-danger">
@@ -41,7 +41,7 @@
           </div>
           <!-- 個人資訊 -->
           <div class="border-top py-6">
-            <h2 class="fs-5 w-fit-content mb-4">個人資訊
+            <h2 class="fs-5 d-inline-block mb-4">個人資訊
               <span class="gradient-line gradient-line-8 d-block mt-n2"></span>
             </h2>
             <div class="row row-cols-1 row-cols-md-2 gy-3">
@@ -76,7 +76,7 @@
           </div>
           <!-- 課外輔導 -->
           <div v-if="hasTutor" class="border-top py-6">
-            <h2 class="fs-5 w-fit-content mb-4">課外輔導需求
+            <h2 class="fs-5 d-inline-block mb-4">課外輔導需求
               <span class="gradient-line gradient-line-8 d-block mt-n2"></span>
             </h2>
             <!-- 學習背景 -->
@@ -153,7 +153,7 @@
                       placeholder="例如：想針對作品的某部分請老師給予建議、學習卡關不知道怎麼進行下一步...等">
               </VField>
             </div>
-            <small class="d-block mt-5 text-muted ms-auto w-fit-content">※ 待訂單完成付款，我們會盡快於三日內以電子信箱聯絡您</small>
+            <small class="d-block mt-5 text-muted text-end">※ 待訂單完成付款，我們會盡快於三日內以電子信箱聯絡您</small>
           </div>
         </div>
         <RouterLink to="/checkout/carts" class="btn btn-sm btn-outline-secondary mt-4">

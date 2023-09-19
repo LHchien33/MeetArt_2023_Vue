@@ -85,7 +85,7 @@
               <RouterLink :to="`/product/${tutorPdId}`" class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5">課外輔導</RouterLink>
             </li>
             <li class="nav-item">
-              <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課室專欄</a>
+              <RouterLink to="/articles" class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" href="#">課室專欄</RouterLink>
             </li>
             <li class="nav-item">
               <a class="nav-link py-4 py-lg-2 text-dark-1 px-lg-4 px-xxl-5" aria-current="page" href="#">常見問答</a>
