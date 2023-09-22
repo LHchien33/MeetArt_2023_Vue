@@ -15,7 +15,7 @@
   outline: none;
 }
 
-.before-z-index-2::before {
+.before-z-index-2::before { // 使 gradient border hover 時避免被蓋過
   z-index: 2;
 }
 
@@ -176,6 +176,9 @@
   }
   .hover-animation:hover .scale-11 {
     transform: scale(1.1);
+  }
+  .hover-animation:hover .translate-y-n5 {
+    transform: translateY(-5%);
   }
 }
 

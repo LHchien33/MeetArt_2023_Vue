@@ -5,126 +5,185 @@
       <ol class="breadcrumb mb-3">
         <li class="breadcrumb-item"><RouterLink to="/">首頁</RouterLink></li>
         <li class="breadcrumb-item"><RouterLink to="/articles">課室專欄</RouterLink></li>
-        <li class="breadcrumb-item active" aria-current="page">看不出圖哪裡怪怪的？從觀察開啟「繪畫之眼」</li>
+        <li v-if="article?.title" class="breadcrumb-item active" aria-current="page">{{ article.title}}</li>
       </ol>
-      <div class="row">
-        <div class="col-9">
+      <div v-if="errorMsg">{{ errorMsg }}</div>
+      <div v-else class="row gy-6">
+        <!-- 左欄主要內容 -->
+        <div class="col-lg-8 col-xl-9">
           <div class="p-6 px-8 bg-white bg-opacity-50">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <small class="text-muted">2023/09/29</small>
               <div>
-                <button type="button" class="border-0 bg-transparent icon-fill-1">
-                  <span class="material-symbols-outlined text-muted">share</span>
+                <small class="text-muted me-4 icon-fill-1">
+                  <span class="material-symbols-outlined align-middle fs-5 mb-1">person</span>
+                  {{ article.author }}
+                </small>
+                <small class="text-muted">
+                  <span class="material-symbols-outlined align-middle fs-5 mb-1">calendar_today</span>
+                  {{ dateConverter(article.create_at*1000) }}
+                </small>
+              </div>
+              <div>
+                <button type="button" class="border-0 bg-transparent text-muted icon-fill-1">
+                  <span class="material-symbols-outlined hover-text-primary">share</span>
                 </button>
-                <button type="button" class="border-0 bg-transparent">
-                  <span class="material-symbols-outlined text-muted">bookmark</span>
+                <button type="button" class="border-0 bg-transparent"
+                        :class="bookMarkFill ? ['icon-fill-1', 'text-primary'] : 'text-muted'"
+                        @click="bookMarkFill = !bookMarkFill">
+                  <span class="material-symbols-outlined hover-text-primary">bookmark</span>
                 </button>
               </div>
             </div>
             <!-- 文章內容 -->
             <article>
               <div class="gradient-line gradient-line-1"></div>
-              <h1 class="fs-3 fs-xxl-2 fw-bold mt-6 mb-4">看不出圖哪裡怪怪的？從觀察開啟「繪畫之眼」</h1>
-              <div class="d-flex bg-gradient">
+              <h1 class="fs-4 fs-md-3 fs-xxl-2 fw-bold mt-6 mb-4">{{ article.title }}</h1>
+              <div class="d-flex bg-gradient mb-4">
                 <div class="bg-gradient flex-shrink-0" style="width: 4px;"></div>
-                <p class="mb-0 bg-white bg-opacity-75 p-5">初學者剛開始學畫時，經常會想將看到的一切鉅細靡遺地包含在畫作當中，這些埋首在小細節上、卻又畫不好的時刻，通常是放棄的引子。在繪畫中，講究的其實是一個「整體」結構關係，因此你必須先將頭抬起來、後退一步，重新觀察眼前之事物。</p>
+                <p class="w-100 mb-0 bg-white bg-opacity-75 fs-7 fs-md-6 p-4 p-md-5">{{ article.description }}</p>
               </div>
-              <img class="w-100 my-5" src="../assets/images/course_bird.png" alt="">
-              <p>這裡有一百個字，樣打造完全小子讓人聯繫電話承諾基礎上，相當清除積分方案，律師德國通知西部以外休閒股市經銷商男人電源關閉投資者台北，等方面提示失望鎖定幾天公斤設立最新臉上一份特色哥哥一家我就，插入見過。</p>
-              <p>這裡有一百五十字，品知識情緒不詳自我只有有一定每一個適合才會，那種立刻是在目的，採取理念，情人物理真正選單存在激情家族環保我去合理取得，小區運作可愛小組，一條軟體三大品牌責任順利轉換不要不用應當很久熱情求助淡淡，轉移總經理恐怖不必今年遊戲藥物目錄這就是，種種偉大一道防止，實驗和平島不代表皮膚數碼空。</p>
-              <img class="w-100 my-5" src="../assets/images/course_bird.png" alt="">
-              <p>這裡有一百個字，樣打造完全小子讓人聯繫電話承諾基礎上，相當清除積分方案，律師德國通知西部以外休閒股市經銷商男人電源關閉投資者台北，等方面提示失望鎖定幾天公斤設立最新臉上一份特色哥哥一家我就，插入見過。</p>
+              <div v-html="article.content" class="articleContentSet"></div>
               <div class="gradient-line gradient-line-1 pt-5 pb-2"></div>
             </article>
-            <!-- 上下頁 -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <a href="#" class="link-dark-3 text-decoration-none hover-text-decoration">
-                <span class="material-symbols-outlined align-middle">chevron_left</span>
-                <span class="fs-7">上一篇</span>
-              </a>
-              <a href="#" class="link-dark-3 text-decoration-none hover-text-decoration">
-                <span class="fs-7">下一篇</span>
-                <span class="material-symbols-outlined align-middle">chevron_right</span>
-              </a>
-            </div>
           </div>
         </div>
-        <div class="col-3">
-          <div class="bg-white bg-opacity-50 p-5 mb-8">
-            <h3 class="fs-5 mb-4">探索更多</h3>
-            <div class="row gx-2 gy-3">
-              <div class="col-auto">
-                <RouterLink to="/" class="text-decoration-none badge rounded-pill border border-secondary text-secondary">#標籤1</RouterLink>
-              </div>
-              <div class="col-auto">
-                <RouterLink to="/" class="text-decoration-none badge rounded-pill border border-secondary text-secondary">#標籤標籤1</RouterLink>
-              </div>
-              <div class="col-auto">
-                <RouterLink to="/" class="text-decoration-none badge rounded-pill border border-secondary text-secondary">#標籤標籤標1</RouterLink>
+        <!-- 右欄標籤 & 推薦課程 -->
+        <div class="col-lg-4 col-xl-3">
+          <div class="row flex-lg-column sticky-lg-top" style="top: 100px;">
+            <div class="col-sm-6 col-lg-12">
+              <div class="bg-white bg-opacity-50 p-5 mb-8">
+                <h3 class="fs-5 mb-4">探索更多</h3>
+                <div class="row gx-2 gy-3">
+                  <div v-for="tag in article.tag" :key="tag" class="col-auto">
+                    <RouterLink :to="`/articles?tag=${tag}`" class="btn btn-outline-secondary btn-sm rounded-pill fs-8 lh-1"># {{ tag }}</RouterLink>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="bg-white bg-opacity-50 p-5">
-            <h3 class="fs-5 mb-4">相關課程</h3>
-            <ul class="list-unstyled">
-              <li class="mb-3">
-                <RouterLink to="/" class="rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none mb-3">
-                  <div class="row gx-2 p-3">
-                    <div class="col-4">
-                      <div class="overflow-hidden w-100 h-100">
-                        <img src="../assets/images/course_bird.png" class="object-fit-cover w-100 h-100 scale-11 transition-all-3">
-                      </div>
+            <div class="col-sm-6 col-lg-12">
+              <div class="bg-white bg-opacity-50 p-5">
+                <h3 class="fs-5 mb-4">相關課程</h3>
+                <div v-if="courseLoading" class="d-flex justify-content-center py-4">
+                  <div class="spinner-border text-light-2" style="--bs-spinner-border-width: .2rem;"></div>
+                </div>
+                <ul v-else class="list-unstyled">
+                  <li v-for="course in relatedCourses" :key="course.id" class="mb-3 hover-animation">
+                    <div class="translate-y-n5 transition-all-3">
+                      <RouterLink :to="`/product/${course.id}`" class="rounded-3 overflow-hidden gradient-border gradient-border-1 text-decoration-none mb-3">
+                        <div class="row gx-2 p-3">
+                          <div class="col-4">
+                            <div class="overflow-hidden w-100 h-100">
+                              <img :src="course.imageUrl" :alt="course.title || course.id" class="object-fit-cover w-100 h-100">
+                            </div>
+                          </div>
+                          <div class="col-8">
+                            <div class="bg-white bg-opacity-50">
+                              <h2 class="mb-2 fs-7 fw-semibold text-dark-1">{{ course.title || course.id }}</h2>
+                              <p class="mb-0 fs-8 text-muted">{{ course.classmates || "--" }} 位同學</p>
+                            </div>
+                          </div>
+                        </div>
+                      </RouterLink>
                     </div>
-                    <div class="col-8">
-                      <div class="bg-white bg-opacity-50">
-                        <h2 class="mb-2 fs-7 fw-semibold text-dark-1">進階素描 - 人體動態捕捉</h2>
-                        <p class="mb-0 fs-8 text-muted">123 位同學</p>
-                      </div>
-                    </div>
-                  </div>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink to="/" class="rounded-3 overflow-hidden gradient-border gradient-border-1 before-z-index-2 hover-animation text-decoration-none mb-3">
-                  <div class="row gx-2 p-3">
-                    <div class="col-4">
-                      <div class="overflow-hidden w-100 h-100">
-                        <img src="../assets/images/course_bird.png" class="object-fit-cover w-100 h-100 scale-11 transition-all-3">
-                      </div>
-                    </div>
-                    <div class="col-8">
-                      <div class="bg-white bg-opacity-50">
-                        <h2 class="mb-2 fs-7 fw-semibold text-dark-1">進階素描 - 人體動態捕捉</h2>
-                        <p class="mb-0 fs-8 text-muted">123 位同學</p>
-                      </div>
-                    </div>
-                  </div>
-                </RouterLink>
-              </li>
-            </ul>
-            
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </main>
 </template>
 
 <script>
 import { RouterLink } from 'vue-router';
+import { mapActions } from 'pinia';
+import { useCommonStore } from '@/stores/common';
+const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
   props: ['articleId'],
   components: {
     RouterLink,
   },
+  data(){
+    return {
+      article: {},
+      errorMsg: '',
+      relatedCourses: [],
+      courseLoading: null,
+      bookMarkFill: false
+    }
+  },
+  methods: {
+    ...mapActions(useCommonStore, ['dateConverter']),
+    async getSingleArticle(){
+      let loader = this.$loading.show();
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/article/${this.articleId}`;
+      try {
+        const res = await this.$http.get(url);
+        this.article = res.data?.article || {};
+        this.getRelatedPd();
+      } catch (err) {
+        this.errorMsg = `無法取得此文資料，錯誤代碼：${err.response?.status}`;
+        this.$toast({toastType: 'failed'}).fire({title: this.errorMsg});
+      } finally {
+        loader.hide();
+      }
+    },
+    async getRelatedPd(){
+      this.courseLoading = true;
+      const allProductId = this.article.relatedCourseId || [];
+      let url = `${VITE_BASE}/v2/api/${VITE_API}/product/`;
+      let data = allProductId.map(id => this.$http.get(url + id));
+      try {
+        const result = [];
+        const res = await Promise.allSettled(data);
+        res.forEach((obj, idx) => {
+          if(obj.status === 'rejected'){
+            result.push({
+              'id': allProductId[idx],
+              'errMsg': obj.reason?.response?.status
+            });
+          } else {
+            const { id, title, classmates, imageUrl } = obj.value?.data?.product || {};
+            result.push({ id, title, classmates, imageUrl });
+          }
+        });
+        this.relatedCourses = result;
+      } finally {
+        this.courseLoading = false;
+      }
+    }
+  },
+  mounted(){
+    this.getSingleArticle();
+  }
 }
 
 </script>
 
-<style scoped>
-.hover-text-decoration:hover{
-  text-decoration: underline !important;
+<style>
+.hover-text-primary:hover {
+  color: var(--bs-primary) !important;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+.articleContentSet img {
+  display: block;
+  width: 100%;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.articleContentSet p {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .articleContentSet p {
+    font-size: 1rem;
+  }
 }
 </style>

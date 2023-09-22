@@ -86,6 +86,9 @@ const router = createRouter({
           path: 'articles',
           name: '前台文章列表',
           component: () => import('../views/ArticlesView.vue'),
+          props: (route) => ({
+            query: route.query
+          })
         },
         {
           path: 'article/:articleId',
