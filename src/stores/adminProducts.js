@@ -7,6 +7,7 @@ export const useAdminProdStore = defineStore('adminProd', {
     originTempProd: {},
     pageProducts: [],
     pagination: {},
+    allProducts: null
   }),
   actions: {
     async getPageProducts(page=1){
@@ -19,6 +20,18 @@ export const useAdminProdStore = defineStore('adminProd', {
         throw {
           errName: 'getPageProducts',
           message: '無法取得頁面資料',
+          status: err.response?.status
+        }
+      }
+    },
+    async getAllProducts(){
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/products/all`;
+      try {
+        const res = await axios.get(url);
+        this.allProducts = res.data?.products
+      } catch (err) {
+        throw {
+          message: '無法取得課程資料',
           status: err.response?.status
         }
       }

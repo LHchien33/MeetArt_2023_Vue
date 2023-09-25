@@ -1,6 +1,5 @@
 <template>
-  <div class="pt-lg-8 d-flex flex-column main-content-height" style="padding: 138px 32px 32px;"
-        @touchstart="imgOptionsShow ? imgOptionsShow = false : null ">
+  <div @touchstart="imgOptionsShow ? imgOptionsShow = false : null ">
     <h1 class="fs-3 mb-3">{{ updateId === 'new' ? '新增' : '編輯' }}課程</h1>
     <div class="p-1 m-n1 overflow-y-scroll flex-grow-1">
       <!-- 正在編輯的課程 -->

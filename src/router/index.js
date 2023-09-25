@@ -146,7 +146,25 @@ const router = createRouter({
         {
           path: 'articles',
           name: '後台文章管理',
-          component: () => import('../views/AdminArticlesView.vue'),
+          component: () => import('../views/AdminArticleLayout.vue'),
+          children: [
+            {
+              path: '',
+              name: '文章列表',
+              component: () => import('../views/AdminArticlesView.vue'),
+              props: (route) => ({
+                query: route.query
+              })
+            },
+            {
+              path: ':updateId',
+              name: '新增或編輯文章',
+              component: () => import('../views/AdminUpdateArticleView.vue'),
+              props: (route) => ({
+                updateId: route.params.updateId
+              })
+            }
+          ]
         }
       ]
     },

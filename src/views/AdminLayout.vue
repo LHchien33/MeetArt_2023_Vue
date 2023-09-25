@@ -48,7 +48,9 @@
     </nav>
     <!-- main content -->
     <div class="flex-grow-1">
-      <RouterView v-if="isLoggedIn"></RouterView>
+      <div class="pt-lg-8 d-flex flex-column main-content-height" style="padding: 138px 32px 32px;">
+        <RouterView v-if="isLoggedIn"></RouterView>
+      </div>
       <!-- footer -->
       <footer class="bg-dark-1 sticky-bottom">
         <div class="p-5 py-md-3">
@@ -115,18 +117,21 @@ export default {
     }
   },
   methods: {
-    checkAdmin(){
+    async checkAdmin(){
+      const loader = this.$loading.show();
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)MeetArtToken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
       this.$http.defaults.headers.common.Authorization = token;
       const url = `${VITE_BASE}/v2/api/user/check`;
-
-      this.$http.post(url).then(res => {
+      try {
+        await this.$http.post(url)  
         this.isLoggedIn = true;
-      }).catch(err => {
+      } catch (err) {
         const text = err.response.data.message || '使用者驗證錯誤，請重新登入';
         this.$toast({toastType: 'failed'}).fire({title: text})
         this.$router.push('/login');
-      })
+      } finally {
+        loader.hide();
+      }
     }
   },
   mounted(){

@@ -1,47 +1,45 @@
 <template>
-  <div class="pt-lg-8 d-flex flex-column main-content-height" style="padding: 138px 32px 32px;">
-    <!-- 標題 -->
-    <div class="d-flex align-items-center mb-3">
-      <h1 class="fs-3 mb-0 me-3">優惠券管理</h1>
-      <button type="button" class="btn btn-primary mt-1" @click="editCoupon({})">
-        <span class="material-symbols-outlined fs-5 align-top ms-n1">add</span>
-        建立新優惠券
-      </button>
-    </div>
-    <!-- 優惠券列表 -->
-    <div class="bg-beige px-6 table-responsive-md mb-4 overflow-y-scroll">
-      <table class="w-100 table align-middle table-cell-px-2">
-        <thead class="thead-padding sticky-top bg-beige text-nowrap">
-          <tr>
-            <th>優惠名稱</th>
-            <th>優惠券編號</th>
-            <th>折扣碼</th>
-            <th class="text-center">折數</th>
-            <th class="text-center">到期日</th>
-            <th class="text-center">是否啟用</th>
-            <th class="text-center">操作選項</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="coupon in coupons" :key="coupon.id">
-            <th>{{ coupon.title }}</th>
-            <td style="word-break: break-all;">{{ coupon.id }}</td>
-            <td>{{ coupon.code }}</td>
-            <td class="text-center">{{ coupon.percent }}%</td>
-            <td class="text-center">{{ dateConverter(coupon.due_date * 1000, 'whole') }}</td>
-            <td class="text-center" :class="coupon.is_enabled ? 'text-accent' : 'text-muted' ">{{ coupon.is_enabled ? '是' : '否' }}</td>
-            <td class="text-center">
-              <button type="button" class="btn p-0 bg-gradient border-0 m-1"
-                      @click="editCoupon(coupon)">
-                <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
-              </button>
-              <button type="button" @click="deleteCoupon(coupon.id, coupon.title)"
-                      class="btn btn-danger border border-danger border-3 m-1">刪除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- 標題 -->
+  <div class="d-flex align-items-center mb-3">
+    <h1 class="fs-3 mb-0 me-3">優惠券管理</h1>
+    <button type="button" class="btn btn-primary mt-1" @click="editCoupon({})">
+      <span class="material-symbols-outlined fs-5 align-top ms-n1">add</span>
+      建立新優惠券
+    </button>
+  </div>
+  <!-- 優惠券列表 -->
+  <div class="bg-beige px-6 table-responsive-md mb-4 overflow-y-scroll">
+    <table class="w-100 table align-middle table-cell-px-2">
+      <thead class="thead-padding sticky-top bg-beige text-nowrap">
+        <tr>
+          <th>優惠名稱</th>
+          <th>優惠券編號</th>
+          <th>折扣碼</th>
+          <th class="text-center">折數</th>
+          <th class="text-center">到期日</th>
+          <th class="text-center">是否啟用</th>
+          <th class="text-center">操作選項</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="coupon in coupons" :key="coupon.id">
+          <th>{{ coupon.title }}</th>
+          <td style="word-break: break-all;">{{ coupon.id }}</td>
+          <td>{{ coupon.code }}</td>
+          <td class="text-center">{{ coupon.percent }}%</td>
+          <td class="text-center">{{ dateConverter(coupon.due_date * 1000, 'whole') }}</td>
+          <td class="text-center" :class="coupon.is_enabled ? 'text-accent' : 'text-muted' ">{{ coupon.is_enabled ? '是' : '否' }}</td>
+          <td class="text-center">
+            <button type="button" class="btn p-0 bg-gradient border-0 m-1"
+                    @click="editCoupon(coupon)">
+              <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
+            </button>
+            <button type="button" @click="deleteCoupon(coupon.id, coupon.title)"
+                    class="btn btn-danger border border-danger border-3 m-1">刪除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <InfoModal ref="InfoModal">
     <template #modal-title>{{ tempData.id ? '編輯' : '新增' }}優惠券</template>
