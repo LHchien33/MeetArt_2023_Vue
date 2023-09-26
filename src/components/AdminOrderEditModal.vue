@@ -19,20 +19,22 @@
             </li>
             <li class="mb-3">訂單日期： {{ dateConverter(tempData.create_at * 1000, 'whole') }}</li>
             <li class="mb-3">付款方式：
-              <VField name="user.payMethod" v-slot="{ value }"><span>{{ value }}</span></VField>
+              <VField name="user.payMethod" v-slot="{ value }" :disabled="isDisabled"><span>{{ value }}</span></VField>
             </li>
             <li class="mb-3">付款狀態：
               <div class="form-check form-check-inline">
-                <VField class="form-check-input" type="radio" name="is_paid" id="is_paid_false" value="false"></VField>
+                <VField :disabled="isDisabled" class="form-check-input" type="radio"
+                        name="is_paid" id="is_paid_false" value="false" ></VField>
                 <label class="form-check-label" for="is_paid_false">未付款</label>
               </div>
               <div class="form-check form-check-inline">
-                <VField class="form-check-input" type="radio" name="is_paid" id="is_paid_true" value="true"></VField>
+                <VField :disabled="isDisabled" class="form-check-input" type="radio"
+                        name="is_paid" id="is_paid_true" value="true"></VField>
                 <label class="form-check-label" for="is_paid_true">已付款</label>
               </div>
             </li>
             <li class="mb-3">申請輔導：
-              <VField name="user.applyType" v-slot="{ value }">
+              <VField name="user.applyType" v-slot="{ value }" :disabled="isDisabled">
                 <span :class="{ 'text-accent': value }">{{ value ? '是' : '否' }}</span>
               </VField>
             </li>
@@ -40,12 +42,12 @@
               <li v-if="field.value">輔導狀態：
                 <div class="form-check form-check-inline">
                   <input type="radio" v-bind="field" value="false" :checked="field.value === 'false'"
-                          class="form-check-input" id="order_completed_false">
+                        :disabled="isDisabled" class="form-check-input" id="order_completed_false">
                   <label class="form-check-label" for="order_completed_false">未完成</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input type="radio" v-bind="field" value="true" :checked="field.value === 'true'"
-                          class="form-check-input"  id="order_completed_true">
+                        :disabled="isDisabled" class="form-check-input"  id="order_completed_true">
                   <label class="form-check-label" for="order_completed_true">已完成</label>
                 </div>
               </li>
@@ -61,7 +63,8 @@
                 <span class="text-danger"> *</span>
                 <ErrorMessage name="user.name" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField type="text" rules="required" name="user.name" :class="{ 'is-invalid': errors.user?.name }"
+              <VField type="text" rules="required" name="user.name"
+                      :disabled="isDisabled" :class="{ 'is-invalid': errors.user?.name }"
                       class="form-control" id="user_name" placeholder="例如：王小明"></VField>
             </li>
             <li class="mb-3">
@@ -69,7 +72,8 @@
                 <span class="text-danger"> *</span>
                 <ErrorMessage name="user.email" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField type="text" rules="required|email" name="user.email" :class="{ 'is-invalid': errors.user?.email }"
+              <VField type="text" rules="required|email" name="user.email"
+                      :disabled="isDisabled" :class="{ 'is-invalid': errors.user?.email }"
                       class="form-control" id="user_email" placeholder="例如：example@email.com"></VField>
             </li>
             <li>
@@ -77,7 +81,8 @@
                 <span class="text-danger"> *</span>
                 <ErrorMessage name="user.tel" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
-              <VField type="tel" rules="required|phoneNumber" name="user.tel" :class="{ 'is-invalid': errors.user?.tel }"
+              <VField type="tel" rules="required|phoneNumber" name="user.tel"
+                      :disabled="isDisabled" :class="{ 'is-invalid': errors.user?.tel }"
                       class="form-control" id="user_tel" placeholder="例如：0912-345678、03-123-4567"></VField>
             </li>
           </ul>
@@ -104,7 +109,7 @@ configure({
 });
 
 export default {
-  props: ['tempData'],
+  props: ['tempData', 'isDisabled'],
   emits: ['copyOrderId'],
   components: {
     VForm: Form,

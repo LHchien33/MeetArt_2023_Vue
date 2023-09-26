@@ -3,26 +3,26 @@
   <VForm ref="couponForm" v-slot="{ errors, values, resetForm, setValues }" class="row g-5">
     <div class="col-12">
       <label for="title" class="form-label">優惠名稱：</label>
-      <VField type="text" rules="required" name="title"
+      <VField type="text" rules="required" name="title" :disabled="isDisabled"
               :class="{'is-invalid': errors.title }" id="title" class="form-control"></VField>
       <ErrorMessage name="title" class="invalid-feedback d-block"></ErrorMessage>
     </div>
     <div class="col-6">
       <label for="code" class="form-label">折扣碼：</label>
-      <VField type="text" rules="required" name="code"
+      <VField type="text" rules="required" name="code" :disabled="isDisabled"
               :class="{'is-invalid': errors.code }" id="code" class="form-control"></VField>
       <ErrorMessage name="code" class="invalid-feedback d-block"></ErrorMessage>
     </div>
     <div class="col-6">
       <label for="percent" class="form-label">折數（%）：</label>
-      <VField type="number" rules="required|min_value:0|max_value:100" name="percent"
+      <VField type="number" rules="required|min_value:0|max_value:100" name="percent" :disabled="isDisabled"
               :class="{'is-invalid': errors.percent }" id="percent" class="form-control"></VField>
       <ErrorMessage name="percent" class="invalid-feedback d-block"></ErrorMessage>
     </div>
     <div class="col-12">
       <label for="due_date" class="form-label">到期日：</label>
       <VField type="text" v-model="date" rules="required" name="due_date" id="due_date" class="form-control d-none"></VField>
-      <DatePicker v-model="date" model-type="timestamp" :format="'yyyy/MM/dd HH:mm:ss'"
+      <DatePicker v-model="date" model-type="timestamp" :format="'yyyy/MM/dd HH:mm:ss'" :disabled="isDisabled"
                   :min-date="new Date()" prevent-min-max-navigation :flow="['calendar', 'time']"
                   week-start="0" hide-input-icon enable-seconds :month-change-on-scroll="false"
                   locale="zh-TW" cancel-text="取消" select-text="確定"
@@ -33,7 +33,7 @@
     </div>
     <div class="col-12">
       <div class="form-check form-switch">
-        <VField type="checkbox" name="is_enabled" value="1" id="is_enabled" class="form-check-input"></VField>
+        <VField type="checkbox" name="is_enabled" :disabled="isDisabled" value="1" id="is_enabled" class="form-check-input"></VField>
         <label for="is_enabled" class="form-check-label">{{ values.is_enabled === '1' ? '啟用' : '未啟用' }}</label>
       </div>
     </div>
@@ -61,7 +61,7 @@ configure({
 });
 
 export default {
-  props: ['tempData'],
+  props: ['tempData', 'isDisabled'],
   components: {
     VForm: Form,
     VField: Field,

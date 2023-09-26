@@ -59,28 +59,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in pageArticles" :key="item.id" class="text-center">
-            <td>
-              <div style="max-width:92px; height: 45px;" class="overflow-hidden">
-                <img :src="item.image" alt="文章主要圖片" class="object-fit-cover w-100 h-100">
-              </div>
-            </td>
-            <td class="text-start text-nowrap text-md-wrap user-select-all" style="word-break: break-all;">{{ item.id }}</td>
-            <td class="text-start text-nowrap text-md-wrap user-select-all">{{ item.title }}</td>
-            <td>{{ dateConverter(item.create_at*1000) }}</td>
-            <td :class="item.isPublic ? 'text-accent' : 'text-muted' ">{{ item.isPublic ? '公開' : '不公開' }}</td>
-            <td>
-              <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap"
-                      :class="{'disabled': disabled}"
-                      data-bs-toggle="modal" data-bs-target="#infoModal" @click="viewArticleInfo(item)">查看</button>
-            </td>
-            <td>
-              <RouterLink :to="`/admin/articles/${item.id}`" class="btn p-0 bg-gradient border-0 m-1">
-                <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
-              </RouterLink>
-              <button type="button" class="btn btn-danger border border-danger border-3 m-1">刪除</button>
-            </td>
+          <tr v-if="articleErrorMsg">
+            <td colspan="7" class="text-center py-3">{{ articleErrorMsg }}</td>
           </tr>
+          <template v-else>
+            <tr v-for="item in pageArticles" :key="item.id" class="text-center">
+              <td>
+                <div style="max-width:92px; height: 45px;" class="overflow-hidden">
+                  <img :src="item.image" alt="文章主要圖片" class="object-fit-cover w-100 h-100">
+                </div>
+              </td>
+              <td class="text-start text-nowrap text-md-wrap user-select-all" style="word-break: break-all;">{{ item.id }}</td>
+              <td class="text-start text-nowrap text-md-wrap user-select-all">{{ item.title }}</td>
+              <td>{{ dateConverter(item.create_at*1000) }}</td>
+              <td :class="item.isPublic ? 'text-accent' : 'text-muted' ">{{ item.isPublic ? '公開' : '不公開' }}</td>
+              <td>
+                <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap"
+                        :class="{'disabled': disabled}" data-bs-toggle="modal" data-bs-target="#infoModal"
+                        @click="viewArticleInfo(item)">查看</button>
+              </td>
+              <td>
+                <RouterLink :to="`/admin/articles/${item.id}`" class="btn p-0 bg-gradient border-0 m-1">
+                  <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
+                </RouterLink>
+                <button type="button" @click="deleteArticle(item.id, item.title)"
+                        class="btn btn-danger border border-danger border-3 m-1">刪除</button>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -98,11 +104,11 @@
     </template>
   </InfoModal>
   <!-- 確認刪除文章 modal -->
-  <!-- <ConfirmModal ref="ConfirmModal" v-bind="modalContent">
+  <ConfirmModal ref="ConfirmModal" v-bind="delModalContent">
     <template #modal-content>
-      <p class="mb-0">刪除後將無法恢復，確定刪除 <span class="text-danger">{{ modalContent.itemName }}</span> 嗎？</p>
+      <p class="mb-0">刪除後將無法恢復，確定刪除文章 <span class="text-danger">{{ delModalContent.itemName }}</span> 嗎？</p>
     </template>
-  </ConfirmModal> -->
+  </ConfirmModal>
 </template>
 
 <script>
@@ -112,7 +118,7 @@ import { useCommonStore } from '@/stores/common';
 import Pagination from '@/components/Pagination.vue';
 import InfoModal from '@/components/InfoModal.vue';
 import AdminArticleModal from '@/components/AdminArticleModal.vue';
-// import ConfirmModal from '@/components/ConfirmModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
@@ -123,14 +129,21 @@ export default {
       pagination: {},
       targetArticle: {},
       disabled: true,
-      prodErrorMsg: ''
+      articleErrorMsg: '',
+      prodErrorMsg: '',
+      delModalContent: {
+        title: '刪除文章',
+        confirmBtnText: '確定刪除',
+        itemName: ''
+      }
     }
   },
   components: {
     RouterLink,
     Pagination,
     InfoModal,
-    AdminArticleModal
+    AdminArticleModal,
+    ConfirmModal
   },
   computed: {
     setPagination(){
@@ -169,7 +182,8 @@ export default {
         this.pageArticles =  temp.filter(item => item.id);
         this.pagination = res.data?.pagination || {};
       } catch (err) {
-        this.$toast({toastType: 'failed'}).fire({title: `無法取得文章列表，錯誤代碼：${err.response?.status}`});
+        this.articleErrorMsg = `無法取得文章列表，錯誤代碼：${err.response?.status}`;
+        this.$toast({toastType: 'failed'}).fire({title: this.articleErrorMsg });
       } finally {
         this.disabled = false;
         loader.hide();
@@ -188,11 +202,34 @@ export default {
           })
         });
       } 
-
       this.targetArticle = {
         ...article,
         relatedCourseInfo
       };
+    },
+    async deleteArticle(id, title){
+      let loader = null;
+      const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/article/${id}`;
+      try {
+        this.delModalContent.itemName = title;
+        await this.$refs.ConfirmModal.openModal();
+        loader = this.$loading.show();
+        await this.$http.delete(url);
+        this.$toast({toastType: 'success'}).fire({title: '已刪除文章'});
+        this.getPageArticles();
+      } catch (err) {
+        let toastTxt = '';
+        if(err.errName === 'modalRes'){
+          toastTxt = '已取消刪除';
+        } else {
+          toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
+        }
+        this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      } finally {
+        if(loader){
+          loader.hide();
+        }
+      }
     }
   },
   mounted(){

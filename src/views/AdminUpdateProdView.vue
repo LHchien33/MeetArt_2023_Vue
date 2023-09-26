@@ -1,7 +1,7 @@
 <template>
-  <div @touchstart="imgOptionsShow ? imgOptionsShow = false : null ">
-    <h1 class="fs-3 mb-3">{{ updateId === 'new' ? '新增' : '編輯' }}課程</h1>
-    <div class="p-1 m-n1 overflow-y-scroll flex-grow-1">
+  <h1 class="fs-3 mb-3 px-2">{{ updateId === 'new' ? '新增' : '編輯' }}課程</h1>
+  <div class="overflow-y-scroll p-2" @touchstart="imgOptionsShow ? imgOptionsShow = false : null ">
+    <div class="flex-grow-1">
       <!-- 正在編輯的課程 -->
       <div v-if="tempProduct.id" class="bg-beige gradient-border gradient-border-3 p-6 mb-3 text-secondary">
         <div class="row position-relative" style="z-index: 2;">
@@ -424,24 +424,26 @@ export default {
       this.$refs.imageUrl.handleChange(this.uploadedImgUrl, true)
       this.$refs.imageUrl.setTouched(true)
     },
-    uploadImg(){
+    async uploadImg(){
       this.imgUploading = true;
       const formData = new FormData();
       formData.append('file-to-upload', this.imgFile)
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/upload`;
-
-      this.$http.post(url, formData).then(res => {
+      try {
+        const res = await this.$http.post(url, formData);
         this.imgFile = {};
         this.previewImgUrl = URL.revokeObjectURL(this.previewImgUrl);
         this.uploadedImgUrl = res.data.imageUrl;
         // 觸發欄位驗證
         this.$refs.imageUrl.handleChange(this.uploadedImgUrl, true);
         this.$toast({toastType: 'success'}).fire({title: '圖片上傳成功'})
-      }).catch(err => {
+      } catch (err) {
         this.$toast({toastType: 'failed'}).fire({
-          title: `圖片上傳失敗，錯誤代碼：${err.response.status}`
-        })
-      }).finally(() => this.imgUploading = false)
+          title: `圖片上傳失敗，錯誤代碼：${err.response?.status}`
+        });
+      } finally {
+        this.imgUploading = false;
+      }
     },
     valueProcessing(val){
       val.origin_price = Number(val.origin_price);
@@ -466,21 +468,23 @@ export default {
       return val
     },
     async onSubmit(values){
+      let loader = this.$loading.show();
       const requestData = this.valueProcessing(values);
       const method = this.updateId === 'new' ? 'post' : 'put';
       const path = this.updateId === 'new' ? '' : this.updateId
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${path}`;
-
       try {
-        const res = await this.$http[method](url, {data: {...requestData}})  
+        const res = await this.$http[method](url, {data: {...requestData}});
         this.productSaved = true;
         this.$toast({toastType: 'success'}).fire({title: res.data.message});
         this.$router.push('/admin/products');
       } catch (err) {
         const txt = method === 'post' ? '新增' : '更新';
         this.$toast({toastType: 'failed'}).fire({
-          title: `${txt}失敗，錯誤代碼：${err.response.status}`
+          title: `${txt}失敗，錯誤代碼：${err.response?.status}`
         })
+      } finally {
+        loader.hide();
       }
     },
     async beforeCancel(formTouched){

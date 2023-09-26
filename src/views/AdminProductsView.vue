@@ -60,30 +60,35 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="prod in pageProducts" :key="prod.id" class="text-center">
-            <td>
-              <div style="max-width:92px; height: 45px;" class="overflow-hidden">
-                <img :src="prod.imageUrl" alt="課程圖片" class="object-fit-cover w-100 h-100">
-              </div>
-            </td>
-            <td class="text-start text-nowrap text-md-wrap user-select-all" style="word-break: break-all;">{{ prod.id }}</td>
-            <td class="text-start text-nowrap text-md-wrap user-select-all">{{ prod.title }}</td>
-            <td>{{ numToPriceString(prod.origin_price) }}</td>
-            <td>{{ numToPriceString(prod.price) }}</td>
-            <td :class="prod.is_enabled ? 'text-accent' : 'text-muted' ">{{ prod.is_enabled ? '是' : '否' }}</td>
-            <td>
-              <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap" data-bs-toggle="modal"
-                      data-bs-target="#infoModal" @click="updateTempProd(prod)">查看</button>
-            </td>
-            <td>
-              <RouterLink :to="`/admin/products/${prod.id}`" class="btn p-0 bg-gradient border-0 m-1"
-                    @click="updateTempProd(prod)">
-                <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
-              </RouterLink>
-              <button type="button" class="btn btn-danger border border-danger border-3 m-1"
-              @click="deleteProduct(prod.id, prod.title)">刪除</button>
-            </td>
+          <tr v-if="productErrorMsg">
+            <td colspan="8" class="text-center py-3">{{ productErrorMsg }}</td>
           </tr>
+          <template v-else>
+            <tr v-for="prod in pageProducts" :key="prod.id" class="text-center">
+              <td>
+                <div style="max-width:92px; height: 45px;" class="overflow-hidden">
+                  <img :src="prod.imageUrl" alt="課程圖片" class="object-fit-cover w-100 h-100">
+                </div>
+              </td>
+              <td class="text-start text-nowrap text-md-wrap user-select-all" style="word-break: break-all;">{{ prod.id }}</td>
+              <td class="text-start text-nowrap text-md-wrap user-select-all">{{ prod.title }}</td>
+              <td>{{ numToPriceString(prod.origin_price) }}</td>
+              <td>{{ numToPriceString(prod.price) }}</td>
+              <td :class="prod.is_enabled ? 'text-accent' : 'text-muted' ">{{ prod.is_enabled ? '是' : '否' }}</td>
+              <td>
+                <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap" data-bs-toggle="modal"
+                        data-bs-target="#infoModal" @click="updateTempProd(prod)">查看</button>
+              </td>
+              <td>
+                <RouterLink :to="`/admin/products/${prod.id}`" class="btn p-0 bg-gradient border-0 m-1"
+                      @click="updateTempProd(prod)">
+                  <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
+                </RouterLink>
+                <button type="button" class="btn btn-danger border border-danger border-3 m-1"
+                @click="deleteProduct(prod.id, prod.title)">刪除</button>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -123,6 +128,7 @@ export default {
   props: ['query'],
   data(){
     return {
+      productErrorMsg: '',
       modalContent: {
         itemName: '',
         title: '刪除課程',
@@ -160,10 +166,11 @@ export default {
         container: this.$refs.loadingContainer
       });
       try {
-        await this.getPageProducts(page)
+        await this.getPageProducts(page);
       } catch (err) {
         const { message:msg, status } = err;
-        this.$toast({toastType: 'failed'}).fire({title: `${msg}，錯誤代碼：${status}`})
+        this.productErrorMsg = `${msg}，錯誤代碼：${status}`;
+        this.$toast({toastType: 'failed'}).fire({title: this.productErrorMsg});
       } finally {
         loader.hide();
       }
@@ -172,27 +179,28 @@ export default {
       this.originTempProd = product;
     },
     async deleteProduct(id, title){
+      let loader = null;
       this.modalContent.itemName = title;
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/product/${id}`;
       try {
         await this.$refs.ConfirmModal.openModal();
+        loader = this.$loading.show();
         const res = await this.$http.delete(url);
-        await this.getPageProducts();
+        this.getProducts();
         this.$toast({toastType: 'success'}).fire({title: res.data.message});
       } catch (err) {
         let toastTxt = '';
         const { errName, message:msg, status } = err;
-        switch (errName){
-          case 'modalRes':
-            toastTxt = '已取消刪除';
-            break;
-          case 'getPageProducts':
-            toastTxt = `${msg}，錯誤代碼：${status}`;
-            break;
-          default:
-            toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
+        if(errName){
+          toastTxt = '已取消刪除';
+        } else {
+          toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
         }
         this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      } finally {
+        if(loader){
+          loader.hide();
+        }
       }
     }
   },

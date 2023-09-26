@@ -37,52 +37,59 @@
     </div>
   </div>
   <!-- 訂單列表 -->
-  <div class="bg-beige px-6 table-responsive mb-4 overflow-y-scroll">
-    <table class="w-100 table align-middle table-cell-px-2">
-      <thead class="thead-padding sticky-top bg-beige text-nowrap">
-        <tr>
-          <th>訂單編號</th>
-          <th>訂單日期</th>
-          <th>姓名</th>
-          <th>電子信箱</th>
-          <th class="text-center">付款狀態</th>
-          <th class="text-center">輔導狀態</th>
-          <th class="text-center">訂單詳情</th>
-          <th class="text-center">操作選項</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in orders" :key="order.id">
-          <th class="fw-normal user-select-all" style="word-break: break-all;">{{ order.id }}</th>
-          <td style="word-break: break-all;">{{ dateConverter(order.create_at*1000) }}</td>
-          <td class="text-nowrap user-select-all">{{ order.user?.name }}</td>
-          <td class="user-select-all" style="word-break: break-all;">{{ order.user?.email }}</td>
-          <td class="text-center">
-            <span :class="order.is_paid ? 'text-muted' : 'text-accent'">
-              {{ order.is_paid ? '已付款' : '未付款' }}
-            </span>
-          </td>
-          <td class="text-center">
-            <span v-if="order.user?.applyType" :class="order.user?.order_completed ? 'text-muted' : 'text-accent'">
-              {{ order.user.order_completed ? '已完成' : '未完成' }}
-            </span>
-            <span v-else class="text-muted">-</span>
-          </td>
-          <td class="text-center">
-            <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap"
-                    @click="showOrderModal(order, 'info')">查看</button>
-          </td>
-          <td class="text-center">
-            <button type="button" class="btn p-0 bg-gradient border-0 m-1"
-                    @click="showOrderModal(order, 'edit')">
-              <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
-            </button>
-            <button type="button" @click="deleteOrder(order.id)"
-                    class="btn btn-danger border border-danger border-3 m-1">刪除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div ref="loadingContainer" class="mb-4 overflow-y-scroll vl-parent">
+    <div class="bg-beige px-6 table-responsive">
+      <table class="w-100 table align-middle table-cell-px-2">
+        <thead class="thead-padding sticky-top bg-beige text-nowrap">
+          <tr>
+            <th>訂單編號</th>
+            <th>訂單日期</th>
+            <th>姓名</th>
+            <th>電子信箱</th>
+            <th class="text-center">付款狀態</th>
+            <th class="text-center">輔導狀態</th>
+            <th class="text-center">訂單詳情</th>
+            <th class="text-center">操作選項</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="orderErrorMsg">
+            <td colspan="8" class="text-center py-3">{{ orderErrorMsg }}</td>
+          </tr>
+          <template v-else>
+            <tr v-for="order in orders" :key="order.id">
+              <th class="fw-normal user-select-all" style="word-break: break-all;">{{ order.id }}</th>
+              <td style="word-break: break-all;">{{ dateConverter(order.create_at*1000) }}</td>
+              <td class="text-nowrap user-select-all">{{ order.user?.name }}</td>
+              <td class="user-select-all" style="word-break: break-all;">{{ order.user?.email }}</td>
+              <td class="text-center">
+                <span :class="order.is_paid ? 'text-muted' : 'text-accent'">
+                  {{ order.is_paid ? '已付款' : '未付款' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <span v-if="order.user?.applyType" :class="order.user?.order_completed ? 'text-muted' : 'text-accent'">
+                  {{ order.user.order_completed ? '已完成' : '未完成' }}
+                </span>
+                <span v-else class="text-muted">-</span>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn btn-link text-muted hover-bg-light-2 text-nowrap"
+                        @click="showOrderModal(order, 'info')">查看</button>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn p-0 bg-gradient border-0 m-1"
+                        @click="showOrderModal(order, 'edit')">
+                  <div class="btn bg-clip-padding-box bg-beige border border-3 border-transparent hover-bg-transparent text-nowrap">編輯</div>
+                </button>
+                <button type="button" @click="deleteOrder(order.id)"
+                        class="btn btn-danger border border-danger border-3 m-1">刪除</button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
   </div>
   <!-- 分頁導覽 -->
   <Pagination v-if="pagination.total_pages" v-bind="pagination" :pathData="{path: '/admin/orders'}" class="justify-content-center"></Pagination>
@@ -90,11 +97,12 @@
   <InfoModal ref="infoModal">
     <template #modal-title>{{ editing ? '編輯訂單' : '訂單詳情' }}</template>
     <template #modal-content>
-      <AdminOrderEditModal ref="orderEditModal" v-if="editing" :tempData="tempData" @copyOrderId="copyText"></AdminOrderEditModal>
+      <AdminOrderEditModal ref="orderEditModal" v-if="editing" :tempData="tempData" @copyOrderId="copyText" :isDisabled="disabled"></AdminOrderEditModal>
       <AdminOrderInfoModal v-else :tempData="tempData" @copyOrderId="copyText"></AdminOrderInfoModal>
     </template>
     <template #confirm-btn="{ hideModal }">
-      <button v-if="editing" @click="updateOrder(tempData.id)" class="btn btn-primary">確定編輯</button>
+      <button v-if="editing" @click="updateOrder(tempData.id)" :class="{ 'disabled': disabled }" class="btn btn-primary">
+        <span :class="{ 'spinner-border': disabled }" class="spinner-border-sm me-1"></span>確定編輯</button>
       <button v-else @click="editing = true" class="btn btn-primary">前往編輯</button>
     </template>
   </InfoModal>
@@ -135,7 +143,9 @@ export default {
         title: '刪除訂單',
         confirmBtnText: '確定刪除'
       },
-      pagination: {}
+      pagination: {},
+      orderErrorMsg: '',
+      disabled: false
     }
   },
   watch: {
@@ -148,16 +158,24 @@ export default {
   },
   methods: {
     ...mapActions(useCommonStore, ['dateConverter', 'scrollErrorIntoView', 'copyText']),
-    getOrders(page=1){
+    async getOrders(page=1){
+      const loader = this.$loading.show({
+        isFullPage: false,
+        width: 32,
+        height: 32,
+        container: this.$refs.loadingContainer
+      });
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/orders?page=${page}`;
-      this.$http.get(url).then(res => {
-        this.orders = res.data.orders;
-        this.pagination = res.data.pagination;
-      }).catch(err => {
-        this.$toast({toastType: 'failed'}).fire({
-          title: `無法取得訂單，錯誤代碼：${err.response.status}`
-        })
-      })
+      try {
+        const res = await this.$http.get(url);
+        this.orders = res.data?.orders || [];
+        this.pagination = res.data?.pagination || {};
+      } catch (err) {
+        this.orderErrorMsg = `無法取得訂單，錯誤代碼：${err.response?.status}`;
+        this.$toast({toastType: 'failed'}).fire({ title: this.orderErrorMsg })
+      } finally {
+        loader.hide();
+      }
     },
     showOrderModal(order, type){
       this.tempData = JSON.parse(JSON.stringify(order));
@@ -166,6 +184,7 @@ export default {
     },
     async updateOrder(orderId){      
       const orderEditForm = this.$refs.orderEditModal.$refs.orderEditForm;
+      this.disabled = true;
       try {
         const formRes = await orderEditForm.validate();
         if(formRes.valid){
@@ -183,19 +202,21 @@ export default {
           this.$refs.infoModal.hideModal();
           this.$toast({toastType: 'success'}).fire({title: '已更新訂單'});
         } else {
-          this.scrollErrorIntoView(res);
+          this.scrollErrorIntoView(formRes);
         }
       } catch (err) {
-        this.$toast({toastType: 'failed'}).fire({
-          title: `無法更新訂單，錯誤代碼：${err.response?.status}`
-        });
+        this.$toast({toastType: 'failed'}).fire({title: `無法更新訂單，錯誤代碼：${err.response?.status}`});
+      } finally {
+        this.disabled = false;
       }
     },
     async deleteOrder(id){
+      let loader = null;
       this.delModalContent.itemName = id;
       const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/order/${id}`;
       try {
         await this.$refs.ConfirmModal.openModal();
+        loader = this.$loading.show();
         await this.$http.delete(url);
         this.$toast({toastType: 'success'}).fire({title: '已刪除訂單'});
         this.getOrders();
@@ -207,8 +228,11 @@ export default {
           toastTxt = `刪除失敗，錯誤代碼：${err.response?.status}`;
         }
         this.$toast({toastType: 'failed'}).fire({title: toastTxt});
+      } finally {
+        if(loader){
+          loader.hide();
+        }
       }
-
     }
   },
   mounted(){
