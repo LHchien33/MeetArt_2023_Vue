@@ -2,8 +2,7 @@
   <!-- 標題 -->
   <div class="d-flex align-items-center mb-3">
     <h1 class="fs-3 mb-0 me-3">文章管理</h1>
-    <RouterLink to="/admin/products/new" class="btn btn-primary mt-1"
-                @click="updateTempProd()">
+    <RouterLink to="/admin/articles/new" class="btn btn-primary mt-1">
       <span class="material-symbols-outlined fs-5 align-top ms-n1">add</span>
       建立新文章
     </RouterLink>
