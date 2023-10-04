@@ -169,14 +169,6 @@ export default {
   color: var(--bs-primary) !important;
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
 }
-
-.articleContentSet img {
-  display: block;
-  width: 100%;
-  margin-top: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
 .articleContentSet p {
   font-size: 0.875rem;
 }
@@ -186,4 +178,5 @@ export default {
     font-size: 1rem;
   }
 }
+
 </style>

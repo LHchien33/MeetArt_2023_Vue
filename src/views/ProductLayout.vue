@@ -339,11 +339,6 @@ export default {
   aspect-ratio: 16 / 9;
 }
 
-.main-content-style-set {
-  --bs-link-color: var(--bs-secondary);
-  --bs-link-hover-color: var(--bs-accent);
-}
-
 .main-content-style-set .list-space-lg li + li {
   margin-top: 1.5rem;
 }

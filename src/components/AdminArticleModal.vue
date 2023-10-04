@@ -1,7 +1,7 @@
 <template>
   <div class="bg-beige p-5">
-    <div class="row gy-3">
-      <div class="col-md-8">
+    <div class="row gy-0">
+      <div class="col-lg-8">
         <div class="mb-2">
           <p class="d-inline-block mb-0" style="word-break: break-all;">
             編號：<span class="user-select-all">{{ data.id }}</span><span @click="$emit('copyArticleId', data.id)"
@@ -23,7 +23,8 @@
           </ul>
         </div>    
       </div>
-      <div class="col-md-4">
+      <div class="col-lg-4">
+        <p class="mb-1">主要圖片：</p>
         <img :src="data.image" :alt="data.title" class="w-100 mb-3">
       </div>
     </div>

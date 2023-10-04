@@ -1,0 +1,177 @@
+/*
+ * CKEditor 5 (v39.0.2) content styles.
+ * Generated on Fri, 29 Sep 2023 04:42:10 GMT.
+ * For more information, check out https://ckeditor.com/docs/ckeditor5/latest/installation/advanced/content-styles.html
+ */
+
+:root {
+  --ck-color-image-caption-background: hsl(0, 0%, 97%);
+  --ck-color-image-caption-text: hsl(0, 0%, 20%);
+  --ck-image-style-spacing: 1.5em;
+  --ck-inline-image-style-spacing: calc(var(--ck-image-style-spacing) / 2);
+}
+
+/* @ckeditor/ckeditor5-media-embed/theme/mediaembed.css */
+.articleContentSet .media {
+  clear: both;
+  margin: 0.9em 0;
+  display: block;
+  min-width: 15em;
+}
+
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.articleContentSet .image {
+  display: table;
+  clear: both;
+  text-align: center;
+  margin: 0.9em auto;
+  min-width: 50px;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.articleContentSet .image img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  min-width: 100%;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.articleContentSet .image-inline {
+  /*
+   * Normally, the .image-inline would have "display: inline-block" and "img { width: 100% }" (to follow the wrapper while resizing).;
+   * Unfortunately, together with "srcset", it gets automatically stretched up to the width of the editing root.
+   * This strange behavior does not happen with inline-flex.
+   */
+  display: inline-flex;
+  max-width: 100%;
+  align-items: flex-start;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.articleContentSet .image-inline picture {
+  display: flex;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.articleContentSet .image-inline picture,
+.articleContentSet .image-inline img {
+  flex-grow: 1;
+  flex-shrink: 1;
+  max-width: 100%;
+}
+/* @ckeditor/ckeditor5-image/theme/imagecaption.css */
+.articleContentSet .image > figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  word-break: break-word;
+  color: var(--ck-color-image-caption-text);
+  background-color: var(--ck-color-image-caption-background);
+  padding: .6em;
+  font-size: .75em;
+  outline-offset: -1px;
+}
+
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ol {
+  list-style-type: decimal;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ol ol {
+  list-style-type: lower-latin;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ol ol ol {
+  list-style-type: lower-roman;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ol ol ol ol {
+  list-style-type: upper-latin;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ol ol ol ol ol {
+  list-style-type: upper-roman;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ul {
+  list-style-type: disc;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ul ul {
+  list-style-type: circle;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ul ul ul {
+  list-style-type: square;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+.articleContentSet ul ul ul ul {
+  list-style-type: square;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-block-align-left,
+.articleContentSet .image-style-block-align-right {
+  max-width: calc(100% - var(--ck-image-style-spacing));
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-align-left,
+.articleContentSet .image-style-align-right {
+  clear: none;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-side {
+  float: right;
+  margin-left: var(--ck-image-style-spacing);
+  max-width: 50%;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-align-left {
+  float: left;
+  margin-right: var(--ck-image-style-spacing);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-align-right {
+  float: right;
+  margin-left: var(--ck-image-style-spacing);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-block-align-right {
+  margin-right: 0;
+  margin-left: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-style-block-align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet p + .image-style-align-left,
+.articleContentSet p + .image-style-align-right,
+.articleContentSet p + .image-style-side {
+  margin-top: 0;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-inline.image-style-align-left,
+.articleContentSet .image-inline.image-style-align-right {
+  margin-top: var(--ck-inline-image-style-spacing);
+  margin-bottom: var(--ck-inline-image-style-spacing);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-inline.image-style-align-left {
+  margin-right: var(--ck-inline-image-style-spacing);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.articleContentSet .image-inline.image-style-align-right {
+  margin-left: var(--ck-inline-image-style-spacing);
+}
+/* @ckeditor/ckeditor5-block-quote/theme/blockquote.css */
+.articleContentSet blockquote {
+  overflow: hidden;
+  padding-right: 1.5em;
+  padding-left: 1.5em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  border-left: solid 5px hsl(0, 0%, 80%);
+}

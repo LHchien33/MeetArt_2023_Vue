@@ -2,7 +2,7 @@
   <h1 class="fs-4 fs-xxl-3 mb-3 mb-md-5">
     <span class="material-symbols-outlined align-bottom me-1">assignment</span>填寫訂單資訊
   </h1>
-  <VForm v-slot="{ errors }" @submit="onSubmit" @invalid-submit="scrollErrorIntoView" @keydown.enter.exact="preventEnter($event)">
+  <VForm v-slot="{ errors }" @submit="onSubmit" @invalid-submit="scrollErrorIntoView" @keydown.enter.exact.prevent>
     <div class="row">
       <!-- 左欄 -->
       <div class="col-lg-9 mb-8">
@@ -306,12 +306,6 @@ export default {
         }
       } finally {
         this.uiDisabled = false;
-      }
-    },
-    preventEnter(e){
-      if(e.target.name !== 'problem'){
-        e.preventDefault();
-        return
       }
     }
   },
