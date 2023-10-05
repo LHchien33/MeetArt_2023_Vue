@@ -13,10 +13,12 @@
           <slot name="modal-content"></slot>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-dark-3" data-bs-dismiss="modal">
-            <slot name="cancel-btn-text">關閉</slot>
-          </button>
-          <slot name="confirm-btn" :hideModal="hideModal"></slot>
+          <slot name="cancel-btn">
+            <button type="button" class="btn btn-outline-dark-3" data-bs-dismiss="modal">關閉</button>
+          </slot>
+          <slot name="confirm-btn" :hideModal="hideModal">
+            <button type="button" class="btn btn-primary">確定</button>
+          </slot>
         </div>
       </div>
     </div>

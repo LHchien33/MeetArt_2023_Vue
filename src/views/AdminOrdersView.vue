@@ -100,7 +100,7 @@
       <AdminOrderEditModal ref="orderEditModal" v-if="editing" :tempData="tempData" @copyOrderId="copyText" :isDisabled="disabled"></AdminOrderEditModal>
       <AdminOrderInfoModal v-else :tempData="tempData" @copyOrderId="copyText"></AdminOrderInfoModal>
     </template>
-    <template #confirm-btn="{ hideModal }">
+    <template #confirm-btn>
       <button v-if="editing" @click="updateOrder(tempData.id)" :class="{ 'disabled': disabled }" class="btn btn-primary">
         <span :class="{ 'spinner-border': disabled }" class="spinner-border-sm me-1"></span>確定編輯</button>
       <button v-else @click="editing = true" class="btn btn-primary">前往編輯</button>

@@ -48,19 +48,7 @@
       </table>
     </div>
   </div>
-  <InfoModal ref="InfoModal">
-    <template #modal-title>{{ tempData.id ? '編輯' : '新增' }}優惠券</template>
-    <template #modal-content>
-      <AdminCouponModal ref="couponModal" :tempData="{...tempData}" :isDisabled="disabled"></AdminCouponModal>
-    </template>
-    <template #cancel-btn-text>取消</template>
-    <template #confirm-btn>
-      <button type="button" @click="updateCoupon()" :class="{'disabled': disabled}" class="btn btn-primary">
-        <span :class="{'spinner-border': disabled}" class="spinner-border-sm"></span>
-        {{ tempData.id ? '儲存編輯' : '確定新增' }}
-      </button>
-    </template>
-  </InfoModal>
+  <AdminCouponModal ref="CouponModal" :tempData="tempData" @getCoupons="getCoupons"></AdminCouponModal>
   <ConfirmModal ref="ConfirmModal" v-bind="modalContent">
     <template #modal-content>
       <p class="mb-0">刪除後將無法恢復，確定刪除 <span class="text-danger">{{ modalContent.itemName }}</span> 嗎？</p>
@@ -71,14 +59,12 @@
 <script>
 import { mapActions } from 'pinia';
 import { useCommonStore } from '@/stores/common';
-import InfoModal from '@/components/InfoModal.vue';
 import AdminCouponModal from '@/components/AdminCouponModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
 export default {
   components: {
-    InfoModal,
     AdminCouponModal,
     ConfirmModal
   },
@@ -86,7 +72,6 @@ export default {
     return {
       coupons: [],
       tempData: {},
-      disabled: false,
       couponErrorMsg: '',
       modalContent: {
         itemName: '',
@@ -96,7 +81,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useCommonStore, ['dateConverter', 'scrollErrorIntoView']),
+    ...mapActions(useCommonStore, ['dateConverter']),
     async getCoupons(){
       const loader = this.$loading.show({
         isFullPage: false,
@@ -116,38 +101,8 @@ export default {
       }
     },
     editCoupon(item){
-      this.tempData = {}; // 重置
-      this.tempData = item;
-      this.$refs.InfoModal.openModal();
-    },
-    async updateCoupon(){
-      this.disabled = true;
-      const couponForm = this.$refs.couponModal.$refs.couponForm;
-      try {
-        const res = await couponForm.validate();
-        if(res.valid){
-          const values = couponForm.getValues();
-          const method = values.id ? 'put' : 'post';
-          const url = `${VITE_BASE}/v2/api/${VITE_API}/admin/coupon/${values.id || ''}`;
-          // 整理資料
-          values.percent = parseInt(values.percent);
-          values.is_enabled = values.is_enabled ? parseInt(values.is_enabled) : 0;
-          values.due_date = values.due_date/1000;
-          // 送出
-          await this.$http[method](url, {data: {...values}});
-          this.getCoupons();
-          this.$refs.InfoModal.hideModal();
-          this.$toast({toastType: 'success'}).fire({ title: `已${values.id ? '更新' : '新增'}優惠券` });
-        } else {
-          this.scrollErrorIntoView(res);
-        }
-      } catch (err) {
-        this.$toast({toastType: 'failed'}).fire({
-          title: `無法更新優惠券，錯誤代碼：${err.response?.status}`
-        })
-      } finally {
-        this.disabled = false;
-      }
+      this.tempData = JSON.parse(JSON.stringify(item));
+      this.$refs.CouponModal.$refs.InfoModal.openModal();
     },
     async deleteCoupon(id, title){
       let loader = null;
@@ -157,7 +112,7 @@ export default {
         await this.$refs.ConfirmModal.openModal();
         loader = this.$loading.show();
         await this.$http.delete(url);
-        this.$toast({toastType: 'success'}).fire({title: '已刪除優惠券'})
+        this.$toast({toastType: 'success'}).fire({title: '已刪除優惠券'});
         this.getCoupons();
       } catch (err) {
         let toastTxt = '';

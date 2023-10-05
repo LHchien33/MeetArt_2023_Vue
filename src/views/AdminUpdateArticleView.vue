@@ -410,4 +410,8 @@ export default {
 .min-height-8rem .ck-content {
   min-height: 8rem;
 }
+
+.ck-content blockquote p {
+  margin-bottom: 0;
+}
 </style>
