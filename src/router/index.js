@@ -168,9 +168,11 @@ const router = createRouter({
         }
       ]
     },
-    // {
-    //   name: '預設頁面 404'
-    // }
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404頁面',
+      component: () => import('../views/404NotFoundView.vue'),
+    }
   ]
 })
 

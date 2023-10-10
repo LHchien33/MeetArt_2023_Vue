@@ -38,7 +38,7 @@
       <div class="container">
         <a class="navbar-brand py-3 py-lg-0 py-xxl-2 pe-0 pe-lg-6 me-0 me-lg-6" href="#">
           <picture>
-            <!-- <source srcset="../assets/images/logo.png" media="(min-width: 1400px)"> -->
+            <source srcset="../assets/images/logo.png" media="(min-width: 1400px)">
             <source srcset="../assets/images/logo_m.png" media="(max-width: 1399.98px)">
             <img src="../assets/images/logo_m.png" alt="MeetArt 繪課室">
           </picture>

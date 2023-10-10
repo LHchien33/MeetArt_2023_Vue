@@ -23,14 +23,15 @@
                   {{ dateConverter(article.create_at*1000) }}
                 </small>
               </div>
-              <div>
-                <button type="button" class="border-0 bg-transparent text-muted icon-fill-1">
-                  <span class="material-symbols-outlined hover-text-primary">share</span>
+              <div class="d-flex">
+                <button type="button" @click="share" class="hover-text-primary border-0 bg-transparent text-muted icon-fill-1 d-flex align-items-center">
+                  <span v-if="useCopy" class="fs-7 me-1">複製網址</span>
+                  <span class="fs-5 material-symbols-outlined">share</span>
                 </button>
                 <button type="button" class="border-0 bg-transparent"
                         :class="bookMarkFill ? ['icon-fill-1', 'text-primary'] : 'text-muted'"
                         @click="bookMarkFill = !bookMarkFill">
-                  <span class="material-symbols-outlined hover-text-primary">bookmark</span>
+                  <span class="material-symbols-outlined hover-text-primary align-middle">bookmark</span>
                 </button>
               </div>
             </div>
@@ -113,11 +114,12 @@ export default {
       errorMsg: '',
       relatedCourses: [],
       courseLoading: null,
-      bookMarkFill: false
+      bookMarkFill: false,
+      useCopy: false
     }
   },
   methods: {
-    ...mapActions(useCommonStore, ['dateConverter']),
+    ...mapActions(useCommonStore, ['dateConverter', 'copyText']),
     async getSingleArticle(){
       let loader = this.$loading.show();
       const url = `${VITE_BASE}/v2/api/${VITE_API}/article/${this.articleId}`;
@@ -155,10 +157,31 @@ export default {
       } finally {
         this.courseLoading = false;
       }
+    },
+    async share(){
+      const url = `https://lhchien33.github.io/MeetArt_2023_Vue/#/article/${this.articleId}`;
+      const shareData = {
+        url,
+        title: this.article.title || 'MeetArt 繪課室文章分享',
+        text: '來自 MeetArt 繪課室 的精彩好文'
+      };
+
+      try {
+        if(this.useCopy){
+          await this.copyText(url);
+        } else {
+          await navigator.share(shareData);
+        }
+      } catch (err) {
+        if(!this.useCopy){
+          this.$toast({toastType: 'failed'}).fire({title: '分享失敗'});
+        }
+      } 
     }
   },
   mounted(){
     this.getSingleArticle();
+    this.useCopy = navigator.share ? false : true;
   }
 }
 
@@ -178,5 +201,4 @@ export default {
     font-size: 1rem;
   }
 }
-
 </style>

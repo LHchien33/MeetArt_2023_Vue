@@ -2,7 +2,7 @@
   <h1 class="fs-3 mb-3 px-2">{{ updateId === 'new' ? '新增' : '編輯' }}文章</h1>
   <div v-if="errorMsg" class="p-6 bg-beige">{{ errorMsg }}</div>
   <template v-else>
-    <VForm ref="articleForm" v-slot="{ errors, values, meta, setFieldTouched }" :initial-values="tempArticle" @submit="onSubmit" @keydown.enter.exact="preventEnter($event)" @invalid-submit="scrollErrorIntoView" class="overflow-y-scroll bg-beige">
+    <VForm ref="articleForm" v-slot="{ errors, values, setFieldTouched }" :initial-values="tempArticle" @submit="onSubmit" @keydown.enter.exact="preventEnter($event)" @invalid-submit="scrollErrorIntoView" class="overflow-y-scroll bg-beige">
       <div class="p-6">
         <div class="row">
           <!-- 左欄欄位 -->
@@ -98,7 +98,7 @@
           <div class="col-md-4">
             <div class="mb-4">
               <label for="image" class="form-label d-block">
-                <span class="text-danger">* </span>主要圖片：
+                <span class="text-danger">* </span>顯示縮圖：
                 <ErrorMessage name="image" class="invalid-feedback d-inline-block w-auto"></ErrorMessage>
               </label>
               <label v-if="!previewImgUrl && !uploadedImgUrl" for="image" class="d-block btn btn-secondary text-nowrap"
@@ -192,7 +192,7 @@ configure({
       'tag[0]': '文章標籤',
       description: '文章概述',
       content: '主要文章內容',
-      image: '主要圖片'
+      image: '顯示縮圖'
     },
     fields: {
       image: {
@@ -289,11 +289,11 @@ export default {
       this.relatedCourseOpts = result;
     },
     setInitialVal(data){
-      const { title, author, image, tag, description, content } = data;
+      const { title, author, image, tag, description, content, create_at } = data;
       this.tempArticle = {
-        title, author, image, tag, description, content,
-        is_public: data.isPublic ? '1' : '',
-        related_course: data.relatedCourseId
+        title, author, image, tag, description, content, create_at,
+        'is_public': data.isPublic ? '1' : '',
+        'related_course': data.relatedCourseId
       };
       this.$refs.articleForm.setValues(this.tempArticle);
       this.uploadedImgUrl = image;
@@ -335,10 +335,10 @@ export default {
     },
     async onSubmit(values){
       let loader = this.$loading.show();
-      const {author, content, description, image, is_public, related_course, tag, title } = values;
+      const { author, content, description, image, is_public, related_course, tag, title, create_at } = values;
       const requestData = {
         author, content, description, image, tag, title,
-        "create_at": Math.floor(Date.now()/1000),
+        "create_at": create_at ? create_at : Math.floor(Date.now()/1000),
         "isPublic": is_public === '1' ? true : false,
         "relatedCourseId": related_course
       }
