@@ -137,7 +137,7 @@ export default {
   mounted(){
     this.checkAdmin();
   },
-  async beforeRouteLeave (to, from){
+  async beforeRouteLeave (to){
     if(to.path === '/login' && this.isLoggedIn === true){
       try {
         await this.$http.post(`${VITE_BASE}/v2/logout`);

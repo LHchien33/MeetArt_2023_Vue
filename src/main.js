@@ -36,7 +36,7 @@ defineRule('url', url);
 defineRule('min_value', min_value);
 defineRule('regex', regex);
 defineRule('phoneNumber', (value) => {
-  const format = /^(?!.*--)[0-9\-]+$/;
+  const format = /^(?!.*--)[0-9-]+$/;
   if(!format.test(value)){
     return '僅接受數字及不連續的連字號（-）';
   }

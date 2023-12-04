@@ -43,7 +43,7 @@
             <div class="col-auto col-md-6">課程名稱</div>
           </div>
           <ul class="list-unstyled mb-0">
-            <li v-for="(item,idx) in data.relatedCourseInfo" :key="item.id">
+            <li v-for="(item) in data.relatedCourseInfo" :key="item.id">
               <hr class="my-1">
               <div class="row">
                 <div class="col-md-6">{{ item.id }}</div>

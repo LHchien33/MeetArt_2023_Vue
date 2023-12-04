@@ -31,23 +31,19 @@ class ImgUploadAdapter {
     const source = axios.CancelToken.source();
     this.cancelToken = source.token;
 
-    try {
-      const response = await axios.post(url, data, {
-        responseType: 'json',
-        cancelToken: source.token,
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.lengthComputable) {
-              this.loader.uploadTotal = progressEvent.total;
-              this.loader.uploaded = progressEvent.loaded;
-          }
-        },
-      });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await axios.post(url, data, {
+      responseType: 'json',
+      cancelToken: source.token,
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+            this.loader.uploadTotal = progressEvent.total;
+            this.loader.uploaded = progressEvent.loaded;
+        }
+      },
+    });
+    return response;
   }
-};
+}
 
 export default function ImgUploadPlugin( editor ) {
   editor.plugins.get( 'FileRepository' ).createUploadAdapter = ( loader ) => {

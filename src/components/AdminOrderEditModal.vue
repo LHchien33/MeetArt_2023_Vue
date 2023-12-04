@@ -122,7 +122,7 @@ export default {
     }
   },
   watch: {
-    tempData(newVal, oldVal){
+    tempData(newVal){
       this.$refs.orderEditForm.resetForm();
       const formVal = this.resetFormVal(newVal);
       this.$refs.orderEditForm.setValues(formVal)

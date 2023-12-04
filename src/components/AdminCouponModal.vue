@@ -1,14 +1,14 @@
 <template>
   <VForm ref="couponForm" v-slot="{ errors, values }" @submit="onSubmit" @invalid-submit="scrollErrorIntoView">
     <InfoModal ref="InfoModal">
-      <template #modal-title>{{ tempData.id ? '編輯' : '新增' }}優惠券</template>
+      <template #modal-title>{{ data.id ? '編輯' : '新增' }}優惠券</template>
       <template #modal-content>
-        <p v-if="tempData.id" class="text-secondary">優惠券編號： {{ tempData.id }}</p>
+        <p v-if="data.id" class="text-secondary">優惠券編號： {{ data.id }}</p>
         <div class="row g-5">
           <div class="col-12">
-            <label for="title" class="form-label">優惠名稱：</label>
+            <label for="coupon_title" class="form-label">優惠名稱：</label>
             <VField type="text" rules="required" name="title" :disabled="disabled"
-                    :class="{'is-invalid': errors.title }" id="title" class="form-control"></VField>
+                    :class="{'is-invalid': errors.title }" id="coupon_title" class="form-control"></VField>
             <ErrorMessage name="title" class="invalid-feedback d-block"></ErrorMessage>
           </div>
           <div class="col-6">
@@ -49,7 +49,7 @@
       <template #confirm-btn>
         <button type="submit" :class="{'disabled': disabled}" class="btn btn-primary">
           <span :class="{'spinner-border': disabled}" class="spinner-border-sm"></span>
-          {{ tempData.id ? '儲存編輯' : '確定新增' }}
+          {{ data.id ? '儲存編輯' : '確定新增' }}
         </button>
       </template>
     </InfoModal>
@@ -69,17 +69,6 @@ const { VITE_BASE, VITE_API } = import.meta.env;
 
 defineRule('max_value', max_value);
 
-configure({
-  generateMessage: localize('zh_TW',{
-    names: {
-      title: '優惠名稱',
-      code: '折扣碼',
-      percent: '折數',
-      due_date: '到期日'
-    }
-  }),
-});
-
 export default {
   props: ['tempData'],
   emits: ['getCoupons'],
@@ -93,7 +82,8 @@ export default {
   data(){
     return {
       date: null,
-      disabled: false
+      disabled: false,
+      data: {}
     }
   },
   methods: {
@@ -118,17 +108,31 @@ export default {
       } finally {
         this.disabled = false;
       }
+    },
+    errorLocalize(){
+      configure({
+        generateMessage: localize('zh_TW',{
+          names: {
+            title: '優惠名稱',
+            code: '折扣碼',
+            percent: '折數',
+            due_date: '到期日'
+          }
+        }),
+      });
     }
   },
   beforeUpdate(){
-    if(this.tempData.is_enabled !== undefined){
-      this.tempData.is_enabled += ''
+    this.errorLocalize();
+    this.data = JSON.parse(JSON.stringify(this.tempData));
+    if(this.data.is_enabled !== undefined){
+      this.data.is_enabled += ''
     }
-    if(this.tempData.due_date){
-      this.tempData.due_date = this.tempData.due_date * 1000;
+    if(this.data.due_date){
+      this.data.due_date = this.data.due_date * 1000;
     }
-    this.$refs.couponForm.resetForm({values: {...this.tempData}});
-  }
+    this.$refs.couponForm.resetForm({values: this.data});
+  },
 }
 </script>
 

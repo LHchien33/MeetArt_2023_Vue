@@ -35,7 +35,7 @@
 <script>
 import { mapState } from 'pinia';
 import { useProdStore } from '@/stores/product';
-import { RouterLink } from 'vue-router';
+
 export default {
   computed: {
     ...mapState(useProdStore, ['currentPd', 'keywords']),

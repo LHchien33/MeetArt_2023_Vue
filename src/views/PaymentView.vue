@@ -252,7 +252,7 @@ export default {
       }
     }
   },
-  async beforeRouteLeave(to, from){
+  async beforeRouteLeave(to){
     if(!this.orderData.is_paid && to.fullPath !== '/checkout/complete' && !this.errorMsg){
       try {
         await this.$refs.ConfirmModal.openModal();

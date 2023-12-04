@@ -155,7 +155,7 @@ export default {
     }
   },
   watch: {
-    tempData(newVal, oldVal){
+    tempData(newVal){
       this.setValues(newVal);
     }
   },

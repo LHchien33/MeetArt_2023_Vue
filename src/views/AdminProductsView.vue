@@ -190,7 +190,7 @@ export default {
         this.$toast({toastType: 'success'}).fire({title: res.data.message});
       } catch (err) {
         let toastTxt = '';
-        const { errName, message:msg, status } = err;
+        const { errName } = err;
         if(errName){
           toastTxt = '已取消刪除';
         } else {

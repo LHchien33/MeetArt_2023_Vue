@@ -235,7 +235,7 @@ export default {
       const keys =  Object.keys(this.categories);
       const total0 = [], total1 = [], total2 = [], total3 = [], total4 = [];
 
-      this.usualProducts.forEach((item, idx) => {
+      this.usualProducts.forEach((item) => {
         let count = 0;
         if(item.id !== this.currentPd.id){
           // 比對 category、theme、style，有相同且為有效值則計分
@@ -252,7 +252,7 @@ export default {
           case 3: total3.push(item); break;
           case 4: total4.push(item); break;
           case 5: total4.unshift(item); break;
-          default: if(item.id !== this.currentPd.id){ total0.push(item); };
+          default: if(item.id !== this.currentPd.id){ total0.push(item); }
         }
       })
 

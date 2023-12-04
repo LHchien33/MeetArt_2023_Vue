@@ -279,7 +279,7 @@ export default {
       const keys = Object.keys(this.allProducts);
       const result = [];
       keys.forEach(key => {
-        if(!!this.allProducts[key].is_enabled){
+        if(this.allProducts[key].is_enabled){
           result.push({
             'id': key,
             'title': this.allProducts[key].title

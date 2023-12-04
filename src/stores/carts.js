@@ -56,7 +56,7 @@ export const useCartsStore = defineStore('carts', {
       const url = `${VITE_BASE}/v2/api/${VITE_API}/cart`;
       try {
         const res = await axios.get(url);
-        const { carts, total, final_total } = res.data?.data;
+        const { carts, total, final_total } = res.data?.data || {};
         this.carts = carts;
         this.total = total;
         this.final_total = final_total;

@@ -38,7 +38,7 @@ export function toast(style){
 }
 
 export default {
-  install(app, opts){
+  install(app){
     app.config.globalProperties.$toast = (style) => toast(style)
   }
 }

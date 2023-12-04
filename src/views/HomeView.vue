@@ -319,7 +319,7 @@ export default {
           const img = item.picture.medium;
           this.students.push({ name, img });
         })
-      }).catch(err => {
+      }).catch(() => {
         this.students = [
           {name: 'Abby', img: 'https://randomuser.me/api/portraits/women/29.jpg'},
           {name: 'Gary', img: 'https://randomuser.me/api/portraits/men/34.jpg'},
@@ -403,6 +403,13 @@ export default {
       });
     }
   },
+  watch: {
+    normalProducts(newVal) {
+      if (newVal.length !== 0) {
+        this.errorMessage = '';
+      }
+    }
+  },
   computed: {
     ...mapState(useProdStore, ['allProducts', 'tutorPdId']),
     ...mapWritableState(useProdStore, ['finalSearchPattern', 'finalSearchResult', 'routerPositionRecord']),
@@ -414,7 +421,6 @@ export default {
     },
     prodPromotion(){
       if(this.normalProducts.length !== 0){
-        this.errorMessage = '';
         const temp = this.normalProducts.toSorted((a, b) => b.classmates - a.classmates);
         return temp.filter(item => item.classmates > 300).slice(0, 12);
       } else {

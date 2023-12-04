@@ -275,7 +275,7 @@ export default {
       loader.hide();
     }
   },
-  beforeRouteLeave(to, from){
+  beforeRouteLeave(to){
     const hasCheckout = to.fullPath.split('/').includes('checkout');
     if(hasCheckout){
       if(this.carts.length === 0 && to.fullPath === '/checkout/order'){

@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- 表單 -->
-    <VForm ref="VForm" v-slot="{ errors, meta, setFieldTouched }" @submit="onSubmit"  @invalid-submit="scrollErrorIntoView" :initial-values="tempProduct" @keydown.enter.exact="preventEnter($event)">
+    <VForm ref="VForm" v-slot="{ errors, setFieldTouched }" @submit="onSubmit"  @invalid-submit="scrollErrorIntoView" :initial-values="tempProduct" @keydown.enter.exact="preventEnter($event)">
       <div class="accordion accordion-flush">
         <!-- 課程基本資訊 -->
         <div class="accordion-item mb-3">
@@ -329,32 +329,6 @@ import '@ckeditor/ckeditor5-build-classic/build/translations/zh';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 const { VITE_BASE, VITE_API } = import.meta.env;
 
-configure({
-  generateMessage: localize('zh_TW',{
-    names: {
-      title: '課程標題',
-      imageUrl: '主要圖片',
-      category: '繪畫媒材',
-      origin_price: '原價',
-      price: '售價',
-      unit: '單位',
-      'teacher.name': '老師名字',
-      'teacher.brief': '老師簡介',
-      'intro.willLearn': '課程內容',
-      'intro.preparation': '課前準備',
-      'outline.title': '章節標題',
-      'outline.minutes': '總時長',
-      'outline.lectures': '單元數',
-      'outline.brief': '章節概述'
-    },
-    fields: {
-      imageUrl: {
-        required: '{field} 為必填（需上傳圖片）',
-      }
-    },
-  }),
-});
-
 export default {
   props: ['updateId'],
   components: {
@@ -495,6 +469,33 @@ export default {
         e.preventDefault();
         return
       }
+    },
+    errorLocalize() {
+      configure({
+        generateMessage: localize('zh_TW', {
+          names: {
+            title: '課程標題',
+            imageUrl: '主要圖片',
+            category: '繪畫媒材',
+            origin_price: '原價',
+            price: '售價',
+            unit: '單位',
+            'teacher.name': '老師名字',
+            'teacher.brief': '老師簡介',
+            'intro.willLearn': '課程內容',
+            'intro.preparation': '課前準備',
+            'outline.title': '章節標題',
+            'outline.minutes': '總時長',
+            'outline.lectures': '單元數',
+            'outline.brief': '章節概述'
+          },
+          fields: {
+            imageUrl: {
+              required: '{field} 為必填（需上傳圖片）',
+            }
+          },
+        }),
+      });
     }
   },
   async beforeRouteLeave () {
@@ -520,6 +521,7 @@ export default {
     }
     this.setInitialVal();
     window.addEventListener('beforeunload', this.handleBeforeUnload);
+    this.errorLocalize();
   },
 }
 </script>
